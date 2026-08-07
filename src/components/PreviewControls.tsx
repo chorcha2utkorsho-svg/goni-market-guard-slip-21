@@ -10,6 +10,7 @@ interface PreviewControlsProps {
   onResetZoom: () => void;
   onPrint: () => void;
   onDownloadPDF: () => void;
+  onOpenVerification?: () => void;
   isDownloading: boolean;
 }
 
@@ -22,6 +23,7 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
   onResetZoom,
   onPrint,
   onDownloadPDF,
+  onOpenVerification,
   isDownloading,
 }) => {
   return (
@@ -93,6 +95,16 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
 
       {/* Direct Action Buttons */}
       <div className="flex items-center gap-2">
+        {onOpenVerification && (
+          <button
+            onClick={onOpenVerification}
+            className="px-2.5 py-1.5 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 text-xs font-bold border border-emerald-600 transition flex items-center gap-1 cursor-pointer"
+            title="বারকোড ও QR কোডের সরাসরি কার্যকারিতা দেখুন"
+          >
+            <span>🔍 কোড যাচাই</span>
+          </button>
+        )}
+
         <button
           onClick={onPrint}
           className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold border border-slate-600 transition flex items-center gap-1.5 cursor-pointer shadow-xs"

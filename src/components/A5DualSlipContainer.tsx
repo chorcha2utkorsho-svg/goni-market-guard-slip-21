@@ -7,12 +7,14 @@ interface A5DualSlipContainerProps {
   data: GuardDutySlipInput;
   id?: string;
   serialNumber?: string;
+  onVerifyClick?: () => void;
 }
 
 export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
   data,
   id = 'a5-dual-slip-container',
   serialNumber = 'GMS-2026-001',
+  onVerifyClick,
 }) => {
   return (
     <div
@@ -30,6 +32,7 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
           data={data}
           slipNumber={serialNumber}
           copyLabel="মূল কপি (Master Copy)"
+          onVerifyClick={onVerifyClick}
         />
       </div>
 
@@ -52,6 +55,7 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
           data={data}
           slipNumber={`${serialNumber}-B`}
           copyLabel="অফিস কপি (Office Record)"
+          onVerifyClick={onVerifyClick}
         />
       </div>
     </div>

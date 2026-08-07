@@ -6,6 +6,7 @@ import { A4QuadSlipContainer } from './components/A4QuadSlipContainer';
 import { PreviewControls } from './components/PreviewControls';
 import { BatchGeneratorModal } from './components/BatchGeneratorModal';
 import { HistoryPanel } from './components/HistoryPanel';
+import { VerificationModal } from './components/VerificationModal';
 import { GuardDutySlipInput, SavedSlipRecord } from './types';
 import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
 import { downloadElementAsA5PDF, downloadElementAsA4PDF, triggerPrintWindow } from './utils/pdfGenerator';
@@ -28,7 +29,7 @@ export default function App() {
     dutyDate: tomorrowDate,
     roundNumber: initialSchedule.roundNumber,
     serialIndex: initialSchedule.serialNo,
-    mobileNumber: '01712345678',
+    mobileNumber: '01947399752',
     qrCodeUrl: 'https://gonimarket.org/report',
     customInstruction: '',
     theme: 'classic',
@@ -45,6 +46,17 @@ export default function App() {
   // Modals & Drawers
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
+  const [isVerificationOpen, setIsVerificationOpen] = useState(false);
+
+  // Auto open verification modal if URL query has ?verify=1
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('verify') === '1') {
+        setIsVerificationOpen(true);
+      }
+    }
+  }, []);
 
   // History State
   const [historyRecords, setHistoryRecords] = useState<SavedSlipRecord[]>(() => {
@@ -168,6 +180,7 @@ export default function App() {
         onOpenHistory={() => setIsHistoryPanelOpen(true)}
         onOpenBatch={() => setIsBatchModalOpen(true)}
         onOpenPresets={() => {}}
+        onOpenVerification={() => setIsVerificationOpen(true)}
         isDownloading={isDownloading}
         historyCount={historyRecords.length}
       />
@@ -209,6 +222,7 @@ export default function App() {
               onResetZoom={() => setZoomLevel(paperSize === 'a4' ? 0.65 : 0.85)}
               onPrint={triggerPrintWindow}
               onDownloadPDF={handleDownloadPDF}
+              onOpenVerification={() => setIsVerificationOpen(true)}
               isDownloading={isDownloading}
             />
           </div>
@@ -243,12 +257,14 @@ export default function App() {
                   id="a4-quad-slip-container"
                   dataDay1={formData}
                   serialNumberDay1={serialNumber}
+                  onVerifyClick={() => setIsVerificationOpen(true)}
                 />
               ) : (
                 <A5DualSlipContainer
                   id="a5-dual-slip-container"
                   data={formData}
                   serialNumber={serialNumber}
+                  onVerifyClick={() => setIsVerificationOpen(true)}
                 />
               )}
             </div>
@@ -288,6 +304,13 @@ export default function App() {
         onSelectRecord={handleSelectHistoryRecord}
         onDeleteRecord={handleDeleteHistoryRecord}
         onClearAll={handleClearAllHistory}
+      />
+
+      <VerificationModal
+        isOpen={isVerificationOpen}
+        onClose={() => setIsVerificationOpen(false)}
+        data={formData}
+        slipNumber={serialNumber}
       />
     </div>
   );

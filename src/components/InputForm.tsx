@@ -287,7 +287,7 @@ export const InputForm: React.FC<InputFormProps> = ({
               type="tel"
               value={formData.mobileNumber}
               onChange={(e) => onChange({ mobileNumber: e.target.value })}
-              placeholder="যেমন: 01712345678"
+              placeholder="যেমন: 01947399752"
               className="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 text-white text-xs font-mono rounded-xl pl-9 pr-3 py-2.5 outline-none"
               required
             />

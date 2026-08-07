@@ -1,19 +1,22 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { ShieldCheck, Clock, AlertTriangle, Calendar, CheckSquare, Wrench, Users, Store } from 'lucide-react';
+import { ShieldCheck, Clock, AlertTriangle, Calendar, CheckSquare, Wrench, Users, Store, CheckCircle } from 'lucide-react';
 import { GuardDutySlipInput } from '../types';
 import { formatBengaliFullDate, toBengaliNumerals } from '../utils/bengaliUtils';
+import { BarcodeSVG } from './BarcodeSVG';
 
 interface SlipTemplateProps {
   data: GuardDutySlipInput;
   slipNumber?: string;
   copyLabel?: string; // e.g., "মূল কপি (Master Copy)" or "অফিস কপি (Office Copy)"
+  onVerifyClick?: () => void;
 }
 
 export const SlipTemplate: React.FC<SlipTemplateProps> = ({
   data,
   slipNumber = 'GMS-2026-001',
   copyLabel,
+  onVerifyClick,
 }) => {
   const {
     guard1Name = 'খোরশেদ',
@@ -25,7 +28,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
     dutyDate,
     roundNumber = 1,
     serialIndex,
-    mobileNumber = '01712345678',
+    mobileNumber = '01947399752',
     qrCodeUrl = 'https://gonimarket.org/report',
     customInstruction,
     theme = 'classic',
@@ -168,13 +171,13 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
               <li className="flex items-start gap-1">
                 <span className="text-red-700 font-bold">•</span>
                 <span>
-                  বিকাল ৪টার পরে জানালে <strong className="text-red-900 font-bold underline">অতিরিক্ত ১০০ টাকা ক্ষতিপূরণ</strong> প্রযোজ্য হবে।
+                  ডিউটির দিনে বদলির টাকা পরিশোধে বিলম্ব হলে বা বিকাল ৪টা পর্যন্ত পরিশোধ করে না থাকলে সর্বোচ্চ রাত ৯টা পর্যন্ত দেরি হয়ে গেলে <strong className="text-red-900 font-bold underline">আরও ১০০ টাকা জরিমানা</strong> ধার্য হবে।
                 </span>
               </li>
               <li className="flex items-start gap-1">
                 <span className="text-red-700 font-bold">•</span>
                 <span>
-                  যোগাযোগ না করলে <strong className="text-red-950 bg-red-200 px-1 rounded font-bold">১০০০ টাকা জরিমানা</strong> এবং দোকান তালাবদ্ধ রাখার সিদ্ধান্ত কার্যকর হবে।
+                  রাত ১০টার মধ্যে কোনো দায়িত্ব গ্রহণ না করে থাকলে উক্ত ব্যক্তির দোকান বাজার কমিটি কর্তৃক <strong className="text-red-950 bg-red-200 px-1 rounded font-bold">সীলগালা/তালাবন্ধ হবে</strong>। এই আচরণটি উক্ত ব্যক্তির দ্বারা পুরো বাজারের নিরাপত্তা ঝুঁকি সৃষ্টি করা বলে বিবেচিত হবে এবং সেই দায়ে <strong className="text-red-950 underline font-bold">প্রতিদিন ১,০০০ টাকা করে জরিমানা</strong> হতে থাকবে।
                 </span>
               </li>
             </ul>
@@ -220,17 +223,44 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
         </div>
       </div>
 
-      {/* Bottom Footer Section: QR Code, Dual Signatures, and Slogan */}
+      {/* Bottom Footer Section: QR Code, 1D Barcode, Dual Signatures, and Slogan */}
       <div className="mt-1 pt-1 border-t border-dashed border-neutral-300 space-y-1 font-kalpurush">
         <div className="flex items-center justify-between gap-1">
-          {/* QR Code section */}
-          <div className="flex items-center gap-1 bg-white border border-neutral-300 p-0.5 rounded shadow-2xs">
-            <QRCodeSVG value={qrCodeUrl || 'https://gonimarket.org/report'} size={32} level="M" />
-            <div className="text-[7.5px] leading-tight text-neutral-700">
-              <span className="font-bold text-neutral-900 block text-[8px]">রিপোর্ট QR</span>
-              স্ক্যান করে রিপোর্ট
-              <br />
-              জমা দিন
+          {/* QR Code & 1D Barcode Combined Block */}
+          <div className="flex items-center gap-1.5 bg-white border border-neutral-300 p-0.5 rounded shadow-2xs">
+            {/* QR Code */}
+            <div
+              onClick={onVerifyClick}
+              className="cursor-pointer hover:opacity-80 transition"
+              title="ডিজিটাল স্লিপ যাচাইকরণে ক্লিক করুন বা স্ক্যান করুন"
+            >
+              <QRCodeSVG
+                value={
+                  qrCodeUrl && qrCodeUrl !== 'https://gonimarket.org/report'
+                    ? qrCodeUrl
+                    : typeof window !== 'undefined'
+                    ? `${window.location.origin}${window.location.pathname}?verify=1&slip=${slipNumber}&date=${dutyDate}`
+                    : `GMS-VERIFY:${slipNumber}`
+                }
+                size={34}
+                level="M"
+              />
+            </div>
+
+            {/* 1D Barcode & Verification Label */}
+            <div className="flex flex-col items-start text-[7px] leading-tight text-neutral-700">
+              <span className="font-bold text-neutral-900 flex items-center gap-0.5 text-[8px]">
+                <CheckCircle className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                <span>যাচাইকরণ QR & বারকোড</span>
+              </span>
+              <BarcodeSVG value={slipNumber} height={14} showText={false} className="my-0.5" />
+              <button
+                type="button"
+                onClick={onVerifyClick}
+                className="text-[7px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-1 py-0.2 rounded transition cursor-pointer no-print"
+              >
+                🔍 সত্যতা যাচাই
+              </button>
             </div>
           </div>
 

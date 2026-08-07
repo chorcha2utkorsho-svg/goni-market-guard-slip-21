@@ -10,6 +10,7 @@ interface A4QuadSlipContainerProps {
   id?: string;
   serialNumberDay1?: string;
   serialNumberDay2?: string;
+  onVerifyClick?: () => void;
 }
 
 export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
@@ -18,6 +19,7 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
   id = 'a4-quad-slip-container',
   serialNumberDay1 = 'GMS-2026-001',
   serialNumberDay2 = 'GMS-2026-002',
+  onVerifyClick,
 }) => {
   // If custom data for Day 2 is not provided, calculate automatically based on Day 1 date + 1
   const dataDay2 = React.useMemo(() => {
@@ -74,6 +76,7 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
             data={dataDay1}
             slipNumber={serialNumberDay1}
             copyLabel="মূল কপি (Master Copy)"
+            onVerifyClick={onVerifyClick}
           />
         </div>
 
@@ -96,6 +99,7 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
             data={dataDay1}
             slipNumber={`${serialNumberDay1}-B`}
             copyLabel="অফিস কপি (Office Record)"
+            onVerifyClick={onVerifyClick}
           />
         </div>
       </div>
@@ -121,6 +125,7 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
             data={dataDay2}
             slipNumber={serialNumberDay2}
             copyLabel="মূল কপি (Master Copy)"
+            onVerifyClick={onVerifyClick}
           />
         </div>
 
@@ -143,6 +148,7 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
             data={dataDay2}
             slipNumber={`${serialNumberDay2}-B`}
             copyLabel="অফিস কপি (Office Record)"
+            onVerifyClick={onVerifyClick}
           />
         </div>
       </div>

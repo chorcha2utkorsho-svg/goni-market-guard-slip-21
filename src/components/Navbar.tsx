@@ -7,6 +7,7 @@ interface NavbarProps {
   onOpenHistory: () => void;
   onOpenBatch: () => void;
   onOpenPresets: () => void;
+  onOpenVerification?: () => void;
   isDownloading: boolean;
   historyCount: number;
 }
@@ -17,6 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenHistory,
   onOpenBatch,
   onOpenPresets,
+  onOpenVerification,
   isDownloading,
   historyCount,
 }) => {
@@ -45,6 +47,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Buttons */}
         <div className="flex items-center flex-wrap gap-2">
+          {/* Verification Tool Button */}
+          {onOpenVerification && (
+            <button
+              onClick={onOpenVerification}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold border border-emerald-700/60 transition cursor-pointer"
+              title="বারকোড ও QR কোডের সত্যতা যাচাইকরণ পোর্টাল"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">স্লিপ সত্যতা যাচাই</span>
+            </button>
+          )}
+
           {/* Roster Schedule / Batch */}
           <button
             onClick={onOpenBatch}
