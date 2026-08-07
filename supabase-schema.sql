@@ -25,7 +25,12 @@ CREATE TABLE IF NOT EXISTS public.guard_slips (
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.guard_slips ENABLE ROW LEVEL SECURITY;
 
--- Allow public read & write (or replace with authenticated policies as needed)
+-- Drop existing policies if present to prevent duplicates
+DROP POLICY IF EXISTS "Allow public read guard_slips" ON public.guard_slips;
+DROP POLICY IF EXISTS "Allow public insert guard_slips" ON public.guard_slips;
+DROP POLICY IF EXISTS "Allow public delete guard_slips" ON public.guard_slips;
+
+-- Allow public read & write
 CREATE POLICY "Allow public read guard_slips" ON public.guard_slips
     FOR SELECT USING (true);
 
@@ -46,6 +51,8 @@ CREATE TABLE IF NOT EXISTS public.roster_schedule (
 );
 
 ALTER TABLE public.roster_schedule ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read roster_schedule" ON public.roster_schedule;
 
 CREATE POLICY "Allow public read roster_schedule" ON public.roster_schedule
     FOR SELECT USING (true);

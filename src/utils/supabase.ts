@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 import { SavedSlipRecord } from '../types';
 
-// Environment variables for Supabase in Vercel / Vite
+// Environment variables for Supabase in Vercel / Vite with user's project fallback
 const env = (import.meta as any).env || {};
-const SUPABASE_URL = env.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY || '';
+const SUPABASE_URL = env.VITE_SUPABASE_URL || 'https://mcxtputvhypsqtsbcdg.supabase.co';
+const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeHRwdXR2aHlwc3F0Z3NiY2RnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4OTY0MDgsImV4cCI6MjA5NTQ3MjQwOH0.O8GjPitK2yOjkHt0nYteBrLM5WvWhTXPo2ciK44_zLw';
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
@@ -48,7 +48,7 @@ export async function fetchSlipsFromSupabase(): Promise<SavedSlipRecord[] | null
       createdAt: item.created_at,
     }));
   } catch (err) {
-    console.error('Error fetching from Supabase:', err);
+    console.warn('Supabase fetch unavailable, using local history:', err);
     return null;
   }
 }
