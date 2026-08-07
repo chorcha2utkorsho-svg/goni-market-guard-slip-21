@@ -51,10 +51,10 @@ export const BatchGeneratorModal: React.FC<BatchGeneratorModalProps> = ({
         data: {
           guard1Name: scheduled.pair.guard1Name,
           guard1BusinessType: scheduled.pair.guard1BusinessType,
-          guard1ShopNo: '',
+          guard1ShopNo: scheduled.pair.guard1ShopNo || '',
           guard2Name: scheduled.pair.guard2Name,
           guard2BusinessType: scheduled.pair.guard2BusinessType,
-          guard2ShopNo: '',
+          guard2ShopNo: scheduled.pair.guard2ShopNo || '',
           dutyDate: dateStr,
           roundNumber: scheduled.roundNumber,
           serialIndex: scheduled.serialNo,

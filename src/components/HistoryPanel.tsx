@@ -96,6 +96,26 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     <span className="text-[10px] bg-slate-700 text-slate-300 font-mono px-1.5 py-0.2 rounded border border-slate-600">
                       #{record.serialNumber}
                     </span>
+                    {record.guard1Status === 'ABSENT_UNPAID' && (
+                      <span className="text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.2 rounded">
+                        🔴 ১ম জন বকেয়া
+                      </span>
+                    )}
+                    {record.guard2Status === 'ABSENT_UNPAID' && (
+                      <span className="text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.2 rounded">
+                        🔴 ২য় জন বকেয়া
+                      </span>
+                    )}
+                    {record.guard1Status === 'PAID_SUBSTITUTE' && (
+                      <span className="text-[9px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.2 rounded">
+                        🟡 ১ম জন টাকা দিয়েছেন
+                      </span>
+                    )}
+                    {record.guard2Status === 'PAID_SUBSTITUTE' && (
+                      <span className="text-[9px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.2 rounded">
+                        🟡 ২য় জন টাকা দিয়েছেন
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-300">
                     <span className="flex items-center gap-1 text-amber-300/90 font-medium">

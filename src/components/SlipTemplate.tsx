@@ -22,9 +22,13 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
     guard1Name = 'খোরশেদ',
     guard1BusinessType = 'ওয়ার্কশপ',
     guard1ShopNo = '',
+    guard1Status = 'PRESENT',
+    guard1StatusNote = '',
     guard2Name = 'কাজল',
     guard2BusinessType = 'রেস্টুরেন্ট',
     guard2ShopNo = '',
+    guard2Status = 'PRESENT',
+    guard2StatusNote = '',
     dutyDate,
     roundNumber = 1,
     serialIndex,
@@ -109,6 +113,19 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
           </div>
         </div>
 
+        {/* Status Highlight Banner if Paid Substitute or Absent Unpaid */}
+        {(guard1Status === 'ABSENT_UNPAID' || guard2Status === 'ABSENT_UNPAID') && (
+          <div className="bg-red-600 text-white p-1 rounded-xs text-[8.5px] font-bold text-center mb-1 shadow-2xs flex items-center justify-center gap-1">
+            <AlertTriangle className="w-3 h-3 text-amber-300 shrink-0" />
+            <span>সতর্কবার্তা: পাহারাদার রাতে উপস্থিত হননি এবং ফি পরিশোধ করেননি (বকেয়া খেলাপী)!</span>
+          </div>
+        )}
+        {(guard1Status === 'PAID_SUBSTITUTE' || guard2Status === 'PAID_SUBSTITUTE') && guard1Status !== 'ABSENT_UNPAID' && guard2Status !== 'ABSENT_UNPAID' && (
+          <div className="bg-amber-100 border border-amber-400 text-amber-950 p-0.5 rounded-xs text-[8.5px] font-bold text-center mb-1">
+            💰 বিশেষ নোটিশ: পাহারাদার নিজে অনুপস্থিত থেকে নির্ধারিত বিকল্প টাকা পরিশোধ করেছেন।
+          </div>
+        )}
+
         {/* Two Guards Duty Block */}
         <div className="bg-white border border-neutral-300 rounded p-1.5 mb-1.5 shadow-2xs text-[10px] space-y-1">
           <div className="flex items-center gap-1 border-b border-neutral-200 pb-1 text-neutral-800 font-bold text-[10.5px]">
@@ -118,33 +135,79 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
 
           <div className="grid grid-cols-2 gap-1.5 text-[9.5px] pt-0.5">
             {/* Guard 1 */}
-            <div className="bg-amber-50/60 border border-amber-200 p-1 rounded space-y-0.5">
+            <div className={`p-1 rounded space-y-0.5 border ${
+              guard1Status === 'ABSENT_UNPAID'
+                ? 'bg-red-100/90 border-red-500 text-red-950 font-bold'
+                : guard1Status === 'PAID_SUBSTITUTE'
+                ? 'bg-amber-100/80 border-amber-400 text-amber-950'
+                : 'bg-amber-50/60 border-amber-200'
+            }`}>
               <div className="font-bold text-neutral-900 flex items-center justify-between">
                 <span className="text-red-900">১ম পাহারাদার:</span>
                 <span className="text-[8.5px] text-neutral-500 font-mono">
                   {guard1ShopNo ? `দোকান: ${guard1ShopNo}` : ''}
                 </span>
               </div>
-              <div className="text-neutral-950 font-bold text-[10.5px]">{guard1Name || '১ম জনের নাম'}</div>
+              <div className="text-neutral-950 font-bold text-[10.5px] flex items-center justify-between gap-1 flex-wrap">
+                <span>{guard1Name || '১ম জনের নাম'}</span>
+                {guard1Status === 'PAID_SUBSTITUTE' && (
+                  <span className="text-[7.5px] bg-amber-500 text-slate-950 px-1 py-0.2 rounded font-black">
+                    💰 টাকা দেওয়া হয়েছে
+                  </span>
+                )}
+                {guard1Status === 'ABSENT_UNPAID' && (
+                  <span className="text-[7.5px] bg-red-600 text-white px-1 py-0.2 rounded font-black">
+                    🚨 বকেয়া/অনুপস্থিত
+                  </span>
+                )}
+              </div>
               <div className="text-neutral-600 flex items-center gap-1 text-[8.5px]">
                 <Store className="w-2.5 h-2.5 text-neutral-500" />
                 <span>ব্যবসায়িক ধরন: <strong className="text-neutral-800">{guard1BusinessType || '—'}</strong></span>
               </div>
+              {guard1StatusNote && (
+                <div className="text-[8px] font-medium text-amber-900 bg-amber-200/60 px-1 rounded mt-0.5">
+                  নোট: {guard1StatusNote}
+                </div>
+              )}
             </div>
 
             {/* Guard 2 */}
-            <div className="bg-blue-50/60 border border-blue-200 p-1 rounded space-y-0.5">
+            <div className={`p-1 rounded space-y-0.5 border ${
+              guard2Status === 'ABSENT_UNPAID'
+                ? 'bg-red-100/90 border-red-500 text-red-950 font-bold'
+                : guard2Status === 'PAID_SUBSTITUTE'
+                ? 'bg-amber-100/80 border-amber-400 text-amber-950'
+                : 'bg-blue-50/60 border-blue-200'
+            }`}>
               <div className="font-bold text-neutral-900 flex items-center justify-between">
                 <span className="text-blue-900">২য় পাহারাদার:</span>
                 <span className="text-[8.5px] text-neutral-500 font-mono">
                   {guard2ShopNo ? `দোকান: ${guard2ShopNo}` : ''}
                 </span>
               </div>
-              <div className="text-neutral-950 font-bold text-[10.5px]">{guard2Name || '২য় জনের নাম'}</div>
+              <div className="text-neutral-950 font-bold text-[10.5px] flex items-center justify-between gap-1 flex-wrap">
+                <span>{guard2Name || '২য় জনের নাম'}</span>
+                {guard2Status === 'PAID_SUBSTITUTE' && (
+                  <span className="text-[7.5px] bg-amber-500 text-slate-950 px-1 py-0.2 rounded font-black">
+                    💰 টাকা দেওয়া হয়েছে
+                  </span>
+                )}
+                {guard2Status === 'ABSENT_UNPAID' && (
+                  <span className="text-[7.5px] bg-red-600 text-white px-1 py-0.2 rounded font-black">
+                    🚨 বকেয়া/অনুপস্থিত
+                  </span>
+                )}
+              </div>
               <div className="text-neutral-600 flex items-center gap-1 text-[8.5px]">
                 <Store className="w-2.5 h-2.5 text-neutral-500" />
                 <span>ব্যবসায়িক ধরন: <strong className="text-neutral-800">{guard2BusinessType || '—'}</strong></span>
               </div>
+              {guard2StatusNote && (
+                <div className="text-[8px] font-medium text-amber-900 bg-amber-200/60 px-1 rounded mt-0.5">
+                  নোট: {guard2StatusNote}
+                </div>
+              )}
             </div>
           </div>
         </div>

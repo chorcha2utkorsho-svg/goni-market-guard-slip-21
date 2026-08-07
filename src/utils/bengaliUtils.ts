@@ -47,6 +47,20 @@ export function toBengaliNumerals(input: string | number | undefined | null): st
 }
 
 /**
+ * Returns a date string YYYY-MM-DD shifted by offsetDays from a base date string
+ */
+export function getOffsetDateString(baseDateStr: string, offsetDays: number): string {
+  if (!baseDateStr) return getTodayDateString();
+  const [y, m, d] = baseDateStr.split('-').map((v) => parseInt(v, 10));
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + offsetDays);
+  const year = dt.getFullYear();
+  const month = String(dt.getMonth() + 1).padStart(2, '0');
+  const day = String(dt.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Returns tomorrow's date as YYYY-MM-DD
  */
 export function getTomorrowDateString(): string {

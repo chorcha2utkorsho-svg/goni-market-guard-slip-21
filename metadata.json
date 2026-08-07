@@ -1,6 +1,6 @@
 {
   "name": "Goni Market Night Guard Duty Slip Generator",
-  "description": "Automated night guard duty slip generator for Goni Market featuring dual A6 side-by-side A5 layout, Bengali typography, live preview, customizable guard and date inputs, QR code integration, and PDF export.",
+  "description": "Automated night guard duty slip generator and merchant common dashboard for Goni Market featuring Bengali typography, PIN-protected developer security dashboard, merchant sign-in portal, and market prosperity voting.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

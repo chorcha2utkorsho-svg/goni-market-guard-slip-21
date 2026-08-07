@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   User,
   Calendar,
@@ -12,10 +12,17 @@ import {
   Users,
   Store,
   Compass,
+  ChevronDown,
+  ChevronUp,
+  Save,
+  CheckCircle2,
+  DollarSign,
+  AlertTriangle,
 } from 'lucide-react';
 import { GuardDutySlipInput } from '../types';
-import { getTomorrowDateString, getTodayDateString, formatBengaliFullDate, toBengaliNumerals } from '../utils/bengaliUtils';
+import { getTomorrowDateString, getTodayDateString, getOffsetDateString, formatBengaliFullDate, toBengaliNumerals } from '../utils/bengaliUtils';
 import { OFFICIAL_ROSTER_PAIRS, getScheduledPairForDate } from '../data/rosterData';
+import { RosterCalendar } from './RosterCalendar';
 
 interface InputFormProps {
   formData: GuardDutySlipInput;
@@ -36,6 +43,7 @@ export const InputForm: React.FC<InputFormProps> = ({
 }) => {
   const tomorrowDate = getTomorrowDateString();
   const todayDate = getTodayDateString();
+  const [showCalendar, setShowCalendar] = useState(true);
 
   // Auto calculate when date changes
   const handleDateChange = (newDate: string) => {
@@ -46,8 +54,10 @@ export const InputForm: React.FC<InputFormProps> = ({
       serialIndex: scheduled.serialNo,
       guard1Name: scheduled.pair.guard1Name,
       guard1BusinessType: scheduled.pair.guard1BusinessType,
+      guard1ShopNo: scheduled.pair.guard1ShopNo || '',
       guard2Name: scheduled.pair.guard2Name,
       guard2BusinessType: scheduled.pair.guard2BusinessType,
+      guard2ShopNo: scheduled.pair.guard2ShopNo || '',
     });
   };
 
@@ -60,8 +70,10 @@ export const InputForm: React.FC<InputFormProps> = ({
       serialIndex: pair.serialNo,
       guard1Name: pair.guard1Name,
       guard1BusinessType: pair.guard1BusinessType,
+      guard1ShopNo: pair.guard1ShopNo || '',
       guard2Name: pair.guard2Name,
       guard2BusinessType: pair.guard2BusinessType,
+      guard2ShopNo: pair.guard2ShopNo || '',
     });
   };
 
@@ -73,8 +85,12 @@ export const InputForm: React.FC<InputFormProps> = ({
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <h2 className="text-base font-bold text-white flex items-center gap-2 flex-wrap">
               <span>ডিউটি স্লিপ ফরম</span>
+              <span className="text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded-full font-medium flex items-center gap-1" title="প্রতিটি ফিল্ড পরিবর্তনের সাথে সাথে তথ্য সেভ হচ্ছে">
+                <Save className="w-2.5 h-2.5 text-amber-400" />
+                <span>অটো-সেভ চালু</span>
+              </span>
               {isSupabaseActive && (
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-sans">
                   • Supabase Synced
@@ -95,34 +111,59 @@ export const InputForm: React.FC<InputFormProps> = ({
       </div>
 
       {/* Duty Date Picker with Auto-Schedule */}
-      <div className="bg-slate-900/60 border border-slate-700/70 p-3 rounded-xl space-y-2">
-        <div className="flex justify-between items-center">
+      <div className="bg-slate-900/60 border border-slate-700/70 p-3 rounded-xl space-y-3">
+        <div className="flex flex-wrap justify-between items-center gap-2">
           <label className="block text-xs font-bold text-amber-400 flex items-center gap-1.5">
             <Calendar className="w-4 h-4 text-amber-400" />
             <span>ডিউটির তারিখ ও রাউন্ড নির্বাচন (Date & Round):</span>
           </label>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button
               type="button"
-              onClick={() => handleDateChange(tomorrowDate)}
-              className={`text-[10px] px-2 py-0.5 rounded transition cursor-pointer font-medium ${
-                formData.dutyDate === tomorrowDate
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
+              onClick={() => setShowCalendar((prev) => !prev)}
+              className="text-[10px] px-2.5 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold flex items-center gap-1 transition cursor-pointer"
             >
-              আগামীকাল (Tomorrow)
+              <span>{showCalendar ? 'ক্যালেন্ডার লুকান' : '📅 মাসভিত্তিক ক্যালেন্ডার'}</span>
+              {showCalendar ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, -1))}
+              className="text-[10px] px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
+              title="পূর্ববর্তী দিনের পাহারাদার"
+            >
+              ◄ -১ দিন
             </button>
             <button
               type="button"
               onClick={() => handleDateChange(todayDate)}
-              className={`text-[10px] px-2 py-0.5 rounded transition cursor-pointer font-medium ${
+              className={`text-[10px] px-2 py-1 rounded transition cursor-pointer font-medium ${
                 formData.dutyDate === todayDate
                   ? 'bg-amber-500 text-slate-950 font-bold'
                   : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
               }`}
             >
-              আজকে (Today)
+              আজকে
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDateChange(tomorrowDate)}
+              className={`text-[10px] px-2 py-1 rounded transition cursor-pointer font-medium ${
+                formData.dutyDate === tomorrowDate
+                  ? 'bg-amber-500 text-slate-950 font-bold'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              আগামীকাল
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, 1))}
+              className="text-[10px] px-2 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold border border-amber-300 shadow-xs transition cursor-pointer flex items-center gap-1"
+              title="পরবর্তী দিনের পাহারাদার অটো-পরামর্শ"
+            >
+              <span>+১ দিন (পরবর্তী)</span>
+              <Sparkles className="w-3 h-3" />
             </button>
           </div>
         </div>
@@ -147,9 +188,57 @@ export const InputForm: React.FC<InputFormProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Auto-Suggestion Roster Continuity Card */}
+        {(() => {
+          const autoScheduled = getScheduledPairForDate(formData.dutyDate);
+          const isMatchingAuto =
+            formData.guard1Name === autoScheduled.pair.guard1Name &&
+            formData.guard2Name === autoScheduled.pair.guard2Name &&
+            formData.roundNumber === autoScheduled.roundNumber;
+
+          return (
+            <div className="bg-slate-950/80 border border-amber-500/30 rounded-lg p-2.5 space-y-1 text-xs">
+              <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>
+                    স্বয়ংক্রিয় রোস্টার পরামর্শ (ধারাবাহিকতা বজায় রাখা হয়েছে):
+                  </span>
+                </div>
+                {!isMatchingAuto && (
+                  <button
+                    type="button"
+                    onClick={() => handleDateChange(formData.dutyDate)}
+                    className="text-[10px] text-amber-400 hover:underline bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 cursor-pointer"
+                  >
+                    পুনরায় অটো-পরামর্শ ব্যবহার করুন
+                  </button>
+                )}
+              </div>
+              <div className="text-slate-200 text-[11px] leading-relaxed">
+                রাউন্ড-<strong>{toBengaliNumerals(autoScheduled.roundNumber)}</strong> • ক্রমিক #<strong>{toBengaliNumerals(autoScheduled.serialNo)}</strong>: <span className="text-amber-300 font-bold">{autoScheduled.pair.guard1Name || 'খালি'} ({autoScheduled.pair.guard1BusinessType || '-'})</span> এবং <span className="text-amber-300 font-bold">{autoScheduled.pair.guard2Name || 'খালি'} ({autoScheduled.pair.guard2BusinessType || '-'})</span>
+              </div>
+              <div className="text-[10px] text-slate-400">
+                তারিখ পরিবর্তন করলে এই রোস্টার জোড়টি ফর্মের ঘরে স্বয়ংক্রিয়ভাবে সাজেস্ট ও লোড হয়।
+              </div>
+            </div>
+          );
+        })()}
+
         <p className="text-[11px] text-slate-300">
           তারিখ: <strong className="text-amber-300">{formatBengaliFullDate(formData.dutyDate)}</strong>
         </p>
+
+        {/* Interactive Roster Calendar Visualization */}
+        {showCalendar && (
+          <div className="pt-1 animate-fade-in">
+            <RosterCalendar
+              selectedDate={formData.dutyDate}
+              onSelectDate={handleDateChange}
+            />
+          </div>
+        )}
       </div>
 
       {/* Official 35-Pair Quick Roster Selector */}
@@ -229,6 +318,65 @@ export const InputForm: React.FC<InputFormProps> = ({
               />
             </div>
           </div>
+
+          {/* Guard 1 Attendance & Fee Status */}
+          <div className="pt-2 border-t border-slate-800 space-y-1.5">
+            <label className="block text-[11px] font-bold text-amber-300">
+              ১ম জনের উপস্থিতি ও পেমেন্ট স্ট্যাটাস:
+            </label>
+            <div className="grid grid-cols-3 gap-1">
+              <button
+                type="button"
+                onClick={() => onChange({ guard1Status: 'PRESENT' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  (formData.guard1Status || 'PRESENT') === 'PRESENT'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500 ring-1 ring-emerald-500/50'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>🟢 উপস্থিত</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ guard1Status: 'PAID_SUBSTITUTE' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  formData.guard1Status === 'PAID_SUBSTITUTE'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500 ring-1 ring-amber-500/50'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+                <span>🟡 টাকা পরিশোধিত</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ guard1Status: 'ABSENT_UNPAID' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  formData.guard1Status === 'ABSENT_UNPAID'
+                    ? 'bg-red-500/20 text-red-300 border-red-500 ring-1 ring-red-500/50 animate-pulse'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                <span>🔴 বকেয়া (আসেনওনি)</span>
+              </button>
+            </div>
+
+            {(formData.guard1Status === 'PAID_SUBSTITUTE' || formData.guard1Status === 'ABSENT_UNPAID') && (
+              <input
+                type="text"
+                value={formData.guard1StatusNote || ''}
+                onChange={(e) => onChange({ guard1StatusNote: e.target.value })}
+                placeholder={
+                  formData.guard1Status === 'PAID_SUBSTITUTE'
+                    ? 'যেমন: ৩০০ টাকা পরিশোধ করেছেন / বদলি লোক রাখা হয়েছে'
+                    : 'যেমন: একাধিকবার নোটিশ পাঠানো হলেও অনুপস্থিত'
+                }
+                className="w-full bg-slate-950 border border-slate-700 text-amber-300 text-[11px] rounded-lg px-2.5 py-1.5 outline-none mt-1"
+              />
+            )}
+          </div>
         </div>
 
         {/* Guard 2 */}
@@ -271,6 +419,65 @@ export const InputForm: React.FC<InputFormProps> = ({
                 className="w-full bg-slate-950 border border-slate-700 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-2 outline-none"
               />
             </div>
+          </div>
+
+          {/* Guard 2 Attendance & Fee Status */}
+          <div className="pt-2 border-t border-slate-800 space-y-1.5">
+            <label className="block text-[11px] font-bold text-blue-300">
+              ২য় জনের উপস্থিতি ও পেমেন্ট স্ট্যাটাস:
+            </label>
+            <div className="grid grid-cols-3 gap-1">
+              <button
+                type="button"
+                onClick={() => onChange({ guard2Status: 'PRESENT' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  (formData.guard2Status || 'PRESENT') === 'PRESENT'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500 ring-1 ring-emerald-500/50'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>🟢 উপস্থিত</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ guard2Status: 'PAID_SUBSTITUTE' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  formData.guard2Status === 'PAID_SUBSTITUTE'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500 ring-1 ring-amber-500/50'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+                <span>🟡 টাকা পরিশোধিত</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ guard2Status: 'ABSENT_UNPAID' })}
+                className={`p-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center gap-0.5 transition cursor-pointer ${
+                  formData.guard2Status === 'ABSENT_UNPAID'
+                    ? 'bg-red-500/20 text-red-300 border-red-500 ring-1 ring-red-500/50 animate-pulse'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-900'
+                }`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                <span>🔴 বকেয়া (আসেনওনি)</span>
+              </button>
+            </div>
+
+            {(formData.guard2Status === 'PAID_SUBSTITUTE' || formData.guard2Status === 'ABSENT_UNPAID') && (
+              <input
+                type="text"
+                value={formData.guard2StatusNote || ''}
+                onChange={(e) => onChange({ guard2StatusNote: e.target.value })}
+                placeholder={
+                  formData.guard2Status === 'PAID_SUBSTITUTE'
+                    ? 'যেমন: ৩০০ টাকা পরিশোধ করেছেন / বদলি লোক রাখা হয়েছে'
+                    : 'যেমন: একাধিকবার নোটিশ পাঠানো হলেও অনুপস্থিত'
+                }
+                className="w-full bg-slate-950 border border-slate-700 text-blue-300 text-[11px] rounded-lg px-2.5 py-1.5 outline-none mt-1"
+              />
+            )}
           </div>
         </div>
       </div>
