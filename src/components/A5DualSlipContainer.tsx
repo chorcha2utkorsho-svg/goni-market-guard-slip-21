@@ -26,12 +26,12 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
         boxSizing: 'border-box',
       }}
     >
-      {/* Left Slip (Master Copy / পাহারাদার কপি) */}
+      {/* Left Slip (1st Partner Copy) */}
       <div className="w-[105mm] h-[148mm] p-1.5 box-border">
         <SlipTemplate
           data={data}
           slipNumber={serialNumber}
-          copyLabel="মূল কপি (Master Copy)"
+          copyLabel="১ম পাহারাদারের কপি (১ম পার্টনার)"
           onVerifyClick={onVerifyClick}
         />
       </div>
@@ -49,12 +49,12 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
         </div>
       </div>
 
-      {/* Right Slip (Identical Slip / অফিস কপি) */}
+      {/* Right Slip (2nd Partner Copy) */}
       <div className="w-[105mm] h-[148mm] p-1.5 box-border">
         <SlipTemplate
           data={data}
           slipNumber={`${serialNumber}-B`}
-          copyLabel="অফিস কপি (Office Record)"
+          copyLabel="২য় পাহারাদারের কপি (২য় পার্টনার)"
           onVerifyClick={onVerifyClick}
         />
       </div>

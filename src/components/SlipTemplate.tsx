@@ -8,14 +8,14 @@ import { BarcodeSVG } from './BarcodeSVG';
 interface SlipTemplateProps {
   data: GuardDutySlipInput;
   slipNumber?: string;
-  copyLabel?: string; // e.g., "মূল কপি (Master Copy)" or "অফিস কপি (Office Copy)"
+  copyLabel?: string; // e.g., "১ম পাহারাদারের কপি (১ম পার্টনার)" or "২য় পাহারাদারের কপি (২য় পার্টনার)"
   onVerifyClick?: () => void;
 }
 
 export const SlipTemplate: React.FC<SlipTemplateProps> = ({
   data,
   slipNumber = 'GMS-2026-001',
-  copyLabel,
+  copyLabel = '১ম পাহারাদারের কপি (১ম পার্টনার)',
   onVerifyClick,
 }) => {
   const {
@@ -282,8 +282,8 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
         </div>
 
         {/* Motivational Slogan Box */}
-        <div className="bg-slate-900 text-amber-300 border-2 border-amber-400 p-1 rounded-md text-center text-[9.5px] sm:text-[10px] leading-snug font-bold tracking-tight shadow-xs">
-          &ldquo;আপনার দোকানের নিরাপত্তা যেমন আপনার কাছে প্রিয়, পুরো বাজারের নিরাপত্তাও আপনার কাছে ঠিক ততটাই গুরুত্বপূর্ণ।&rdquo;
+        <div className="w-full bg-slate-900 text-amber-300 border-2 border-amber-400 p-1 px-2 rounded-md text-center text-[9px] sm:text-[9.5px] leading-tight font-bold tracking-tight shadow-xs font-kalpurush">
+          &ldquo;আপনার দোকানের নিরাপত্তা যেমন আপনি কোন আপোষ করবেননা তেমনি পুরোবাজারের প্রতিটি দোকানের নিরাপত্তার বিষয়টি আপনার কাছে ততটাই গুরুত্বপূর্ণ&rdquo;
         </div>
       </div>
     </div>

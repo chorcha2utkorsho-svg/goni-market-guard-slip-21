@@ -70,12 +70,12 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
           ১ম দিন (Day 1)
         </div>
 
-        {/* Day 1 Master Copy */}
+        {/* Day 1 1st Partner Copy */}
         <div className="w-[105mm] h-[148.5mm] p-1.5 box-border">
           <SlipTemplate
             data={dataDay1}
             slipNumber={serialNumberDay1}
-            copyLabel="মূল কপি (Master Copy)"
+            copyLabel="১ম পাহারাদারের কপি (১ম পার্টনার)"
             onVerifyClick={onVerifyClick}
           />
         </div>
@@ -93,12 +93,12 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
           </div>
         </div>
 
-        {/* Day 1 Office Copy */}
+        {/* Day 1 2nd Partner Copy */}
         <div className="w-[105mm] h-[148.5mm] p-1.5 box-border">
           <SlipTemplate
             data={dataDay1}
             slipNumber={`${serialNumberDay1}-B`}
-            copyLabel="অফিস কপি (Office Record)"
+            copyLabel="২য় পাহারাদারের কপি (২য় পার্টনার)"
             onVerifyClick={onVerifyClick}
           />
         </div>
@@ -119,12 +119,12 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
           ২য় দিন (Day 2)
         </div>
 
-        {/* Day 2 Master Copy */}
+        {/* Day 2 1st Partner Copy */}
         <div className="w-[105mm] h-[148.5mm] p-1.5 box-border">
           <SlipTemplate
             data={dataDay2}
             slipNumber={serialNumberDay2}
-            copyLabel="মূল কপি (Master Copy)"
+            copyLabel="১ম পাহারাদারের কপি (১ম পার্টনার)"
             onVerifyClick={onVerifyClick}
           />
         </div>
@@ -142,12 +142,12 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
           </div>
         </div>
 
-        {/* Day 2 Office Copy */}
+        {/* Day 2 2nd Partner Copy */}
         <div className="w-[105mm] h-[148.5mm] p-1.5 box-border">
           <SlipTemplate
             data={dataDay2}
             slipNumber={`${serialNumberDay2}-B`}
-            copyLabel="অফিস কপি (Office Record)"
+            copyLabel="২য় পাহারাদারের কপি (২য় পার্টনার)"
             onVerifyClick={onVerifyClick}
           />
         </div>
