@@ -1,0 +1,262 @@
+import React, { useState, useEffect } from 'react';
+import { Navbar } from './components/Navbar';
+import { InputForm } from './components/InputForm';
+import { A5DualSlipContainer } from './components/A5DualSlipContainer';
+import { PreviewControls } from './components/PreviewControls';
+import { BatchGeneratorModal } from './components/BatchGeneratorModal';
+import { HistoryPanel } from './components/HistoryPanel';
+import { GuardDutySlipInput, SavedSlipRecord } from './types';
+import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
+import { downloadElementAsA5PDF, triggerPrintWindow } from './utils/pdfGenerator';
+import { Info } from 'lucide-react';
+import { getScheduledPairForDate } from './data/rosterData';
+import { fetchSlipsFromSupabase, saveSlipToSupabase, isSupabaseConfigured } from './utils/supabase';
+
+export default function App() {
+  const tomorrowDate = getTomorrowDateString();
+  const initialSchedule = getScheduledPairForDate(tomorrowDate);
+
+  // Form State initialized with two guards and round number
+  const [formData, setFormData] = useState<GuardDutySlipInput>(() => ({
+    guard1Name: initialSchedule.pair.guard1Name,
+    guard1BusinessType: initialSchedule.pair.guard1BusinessType,
+    guard1ShopNo: '',
+    guard2Name: initialSchedule.pair.guard2Name,
+    guard2BusinessType: initialSchedule.pair.guard2BusinessType,
+    guard2ShopNo: '',
+    dutyDate: tomorrowDate,
+    roundNumber: initialSchedule.roundNumber,
+    serialIndex: initialSchedule.serialNo,
+    mobileNumber: '01712345678',
+    qrCodeUrl: 'https://gonimarket.org/report',
+    customInstruction: '',
+    theme: 'classic',
+    useBengaliNumerals: true,
+  }));
+
+  const [serialNumber, setSerialNumber] = useState<string>(() => generateSlipSerial());
+  const [zoomLevel, setZoomLevel] = useState<number>(0.85);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isSavedSuccess, setIsSavedSuccess] = useState<boolean>(false);
+  const [isSupabaseActive] = useState<boolean>(() => isSupabaseConfigured());
+
+  // Modals & Drawers
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
+
+  // History State
+  const [historyRecords, setHistoryRecords] = useState<SavedSlipRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('goni_market_slip_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Load from Supabase on mount if configured
+  useEffect(() => {
+    if (isSupabaseActive) {
+      fetchSlipsFromSupabase().then((remoteSlips) => {
+        if (remoteSlips && remoteSlips.length > 0) {
+          setHistoryRecords(remoteSlips);
+        }
+      });
+    }
+  }, [isSupabaseActive]);
+
+  useEffect(() => {
+    localStorage.setItem('goni_market_slip_history', JSON.stringify(historyRecords));
+  }, [historyRecords]);
+
+  // Handlers
+  const handleFormChange = (updated: Partial<GuardDutySlipInput>) => {
+    setFormData((prev) => ({ ...prev, ...updated }));
+  };
+
+  const handleResetForm = () => {
+    const sched = getScheduledPairForDate(tomorrowDate);
+    setFormData({
+      guard1Name: sched.pair.guard1Name,
+      guard1BusinessType: sched.pair.guard1BusinessType,
+      guard1ShopNo: '',
+      guard2Name: sched.pair.guard2Name,
+      guard2BusinessType: sched.pair.guard2BusinessType,
+      guard2ShopNo: '',
+      dutyDate: tomorrowDate,
+      roundNumber: sched.roundNumber,
+      serialIndex: sched.serialNo,
+      mobileNumber: '01712345678',
+      qrCodeUrl: 'https://gonimarket.org/report',
+      customInstruction: '',
+      theme: 'classic',
+      useBengaliNumerals: true,
+    });
+    setSerialNumber(generateSlipSerial());
+  };
+
+  const handleSaveToHistory = async () => {
+    const newRecord: SavedSlipRecord = {
+      ...formData,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      serialNumber,
+    };
+
+    setHistoryRecords((prev) => [newRecord, ...prev]);
+
+    if (isSupabaseActive) {
+      await saveSlipToSupabase(newRecord);
+    }
+
+    setIsSavedSuccess(true);
+    setTimeout(() => setIsSavedSuccess(false), 2500);
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true);
+    const fileName = `Goni_Market_Guard_Slip_${formData.guard1Name}_${formData.guard2Name}_${formData.dutyDate}.pdf`;
+    await downloadElementAsA5PDF('a5-dual-slip-container', fileName);
+    setIsDownloading(false);
+  };
+
+  const handleDeleteHistoryRecord = (id: string) => {
+    setHistoryRecords((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleClearAllHistory = () => {
+    if (window.confirm('আপনি কি সব সংরক্ষিত স্লিপ মুছে ফেলতে চান?')) {
+      setHistoryRecords([]);
+    }
+  };
+
+  const handleSelectHistoryRecord = (record: SavedSlipRecord) => {
+    setFormData({
+      guard1Name: record.guard1Name,
+      guard1BusinessType: record.guard1BusinessType,
+      guard1ShopNo: record.guard1ShopNo,
+      guard2Name: record.guard2Name,
+      guard2BusinessType: record.guard2BusinessType,
+      guard2ShopNo: record.guard2ShopNo,
+      dutyDate: record.dutyDate,
+      roundNumber: record.roundNumber || 1,
+      serialIndex: record.serialIndex,
+      mobileNumber: record.mobileNumber,
+      qrCodeUrl: record.qrCodeUrl,
+      customInstruction: record.customInstruction,
+      theme: record.theme || 'classic',
+      useBengaliNumerals: record.useBengaliNumerals ?? true,
+    });
+    if (record.serialNumber) {
+      setSerialNumber(record.serialNumber);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-['Hind_Siliguri',sans-serif] antialiased">
+      {/* Top Navbar */}
+      <Navbar
+        onPrint={triggerPrintWindow}
+        onDownloadPDF={handleDownloadPDF}
+        onOpenHistory={() => setIsHistoryPanelOpen(true)}
+        onOpenBatch={() => setIsBatchModalOpen(true)}
+        onOpenPresets={() => {}}
+        isDownloading={isDownloading}
+        historyCount={historyRecords.length}
+      />
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Form & Inputs (5 cols) */}
+        <section className="no-print lg:col-span-5 space-y-4">
+          <InputForm
+            formData={formData}
+            onChange={handleFormChange}
+            onReset={handleResetForm}
+            onSaveToHistory={handleSaveToHistory}
+            isSavedSuccess={isSavedSuccess}
+            isSupabaseActive={isSupabaseActive}
+          />
+
+          {/* Quick Info Box */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-xs text-slate-400 space-y-2">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+              <Info className="w-4 h-4 shrink-0" />
+              <span>A5 সাইজ ২-ইন-১ দ্বৈত স্লিপ নির্দেশিকা:</span>
+            </div>
+            <p className="leading-relaxed">
+              এই সিস্টেমটি একরাতে <strong className="text-white">দুজনের নাম, ব্যবসায়িক ধরন ও দোকান নম্বরসহ</strong> একটি স্ট্যান্ডার্ড <strong className="text-white">A5 ল্যান্ডস্কেপ শিটে ২টি হুবহু একই A6 স্লিপ</strong> পাশাপাশি প্রিন্ট করে। ৩৫ জোড়ার ঘূর্ণায়মান তফসিল অনুযায়ী অনন্তকাল ধরে সকল রাউন্ডে স্বয়ংক্রিয় তারিখ ও রাউন্ড গণনা চলে।
+            </p>
+          </div>
+        </section>
+
+        {/* Right Column: Live A5 Dual-Slip Preview (7 cols) */}
+        <section className="lg:col-span-7 space-y-4 flex flex-col items-center">
+          <div className="w-full">
+            <PreviewControls
+              zoomLevel={zoomLevel}
+              onZoomIn={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.3))}
+              onZoomOut={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5))}
+              onResetZoom={() => setZoomLevel(0.85)}
+              onPrint={triggerPrintWindow}
+              onDownloadPDF={handleDownloadPDF}
+              isDownloading={isDownloading}
+            />
+          </div>
+
+          {/* A5 Slip Document Viewer Frame */}
+          <div className="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 overflow-x-auto shadow-2xl flex flex-col items-center min-h-[500px] justify-center relative">
+            <div className="text-[11px] text-slate-400 mb-3 flex items-center gap-2 no-print">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>
+                লাইভ A5 ল্যান্ডস্কেপ স্লিপ প্রিভিউ ({formatBengaliFullDate(formData.dutyDate)} — রাউন্ড-{formData.roundNumber})
+              </span>
+            </div>
+
+            {/* Scaled Preview Canvas */}
+            <div
+              className="transition-transform duration-200 ease-out origin-top shadow-2xl rounded-sm"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                marginBottom: `${(zoomLevel - 1) * 200}px`,
+              }}
+            >
+              <A5DualSlipContainer
+                id="a5-dual-slip-container"
+                data={formData}
+                serialNumber={serialNumber}
+              />
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Hidden Print-Only Container for browser window.print() */}
+      <div className="hidden print-only-container">
+        <A5DualSlipContainer
+          id="a5-dual-slip-container-print"
+          data={formData}
+          serialNumber={serialNumber}
+        />
+      </div>
+
+      {/* Modals & Slide-overs */}
+      <BatchGeneratorModal
+        isOpen={isBatchModalOpen}
+        onClose={() => setIsBatchModalOpen(false)}
+        defaultMobileNumber={formData.mobileNumber}
+        defaultQrCodeUrl={formData.qrCodeUrl}
+      />
+
+      <HistoryPanel
+        isOpen={isHistoryPanelOpen}
+        onClose={() => setIsHistoryPanelOpen(false)}
+        historyRecords={historyRecords}
+        onSelectRecord={handleSelectHistoryRecord}
+        onDeleteRecord={handleDeleteHistoryRecord}
+        onClearAll={handleClearAllHistory}
+      />
+    </div>
+  );
+}
+
