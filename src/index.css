@@ -23,10 +23,9 @@
   box-shadow: inset 0 0 0 2px #ecfdf5, inset 0 0 0 4px #065f46;
 }
 
-/* Print CSS setup for exact A5 Landscape (210mm x 148mm) */
+/* Print CSS setup for exact A5 Landscape (210mm x 148mm) & A4 Portrait (210mm x 297mm) */
 @media print {
   @page {
-    size: A5 landscape;
     margin: 0;
   }
 
@@ -46,21 +45,19 @@
 
   .print-only-container {
     display: block !important;
-    width: 210mm !important;
-    height: 148mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
-    page-break-after: always;
-    overflow: hidden !important;
   }
 
   .print-page {
-    width: 210mm !important;
-    height: 148mm !important;
     page-break-inside: avoid !important;
     page-break-after: always !important;
     box-shadow: none !important;
-    border: none !important;
+  }
+
+  .print-page.print-a4 {
+    width: 210mm !important;
+    height: 297mm !important;
   }
 }
 

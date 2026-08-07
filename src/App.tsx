@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { InputForm } from './components/InputForm';
 import { A5DualSlipContainer } from './components/A5DualSlipContainer';
+import { A4QuadSlipContainer } from './components/A4QuadSlipContainer';
 import { PreviewControls } from './components/PreviewControls';
 import { BatchGeneratorModal } from './components/BatchGeneratorModal';
 import { HistoryPanel } from './components/HistoryPanel';
 import { GuardDutySlipInput, SavedSlipRecord } from './types';
 import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
-import { downloadElementAsA5PDF, triggerPrintWindow } from './utils/pdfGenerator';
-import { Info } from 'lucide-react';
+import { downloadElementAsA5PDF, downloadElementAsA4PDF, triggerPrintWindow } from './utils/pdfGenerator';
+import { Info, Sparkles } from 'lucide-react';
 import { getScheduledPairForDate } from './data/rosterData';
 import { fetchSlipsFromSupabase, saveSlipToSupabase, isSupabaseConfigured } from './utils/supabase';
 
@@ -35,7 +36,8 @@ export default function App() {
   }));
 
   const [serialNumber, setSerialNumber] = useState<string>(() => generateSlipSerial());
-  const [zoomLevel, setZoomLevel] = useState<number>(0.85);
+  const [paperSize, setPaperSize] = useState<'a4' | 'a5'>('a4'); // Default to A4 4-in-1
+  const [zoomLevel, setZoomLevel] = useState<number>(0.75);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSavedSuccess, setIsSavedSuccess] = useState<boolean>(false);
   const [isSupabaseActive] = useState<boolean>(() => isSupabaseConfigured());
@@ -115,8 +117,13 @@ export default function App() {
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
-    const fileName = `Goni_Market_Guard_Slip_${formData.guard1Name}_${formData.guard2Name}_${formData.dutyDate}.pdf`;
-    await downloadElementAsA5PDF('a5-dual-slip-container', fileName);
+    if (paperSize === 'a4') {
+      const fileName = `Goni_Market_Guard_Slips_A4_4Up_${formData.dutyDate}.pdf`;
+      await downloadElementAsA4PDF('a4-quad-slip-container', fileName);
+    } else {
+      const fileName = `Goni_Market_Guard_Slip_A5_${formData.dutyDate}.pdf`;
+      await downloadElementAsA5PDF('a5-dual-slip-container', fileName);
+    }
     setIsDownloading(false);
   };
 
@@ -181,35 +188,45 @@ export default function App() {
           {/* Quick Info Box */}
           <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-xs text-slate-400 space-y-2">
             <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-              <Info className="w-4 h-4 shrink-0" />
-              <span>A5 সাইজ ২-ইন-১ দ্বৈত স্লিপ নির্দেশিকা:</span>
+              <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
+              <span>A4 পেপারে ৪টি স্লিপ (২ দিন) জিরো পেপার ওয়েস্ট প্রিন্টিং:</span>
             </div>
             <p className="leading-relaxed">
-              এই সিস্টেমটি একরাতে <strong className="text-white">দুজনের নাম, ব্যবসায়িক ধরন ও দোকান নম্বরসহ</strong> একটি স্ট্যান্ডার্ড <strong className="text-white">A5 ল্যান্ডস্কেপ শিটে ২টি হুবহু একই A6 স্লিপ</strong> পাশাপাশি প্রিন্ট করে। ৩৫ জোড়ার ঘূর্ণায়মান তফসিল অনুযায়ী অনন্তকাল ধরে সকল রাউন্ডে স্বয়ংক্রিয় তারিখ ও রাউন্ড গণনা চলে।
+              ১টি стандарт <strong className="text-white">A4 সাইজ পেপারে ২টি A5 লেআউট (২ দিন x ২টি কপি = মোট ৪টি ল্যান্ডস্কেপ স্লিপ)</strong> প্রিন্ট করা যায়। এর ফলে কোনো কাগজ অপচয় না হয়ে ২ দিনের স্লিপ একসাথে সুন্দরভাবে বের হয়। আপনি চাইলে উপরে ডানপাশে A5 সাইজও বাছাই করতে পারেন।
             </p>
           </div>
         </section>
 
-        {/* Right Column: Live A5 Dual-Slip Preview (7 cols) */}
+        {/* Right Column: Live Dual / Quad Slip Preview (7 cols) */}
         <section className="lg:col-span-7 space-y-4 flex flex-col items-center">
           <div className="w-full">
             <PreviewControls
+              paperSize={paperSize}
+              onPaperSizeChange={setPaperSize}
               zoomLevel={zoomLevel}
               onZoomIn={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.3))}
-              onZoomOut={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5))}
-              onResetZoom={() => setZoomLevel(0.85)}
+              onZoomOut={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.4))}
+              onResetZoom={() => setZoomLevel(paperSize === 'a4' ? 0.65 : 0.85)}
               onPrint={triggerPrintWindow}
               onDownloadPDF={handleDownloadPDF}
               isDownloading={isDownloading}
             />
           </div>
 
-          {/* A5 Slip Document Viewer Frame */}
-          <div className="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 overflow-x-auto shadow-2xl flex flex-col items-center min-h-[500px] justify-center relative">
+          {/* Slip Document Viewer Frame */}
+          <div className="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 overflow-x-auto shadow-2xl flex flex-col items-center min-h-[550px] justify-center relative">
             <div className="text-[11px] text-slate-400 mb-3 flex items-center gap-2 no-print">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>
-                লাইভ A5 ল্যান্ডস্কেপ স্লিপ প্রিভিউ ({formatBengaliFullDate(formData.dutyDate)} — রাউন্ড-{formData.roundNumber})
+                {paperSize === 'a4' ? (
+                  <>
+                    লাইভ A4 পেজ প্রিভিউ (৪টি ল্যান্ডস্কেপ স্লিপ — {formatBengaliFullDate(formData.dutyDate)} ও পরবর্তী দিন)
+                  </>
+                ) : (
+                  <>
+                    লাইভ A5 পেজ প্রিভিউ (২টি স্লিপ — {formatBengaliFullDate(formData.dutyDate)})
+                  </>
+                )}
               </span>
             </div>
 
@@ -218,14 +235,22 @@ export default function App() {
               className="transition-transform duration-200 ease-out origin-top shadow-2xl rounded-sm"
               style={{
                 transform: `scale(${zoomLevel})`,
-                marginBottom: `${(zoomLevel - 1) * 200}px`,
+                marginBottom: `${(zoomLevel - 1) * (paperSize === 'a4' ? 450 : 200)}px`,
               }}
             >
-              <A5DualSlipContainer
-                id="a5-dual-slip-container"
-                data={formData}
-                serialNumber={serialNumber}
-              />
+              {paperSize === 'a4' ? (
+                <A4QuadSlipContainer
+                  id="a4-quad-slip-container"
+                  dataDay1={formData}
+                  serialNumberDay1={serialNumber}
+                />
+              ) : (
+                <A5DualSlipContainer
+                  id="a5-dual-slip-container"
+                  data={formData}
+                  serialNumber={serialNumber}
+                />
+              )}
             </div>
           </div>
         </section>
@@ -233,11 +258,19 @@ export default function App() {
 
       {/* Hidden Print-Only Container for browser window.print() */}
       <div className="hidden print-only-container">
-        <A5DualSlipContainer
-          id="a5-dual-slip-container-print"
-          data={formData}
-          serialNumber={serialNumber}
-        />
+        {paperSize === 'a4' ? (
+          <A4QuadSlipContainer
+            id="a4-quad-slip-container-print"
+            dataDay1={formData}
+            serialNumberDay1={serialNumber}
+          />
+        ) : (
+          <A5DualSlipContainer
+            id="a5-dual-slip-container-print"
+            data={formData}
+            serialNumber={serialNumber}
+          />
+        )}
       </div>
 
       {/* Modals & Slide-overs */}
@@ -259,4 +292,5 @@ export default function App() {
     </div>
   );
 }
+
 

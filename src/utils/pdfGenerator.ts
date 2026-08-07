@@ -45,6 +45,47 @@ export async function downloadElementAsA5PDF(
 }
 
 /**
+ * Downloads an HTML element as an exact A4 Portrait PDF file (210mm x 297mm).
+ * Contains 4 slips (2 days x 2 slips).
+ */
+export async function downloadElementAsA4PDF(
+  elementId: string,
+  fileName = 'Goni_Market_Guard_Slips_A4_4Up.pdf'
+): Promise<boolean> {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.error(`Element with id ${elementId} not found.`);
+    return false;
+  }
+
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+    });
+
+    const imgData = canvas.toDataURL('image/png', 1.0);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    pdf.save(fileName);
+    return true;
+  } catch (err) {
+    console.error('Error generating A4 PDF:', err);
+    return false;
+  }
+}
+
+/**
  * Downloads multiple element IDs as a multi-page A5 PDF.
  */
 export async function downloadBatchAsA5PDF(
@@ -85,6 +126,51 @@ export async function downloadBatchAsA5PDF(
     return true;
   } catch (err) {
     console.error('Error generating batch PDF:', err);
+    return false;
+  }
+}
+
+/**
+ * Downloads multiple element IDs as a multi-page A4 PDF (210mm x 297mm per page).
+ */
+export async function downloadBatchAsA4PDF(
+  elementIds: string[],
+  fileName = 'Goni_Market_Guard_Slips_A4_Batch.pdf'
+): Promise<boolean> {
+  if (elementIds.length === 0) return false;
+
+  try {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    for (let i = 0; i < elementIds.length; i++) {
+      const element = document.getElementById(elementIds[i]);
+      if (!element) continue;
+
+      const canvas = await html2canvas(element, {
+        scale: 3,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      if (i > 0) {
+        pdf.addPage('a4', 'portrait');
+      }
+
+      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    }
+
+    pdf.save(fileName);
+    return true;
+  } catch (err) {
+    console.error('Error generating A4 batch PDF:', err);
     return false;
   }
 }
