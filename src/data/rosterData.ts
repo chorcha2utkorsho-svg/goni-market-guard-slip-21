@@ -39,7 +39,8 @@ export const OFFICIAL_ROSTER_PAIRS: RosterPair[] = [
 ];
 
 const CYCLE_LENGTH = 35; // 35 days per full round
-const ROUND_1_START = new Date('2026-08-18T00:00:00');
+// Round 3 starts on 2026-08-18 (as per official schedule), so Round 1 started 70 days earlier on 2026-06-09
+const ROUND_1_START = new Date('2026-06-09T00:00:00');
 
 /**
  * Calculates the exact YYYY-MM-DD date for a given serial number (1-35) and round number (1, 2, 3...)
