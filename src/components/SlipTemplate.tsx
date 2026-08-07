@@ -147,55 +147,72 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
         </div>
 
         {/* Instructions Body */}
-        <div className="space-y-1 text-[9px] text-neutral-900">
-          {/* Rule 1 & 2 Box */}
-          <div className="bg-red-50/90 border border-red-200 rounded p-1 space-y-0.5">
-            <p className="leading-tight">
-              <span className="font-bold text-red-900">১. বিকল্প লোক & যোগাযোগ: </span>
-              দায়িত্ব পালনে অপারগ হলে বিকল্প লোক নিতে{' '}
-              <span className="font-bold text-red-950 underline">৩০০ টাকা সহ</span>{' '}
-              বিকাল ৪টার মধ্যে{' '}
-              <span className="font-bold bg-white px-1 border border-red-300 rounded text-red-900 font-mono text-[9.5px]">
-                {displayPhone}
-              </span>{' '}
-              নম্বরে যোগাযোগ করুন।
-            </p>
-
-            <p className="leading-tight border-t border-red-200/60 pt-0.5">
-              <span className="font-bold text-red-900">২. জরিমানা ও সিদ্ধান্ত: </span>
-              ৪টার পরে জানালে অতিরিক্ত{' '}
-              <span className="font-bold text-red-900">১০০ টাকা ক্ষতিপূরণ</span>। যোগাযোগ না করলে{' '}
-              <span className="font-bold text-red-950 bg-red-100 px-0.5 rounded">১০০০ টাকা জরিমানা</span>{' '}
-              এবং দোকান তালাবদ্ধ রাখার সিদ্ধান্ত কার্যকর হবে।
-            </p>
+        <div className="space-y-1 font-kalpurush text-neutral-900">
+          {/* 1. জরুরি নির্দেশনা (Emergency Instructions Box) */}
+          <div className="bg-red-50/90 border border-red-300 rounded p-1.5 space-y-1 text-[10px]">
+            <div className="flex items-center gap-1 font-bold text-red-950 text-[11px] border-b border-red-200 pb-0.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-700 shrink-0" />
+              <span>জরুরি নির্দেশনা:</span>
+            </div>
+            <ul className="space-y-0.5 leading-snug pl-1">
+              <li className="flex items-start gap-1">
+                <span className="text-red-700 font-bold">•</span>
+                <span>
+                  দায়িত্ব পালনে অপারগ হলে বিকল্প লোক নিতে <strong className="text-red-950 bg-red-100 px-1 rounded font-bold">৩০০ টাকা সহ</strong> বিকাল ৪টার মধ্যে{' '}
+                  <strong className="bg-white border border-red-400 text-red-900 px-1 py-0.2 rounded font-mono font-bold text-[10.5px]">
+                    {displayPhone}
+                  </strong>{' '}
+                  নম্বরে যোগাযোগ করুন।
+                </span>
+              </li>
+              <li className="flex items-start gap-1">
+                <span className="text-red-700 font-bold">•</span>
+                <span>
+                  বিকাল ৪টার পরে জানালে <strong className="text-red-900 font-bold underline">অতিরিক্ত ১০০ টাকা ক্ষতিপূরণ</strong> প্রযোজ্য হবে।
+                </span>
+              </li>
+              <li className="flex items-start gap-1">
+                <span className="text-red-700 font-bold">•</span>
+                <span>
+                  যোগাযোগ না করলে <strong className="text-red-950 bg-red-200 px-1 rounded font-bold">১০০০ টাকা জরিমানা</strong> এবং দোকান তালাবদ্ধ রাখার সিদ্ধান্ত কার্যকর হবে।
+                </span>
+              </li>
+            </ul>
           </div>
 
-          {/* Equipment & Emergency */}
-          <div className="grid grid-cols-1 gap-0.5 text-[8.5px]">
-            <div className="flex items-start gap-1 bg-white/80 border border-neutral-200 p-0.5 rounded">
-              <Wrench className="w-2.5 h-2.5 text-neutral-700 shrink-0 mt-0.5" />
-              <p className="leading-tight">
-                <span className="font-bold text-neutral-800">সরঞ্জামাদি:</span> সাথে অবশ্যই{' '}
-                <span className="font-bold">বাঁশি, বল্লম, টর্চ লাইট, মোবাইল</span> রাখুন।
+          {/* 2. প্রয়োজনীয় সরঞ্জাম & 3. নিরাপত্তা ও রিপোর্টিং Grid */}
+          <div className="grid grid-cols-1 gap-1 text-[9.5px]">
+            {/* প্রয়োজনীয় সরঞ্জাম */}
+            <div className="bg-amber-50/90 border border-amber-300 p-1 rounded">
+              <div className="flex items-center gap-1 font-bold text-amber-950 text-[10px] mb-0.5">
+                <Wrench className="w-3 h-3 text-amber-800 shrink-0" />
+                <span>প্রয়োজনীয় সরঞ্জাম:</span>
+              </div>
+              <p className="leading-tight text-neutral-900">
+                ডিউটির সময় অবশ্যই সাথে <strong className="text-amber-950 font-bold bg-amber-200/80 px-1 rounded">বাঁশি, বল্লম, টর্চ লাইট এবং মোবাইল ফোন</strong> রাখুন।
               </p>
             </div>
 
-            <div className="flex items-start gap-1 bg-amber-50/90 border border-amber-200 p-0.5 rounded">
-              <AlertTriangle className="w-2.5 h-2.5 text-amber-700 shrink-0 mt-0.5" />
-              <p className="leading-tight text-amber-950">
-                <span className="font-bold text-amber-900">জরুরী নির্দেশ:</span> সন্দেহভাজন কাউকে দেখলে দ্রুত গ্রুপে জানান এবং প্রয়োজনে পাকরাও করুন।
-              </p>
-            </div>
-
-            <div className="flex items-start gap-1 bg-blue-50/70 border border-blue-200 p-0.5 rounded">
-              <CheckSquare className="w-2.5 h-2.5 text-blue-700 shrink-0 mt-0.5" />
-              <p className="leading-tight text-blue-950">
-                <span className="font-bold text-blue-900">তালা চেক:</span> ডিউটি শুরুতে তালা চেক করার সময় কেউ ভেতরে থাকলে তা ফরমে লিপিবদ্ধ করুন।
-              </p>
+            {/* নিরাপত্তা ও রিপোর্টিং */}
+            <div className="bg-blue-50/80 border border-blue-300 p-1 rounded space-y-0.5">
+              <div className="flex items-center gap-1 font-bold text-blue-950 text-[10px]">
+                <CheckSquare className="w-3 h-3 text-blue-800 shrink-0" />
+                <span>নিরাপত্তা ও রিপোর্টিং:</span>
+              </div>
+              <ul className="space-y-0.5 leading-snug text-neutral-900 text-[9px] pl-1">
+                <li className="flex items-start gap-1">
+                  <span className="text-blue-700 font-bold">•</span>
+                  <span>ডিউটি শুরুর সময় তালা চেক করার সময় যদি কেউ দোকানের ভেতরে থাকে, তবে তা তাৎক্ষণিকভাবে রিপোর্টে লিপিবদ্ধ করুন।</span>
+                </li>
+                <li className="flex items-start gap-1">
+                  <span className="text-blue-700 font-bold">•</span>
+                  <span>সন্দেহভাজন কাউকে দেখলে দ্রুত গ্রুপে জানান এবং প্রয়োজনে পাকরাও করুন।</span>
+                </li>
+              </ul>
             </div>
 
             {customInstruction && (
-              <div className="bg-purple-50 border border-purple-200 p-0.5 rounded text-[8px] text-purple-950">
+              <div className="bg-purple-50 border border-purple-300 p-1 rounded text-[9px] text-purple-950">
                 <span className="font-bold text-purple-900">বিশেষ নির্দেশ:</span> {customInstruction}
               </div>
             )}
@@ -204,7 +221,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
       </div>
 
       {/* Bottom Footer Section: QR Code, Dual Signatures, and Slogan */}
-      <div className="mt-1 pt-1 border-t border-dashed border-neutral-300 space-y-1">
+      <div className="mt-1 pt-1 border-t border-dashed border-neutral-300 space-y-1 font-kalpurush">
         <div className="flex items-center justify-between gap-1">
           {/* QR Code section */}
           <div className="flex items-center gap-1 bg-white border border-neutral-300 p-0.5 rounded shadow-2xs">
@@ -234,8 +251,8 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
           </div>
         </div>
 
-        {/* Motivational Slogan */}
-        <div className="bg-neutral-900 text-amber-200 p-0.5 rounded text-center text-[7.5px] leading-tight font-medium tracking-tight">
+        {/* Motivational Slogan Box */}
+        <div className="bg-slate-900 text-amber-300 border-2 border-amber-400 p-1 rounded-md text-center text-[9.5px] sm:text-[10px] leading-snug font-bold tracking-tight shadow-xs">
           &ldquo;আপনার দোকানের নিরাপত্তা যেমন আপনার কাছে প্রিয়, পুরো বাজারের নিরাপত্তাও আপনার কাছে ঠিক ততটাই গুরুত্বপূর্ণ।&rdquo;
         </div>
       </div>
