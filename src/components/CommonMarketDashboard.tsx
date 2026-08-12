@@ -449,8 +449,7 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
       <LandServicesConsultantSection />
 
       {/* Top Banner & Title */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/50 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl overflow-hidden">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
           <div className="space-y-2">

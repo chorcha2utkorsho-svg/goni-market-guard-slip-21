@@ -324,9 +324,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
       </div>
 
       {/* Part 2: HANNAN BEDDING STORE ADVERTISEMENT BANNER & ORDER SYSTEM */}
-      <div className="bg-gradient-to-br from-amber-950/80 via-slate-900 to-slate-950 border-2 border-amber-500/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
-        <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
+      <div className="bg-slate-950 border-2 border-amber-500/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
         {/* Ad Title & Special Identity */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/30 pb-4">
           <div className="flex items-center gap-3.5">
@@ -351,7 +349,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-slate-950/80 p-3 rounded-2xl border border-amber-500/40 text-right shrink-0">
+          <div className="bg-slate-900 p-3 rounded-2xl border border-amber-500/40 text-right shrink-0">
             <span className="text-[11px] text-amber-400 font-bold block">
               অরিজিনাল শিমুল তুলার নিশ্চয়তা
             </span>
@@ -363,14 +361,14 @@ export const SalonBeautyBeddingSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           {/* Ad Features Showcase */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="p-4 bg-slate-950/90 rounded-2xl border border-amber-500/30 space-y-3">
+            <div className="p-4 bg-slate-900 rounded-2xl border border-amber-500/30 space-y-3">
               <h3 className="text-sm font-bold text-amber-300 flex items-center gap-2">
                 <Flame className="w-4 h-4 text-amber-400" />
                 <span>আমাদের প্রস্তুতকৃত পণ্যের তালিকা ও বৈশিষ্ট্যসমূহ:</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-200">
-                <div className="flex items-start gap-2 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                <div className="flex items-start gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-white block">হাতে তৈরি শীতের শিমুল তুলার লেপ</span>
@@ -378,7 +376,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                <div className="flex items-start gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-white block">কাস্টম সাইজের তোষক ও জাজিম</span>
@@ -386,7 +384,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                <div className="flex items-start gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-white block">বিয়ের শুভ তোশক ও রেডিমেড সেট</span>
@@ -394,7 +392,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+                <div className="flex items-start gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-white block">মেডিকেল ফোম ও কোল বালিশ</span>
@@ -405,7 +403,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
             </div>
 
             {/* Direct Contact Phone & Payment Box */}
-            <div className="p-4 bg-gradient-to-r from-amber-500/20 to-slate-950 rounded-2xl border border-amber-500/40 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="p-4 bg-slate-900 rounded-2xl border border-amber-500/40 flex flex-wrap items-center justify-between gap-3 text-xs">
               <div>
                 <span className="text-[11px] text-amber-300 font-bold block">
                   সরাসরি কল করে মাপ ও অর্ডার দিন:
@@ -426,7 +424,7 @@ export const SalonBeautyBeddingSection: React.FC = () => {
           </div>
 
           {/* Right: Quick Order Calculator & Request Form */}
-          <div className="lg:col-span-5 bg-slate-950 border border-amber-500/40 p-5 rounded-2xl shadow-xl space-y-3.5">
+          <div className="lg:col-span-5 bg-slate-900 border border-amber-500/40 p-5 rounded-2xl shadow-xl space-y-3.5">
             <div className="border-b border-slate-800 pb-2">
               <h3 className="text-sm font-black text-white flex items-center gap-2">
                 <Bed className="w-4 h-4 text-amber-400" />

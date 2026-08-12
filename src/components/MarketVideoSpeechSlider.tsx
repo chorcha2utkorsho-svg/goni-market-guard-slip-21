@@ -112,21 +112,24 @@ export const MarketVideoSpeechSlider: React.FC = () => {
     const loadDevContent = () => {
       const devData = getDevSectionContent('sec-2');
       if (devData && devData.items && devData.items.length > 0) {
-        const customItems: SpeechVideoItem[] = devData.items.map((item, idx) => ({
-          id: item.id || `dev-v-${idx}`,
-          speakerName: item.title || 'বক্তা',
-          speakerTitle: item.subtitle || 'গণিমার্কেট সদস্য',
-          roleTag: (item.badge as any) || 'বিশেষ ব্যবসায়ী',
-          tagBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
-          topicTitle: item.title,
-          speechSummary: item.description || '',
-          subtitleQuote: `“${item.subtitle || item.title}”`,
-          avatarUrl: item.imageUrl || SPEECHES[0].avatarUrl,
-          posterUrl: item.imageUrl || SPEECHES[0].posterUrl,
-          videoUrl: item.videoUrl || SPEECHES[0].videoUrl,
-          durationSeconds: 20,
-        }));
-        setSpeeches(customItems);
+        // Merge saved custom dev items with default speeches so all 4 items remain active
+        const merged: SpeechVideoItem[] = SPEECHES.map((defaultSpeech, idx) => {
+          const devItem = devData.items[idx];
+          if (!devItem) return defaultSpeech;
+          return {
+            ...defaultSpeech,
+            speakerName: devItem.title || defaultSpeech.speakerName,
+            speakerTitle: devItem.subtitle || defaultSpeech.speakerTitle,
+            roleTag: (devItem.badge as any) || defaultSpeech.roleTag,
+            topicTitle: devItem.title || defaultSpeech.topicTitle,
+            speechSummary: devItem.description || defaultSpeech.speechSummary,
+            subtitleQuote: devItem.subtitle ? `“${devItem.subtitle}”` : defaultSpeech.subtitleQuote,
+            avatarUrl: devItem.imageUrl || defaultSpeech.avatarUrl,
+            posterUrl: devItem.imageUrl || defaultSpeech.posterUrl,
+            videoUrl: devItem.videoUrl || defaultSpeech.videoUrl,
+          };
+        });
+        setSpeeches(merged);
       } else {
         setSpeeches(SPEECHES);
       }
@@ -329,18 +332,28 @@ export const MarketVideoSpeechSlider: React.FC = () => {
 
         {/* Right Info & Speaker Playlist Box */}
         <div className="lg:col-span-4 p-5 bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col justify-between space-y-4">
-          {/* Active Speaker Info Card */}
+          {/* Active Speaker Info Card - Responsive Flexbox Layout */}
           <div className="space-y-3.5">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-row items-center gap-3 sm:gap-4 p-3 bg-slate-950/80 rounded-2xl border border-amber-500/30 shadow-md">
               <img
                 src={currentSpeech.avatarUrl}
                 alt={currentSpeech.speakerName}
-                className="w-14 h-14 rounded-2xl object-cover border-2 border-amber-400/80 shadow-md shrink-0"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl object-cover object-center border-2 border-amber-400 shadow-md shrink-0 bg-slate-800"
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80';
+                }}
               />
-              <div>
-                <h4 className="text-sm font-black text-white">{currentSpeech.speakerName}</h4>
-                <p className="text-xs text-amber-300 font-medium leading-snug">{currentSpeech.speakerTitle}</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h4 className="text-sm sm:text-base font-black text-white truncate">{currentSpeech.speakerName}</h4>
+                  {currentSpeech.roleTag === 'সভাপতি' && (
+                    <span className="bg-amber-500/20 text-amber-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-amber-500/40">
+                      👑 সভাপতি
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-amber-300 font-semibold leading-snug truncate mt-0.5">{currentSpeech.speakerTitle}</p>
               </div>
             </div>
 
@@ -369,7 +382,7 @@ export const MarketVideoSpeechSlider: React.FC = () => {
             </div>
 
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-              {SPEECHES.map((item, idx) => {
+              {activeSpeeches.map((item, idx) => {
                 const isActive = idx === currentIndex;
                 return (
                   <button

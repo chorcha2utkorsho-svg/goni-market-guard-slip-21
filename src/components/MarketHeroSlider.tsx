@@ -161,7 +161,7 @@ export const MarketHeroSlider: React.FC<MarketHeroSliderProps> = ({
   return (
     <div className="relative w-full rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950 group">
       {/* Background Image Carousel with Overlay */}
-      <div className="relative h-[320px] sm:h-[400px] md:h-[460px] w-full overflow-hidden">
+      <div className="relative h-[280px] xs:h-[320px] sm:h-[400px] md:h-[460px] w-full overflow-hidden">
         {activeSlides.map((slide, index) => {
           const isActive = index === currentIndex;
           return (
@@ -178,31 +178,31 @@ export const MarketHeroSlider: React.FC<MarketHeroSliderProps> = ({
                 referrerPolicy="no-referrer"
               />
               {/* Gradient Overlays for High Legibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/30" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/20" />
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/50 to-transparent" />
             </div>
           );
         })}
 
-        {/* Content Box Over Slide */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 sm:p-8 md:p-10 max-w-4xl space-y-3 sm:space-y-4">
+        {/* Content Box Over Slide - Flexbox Responsive Layout */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-end p-3.5 sm:p-6 md:p-10 max-w-4xl space-y-2 sm:space-y-4">
           <div className="flex items-center gap-2 flex-wrap animate-in fade-in slide-in-from-bottom-2 duration-500">
             <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md shadow-md ${currentSlide.tagColor}`}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold border backdrop-blur-md shadow-md ${currentSlide.tagColor}`}
             >
               {currentSlide.badgeIcon}
               <span>{currentSlide.tag}</span>
             </span>
-            <span className="text-[11px] font-mono bg-slate-900/80 text-amber-300 px-2.5 py-1 rounded-full border border-slate-700/80 backdrop-blur-md">
+            <span className="text-[10px] sm:text-[11px] font-mono bg-slate-900/90 text-amber-300 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-slate-700/80 backdrop-blur-md">
               ছবি {currentIndex + 1} / {activeSlides.length}
             </span>
           </div>
 
-          <div className="space-y-1.5 animate-in fade-in slide-in-from-bottom-3 duration-500">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-snug drop-shadow-md">
+          <div className="space-y-1 animate-in fade-in slide-in-from-bottom-3 duration-500">
+            <h2 className="text-base sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-tight sm:leading-snug drop-shadow-md line-clamp-2 sm:line-clamp-none">
               {currentSlide.title}
             </h2>
-            <p className="text-xs sm:text-sm font-semibold text-amber-300 drop-shadow">
+            <p className="text-[11px] sm:text-sm font-semibold text-amber-300 drop-shadow line-clamp-1 sm:line-clamp-none">
               {currentSlide.subtitle}
             </p>
           </div>
@@ -211,46 +211,46 @@ export const MarketHeroSlider: React.FC<MarketHeroSliderProps> = ({
             {currentSlide.description}
           </p>
 
-          {/* Action Links */}
-          <div className="pt-2 flex flex-wrap items-center gap-3">
+          {/* Action Links with Flexbox responsive alignment */}
+          <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
             {onExploreDirectory && (
               <button
                 onClick={onExploreDirectory}
-                className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-amber-950/50 transition cursor-pointer active:scale-95"
+                className="px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-amber-950/50 transition cursor-pointer active:scale-95"
               >
-                <Store className="w-4 h-4 text-slate-950" />
-                <span>দোকান ডিরেক্টরি দেখুন</span>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
+                <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950" />
+                <span>দোকান ডিরেক্টরি</span>
+                <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-950" />
               </button>
             )}
 
             {onOpenFeed && (
               <button
                 onClick={onOpenFeed}
-                className="px-4 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800/90 text-white font-bold text-xs flex items-center gap-2 border border-slate-700/80 backdrop-blur-md transition cursor-pointer active:scale-95"
+                className="px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 border border-slate-700/80 backdrop-blur-md transition cursor-pointer active:scale-95"
               >
-                <Users className="w-4 h-4 text-sky-400" />
-                <span>সোশ্যাল ফিডে যুক্ত হোন</span>
+                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400" />
+                <span>সোশ্যাল ফিড</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Carousel Navigation Arrows */}
+        {/* Carousel Navigation Arrows - Flexbox Centered Touch Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-slate-950/70 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700/80 backdrop-blur-md flex items-center justify-center transition cursor-pointer opacity-80 hover:opacity-100 shadow-xl"
+          className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-950/80 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700/80 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl active:scale-95"
           title="পূর্ববর্তী ছবি"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-slate-950/70 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700/80 backdrop-blur-md flex items-center justify-center transition cursor-pointer opacity-80 hover:opacity-100 shadow-xl"
+          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-950/80 hover:bg-amber-500 hover:text-slate-950 text-white border border-slate-700/80 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl active:scale-95"
           title="পরবর্তী ছবি"
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
 
         {/* Play/Pause Toggle Floating Controller */}

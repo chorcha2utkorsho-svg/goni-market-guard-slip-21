@@ -16,6 +16,7 @@ import {
   Type,
   FileText,
   AlertCircle,
+  BarChart2,
 } from 'lucide-react';
 import {
   getDevSectionContent,
@@ -24,6 +25,7 @@ import {
   parseYouTubeEmbedUrl,
   SectionContentOverride,
 } from '../utils/devCustomContent';
+import { SectionUsageD3Chart } from './SectionUsageD3Chart';
 
 interface DeveloperContentModalProps {
   isOpen: boolean;
@@ -49,6 +51,7 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
   initialSectionId = 'sec-1',
 }) => {
   const [selectedSectionId, setSelectedSectionId] = useState<string>(initialSectionId);
+  const [activeTabMode, setActiveTabMode] = useState<'editor' | 'analytics'>('editor');
   const [items, setItems] = useState<
     Array<{
       id: string;
@@ -225,36 +228,75 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
           </button>
         </div>
 
-        {/* Section Picker Bar */}
-        <div className="space-y-2">
-          <label className="block text-slate-300 font-bold flex items-center gap-2 text-xs">
-            <Layers className="w-4 h-4 text-amber-400" />
-            <span>সম্পাদনা করার জন্য সেকশন নির্বাচন করুন:</span>
-          </label>
-          <select
-            value={selectedSectionId}
-            onChange={(e) => setSelectedSectionId(e.target.value)}
-            className="w-full bg-slate-950 border border-amber-500/40 rounded-2xl px-4 py-2.5 text-white font-bold text-xs outline-none focus:border-amber-400"
+        {/* Modal Navigation Tabs: Editor vs D3 Analytics */}
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <button
+            onClick={() => setActiveTabMode('editor')}
+            className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+              activeTabMode === 'editor'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+            }`}
           >
-            {SECTIONS_LIST.map((sec) => (
-              <option key={sec.id} value={sec.id}>
-                {sec.name}
-              </option>
-            ))}
-          </select>
+            <Edit3 className="w-4 h-4" />
+            <span>✏️ কন্টেন্ট এডিটর</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTabMode('analytics')}
+            className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+              activeTabMode === 'analytics'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+            }`}
+          >
+            <BarChart2 className="w-4 h-4 text-emerald-400" />
+            <span>📊 সেকশন ইউজ ও ট্রাফিক অ্যানালিটিক্স (D3 Chart)</span>
+          </button>
         </div>
 
-        {/* Success Alert Banner */}
-        {saveSuccess && (
-          <div className="bg-emerald-950/80 border border-emerald-500/60 p-3 rounded-2xl text-emerald-300 font-bold text-xs flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <span>{saveSuccess}</span>
-            </div>
+        {activeTabMode === 'analytics' ? (
+          <div className="space-y-4 my-auto overflow-y-auto">
+            <SectionUsageD3Chart
+              selectedSectionId={selectedSectionId}
+              onSelectSection={(secId) => {
+                setSelectedSectionId(secId);
+                setActiveTabMode('editor');
+              }}
+            />
           </div>
-        )}
+        ) : (
+          <>
+            {/* Section Picker Bar */}
+            <div className="space-y-2">
+              <label className="block text-slate-300 font-bold flex items-center gap-2 text-xs">
+                <Layers className="w-4 h-4 text-amber-400" />
+                <span>সম্পাদনা করার জন্য সেকশন নির্বাচন করুন:</span>
+              </label>
+              <select
+                value={selectedSectionId}
+                onChange={(e) => setSelectedSectionId(e.target.value)}
+                className="w-full bg-slate-950 border border-amber-500/40 rounded-2xl px-4 py-2.5 text-white font-bold text-xs outline-none focus:border-amber-400"
+              >
+                {SECTIONS_LIST.map((sec) => (
+                  <option key={sec.id} value={sec.id}>
+                    {sec.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        {/* Content Layout: Item List (Left) + Editor Form & Preview (Right) */}
+            {/* Success Alert Banner */}
+            {saveSuccess && (
+              <div className="bg-emerald-950/80 border border-emerald-500/60 p-3 rounded-2xl text-emerald-300 font-bold text-xs flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <span>{saveSuccess}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Content Layout: Item List (Left) + Editor Form & Preview (Right) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 overflow-y-auto pr-1">
           {/* Left Column: Item Selector */}
           <div className="md:col-span-4 bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-between">
@@ -440,6 +482,8 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
             )}
           </div>
         </div>
+        </>
+        )}
 
         {/* Modal Footer Actions */}
         <div className="border-t border-slate-800 pt-3 flex flex-col sm:flex-row items-center justify-between gap-3">
