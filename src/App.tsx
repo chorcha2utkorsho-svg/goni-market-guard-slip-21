@@ -470,20 +470,25 @@ export default function App() {
             <span>সহায়তা ও হটলাইন: ০১৯৪৭-৩৯৭৭৫২</span>
 
             {/* Subtle Developer Access Link at bottom right corner */}
-            <button
-              onClick={() => {
-                if (isDevUnlocked) {
-                  setCurrentView(currentView === 'SLIP_GENERATOR' ? 'COMMON_DASHBOARD' : 'SLIP_GENERATOR');
-                } else {
-                  setIsDevAuthModalOpen(true);
-                }
-              }}
-              className="text-slate-500 hover:text-amber-400 transition cursor-pointer flex items-center gap-1.5 opacity-80 hover:opacity-100 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-amber-500/30"
-              title="প্রিন্টেড স্লিপ জেনারেটর প্যানেল (লক করা)"
-            >
-              <Lock className={`w-3.5 h-3.5 ${isDevUnlocked ? 'text-emerald-400' : 'text-slate-500'}`} />
-              <span>{isDevUnlocked ? 'ডেভেলপার মোড ⚡' : 'ডেভেলপার এক্সেস'}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenDevContentEditor}
+                className="text-slate-500 hover:text-amber-400 text-[11px] font-medium transition cursor-pointer flex items-center gap-1 opacity-70 hover:opacity-100 bg-slate-900/90 px-2.5 py-1 rounded-md border border-slate-800 hover:border-amber-500/40"
+                title="গোপন পাসওয়ার্ড দিয়ে সেকশন এডিটর খুলুন"
+              >
+                <Lock className={`w-3 h-3 ${isDevUnlocked ? 'text-emerald-400' : 'text-slate-500'}`} />
+                <span>{isDevUnlocked ? 'এডমিন সেকশন এডিটর' : 'এডমিন পোর্টাল 🔒'}</span>
+              </button>
+
+              {isDevUnlocked && (
+                <button
+                  onClick={() => setCurrentView(currentView === 'SLIP_GENERATOR' ? 'COMMON_DASHBOARD' : 'SLIP_GENERATOR')}
+                  className="text-slate-500 hover:text-emerald-400 text-[11px] font-medium transition cursor-pointer flex items-center gap-1 opacity-70 hover:opacity-100 bg-slate-900/90 px-2.5 py-1 rounded-md border border-slate-800 hover:border-emerald-500/40"
+                >
+                  <span>{currentView === 'SLIP_GENERATOR' ? 'কমন ড্যাশবোর্ড' : 'স্লিপ প্যানেল'}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </footer>
@@ -526,16 +531,6 @@ export default function App() {
         onClose={() => setIsDevContentModalOpen(false)}
         initialSectionId="sec-1"
       />
-
-      {/* Floating Quick CMS Edit Button */}
-      <button
-        onClick={handleOpenDevContentEditor}
-        className="fixed bottom-5 right-5 z-40 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 py-3 rounded-2xl shadow-2xl border-2 border-amber-300 flex items-center gap-2 transition transform hover:scale-105 active:scale-95 cursor-pointer"
-        title="সকল ৯টি সেকশনের লেখা, ছবি ও ইউটিউব ভিডিও এডিট করার জন্য ক্লিক করুন (CMS)"
-      >
-        <Edit3 className="w-5 h-5 text-slate-950" />
-        <span className="text-xs font-black">🛠️ সেকশন এডিটর (১-৯)</span>
-      </button>
 
       <MerchantAuthModal
         isOpen={isMerchantAuthModalOpen}

@@ -418,42 +418,6 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
 
   return (
     <div className="space-y-6 pb-12">
-      {/* TOP CMS BANNER CONTROL */}
-      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-2 border-amber-500/80 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-lg">
-            <Edit3 className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-black text-white">
-                🛠️ সেকশন কন্টেন্ট ম্যানেজমেন্ট (CMS) পোর্টাল
-              </h3>
-              {isDevUnlocked ? (
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                  আনলকড ⚡
-                </span>
-              ) : (
-                <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30">
-                  পাসওয়ার্ড প্রয়োজন 🔒
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-amber-200/90 mt-0.5">
-              ১ম সেকশন থেকে ৯মে সেকশন পর্যন্ত যেকোনো টেক্সট, ছবি (Image URL) ও ইউটিউব ভিডিও (YouTube Link) এডিট করুন।
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => openDevContentEditor('sec-1')}
-          className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg cursor-pointer transition active:scale-95 shrink-0"
-        >
-          <Edit3 className="w-4 h-4" />
-          <span>সকল সেকশন কন্টেন্ট এডিট করুন (১-৯)</span>
-        </button>
-      </div>
-
       {/* SECTION 1: Featured Market Photo Slider (Hero Carousel) */}
       <MarketHeroSlider
         onExploreDirectory={() => setActiveTab('CLASSIFIED')}
@@ -1408,62 +1372,6 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
           </div>
         </div>
       )}
-
-      {/* Developer Master CMS Control Banner (Positioned at the very bottom) */}
-      <div className="mt-8 bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-lg shrink-0">
-            <Edit3 className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-black text-white">
-                🛠️ ডেভেলপার কন্টেন্ট ম্যানেজমেন্ট (CMS) পোর্টাল
-              </h3>
-              {isDevUnlocked ? (
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                  পিন আনলকড (লগইন সম্পন্ন)
-                </span>
-              ) : (
-                <span className="text-[10px] bg-red-500/20 text-red-300 font-bold px-2.5 py-0.5 rounded-full border border-red-500/30">
-                  ডেভেলপার পিন প্রয়োজন
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-amber-200/90 mt-0.5">
-              ১ম থেকে ৯মে সেকশন পর্যন্ত যেকোনো টেক্সট, ছবি (Image URL) ও ইউটিউব ভিডিও (YouTube Link) ইনপুট ও এডিট করুন।
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap shrink-0 relative z-10">
-          <button
-            onClick={() => openDevContentEditor('sec-1')}
-            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-lg cursor-pointer transition active:scale-95"
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>সকল সেকশন কন্টেন্ট এডিট করুন (১-৯)</span>
-          </button>
-
-          {isDevUnlocked ? (
-            <button
-              onClick={onGoToDevDashboard}
-              className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-600/60 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>নৈশ পাহারাদার স্লিপ এডমিন</span>
-            </button>
-          ) : (
-            <button
-              onClick={onOpenDevAuth}
-              className="px-3.5 py-2 bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
-            >
-              <Lock className="w-4 h-4 text-red-400" />
-              <span>ডেভেলপার পিন টাইপ করুন (🔒)</span>
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* Developer Content Manager Modal */}
       <DeveloperContentModal

@@ -63,18 +63,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Buttons & Merchant Sign-in */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Prominent CMS Content Editor Button */}
-          {onOpenDevContentEditor && (
-            <button
-              onClick={onOpenDevContentEditor}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-xs font-bold transition cursor-pointer shadow-md active:scale-95"
-              title="সকল ৯টি সেকশনের লেখা, ছবি ও ভিডিও সম্পাদনা করুন (CMS)"
-            >
-              <Edit3 className="w-4 h-4 text-amber-400" />
-              <span>🛠️ সেকশন এডিটর (১-৯)</span>
-            </button>
-          )}
-
           {/* If in Slip Generator mode, show back to Common Dashboard button */}
           {currentView === 'SLIP_GENERATOR' && (
             <button
