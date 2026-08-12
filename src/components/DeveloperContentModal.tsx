@@ -43,6 +43,7 @@ const SECTIONS_LIST = [
   { id: 'sec-7', name: '৭ম সেকশন: সেলুন, পার্লার, টেইলার্স ও বেডিং (Salon, Beauty & Bedding)' },
   { id: 'sec-8', name: '৮ম সেকশন: ফার্মেসী ও টেলিমেডিসিন স্বাস্থ্যসেবা (Pharmacies & Healthcare)' },
   { id: 'sec-9', name: '৯ম সেকশন: ভূমি সেবা ও পরামর্শদাতা চেম্বার (Land Services & Legal Chamber)' },
+  { id: 'sec-10', name: '১০ম সেকশন: ব্যবসায়ী সামাজিক ফেসবুক পেজ ও প্ল্যাটফর্ম (Merchant Facebook Page/Wall)' },
 ];
 
 export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({

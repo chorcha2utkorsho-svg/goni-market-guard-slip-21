@@ -145,3 +145,72 @@ export function getScheduledPairForDate(dateString: string): {
     serialNo,
   };
 }
+
+export interface UpcomingDutyDate {
+  dateStr: string;
+  formattedDate: string;
+  roundNumber: number;
+  serialNo: number;
+  partnerName: string;
+  partnerShopNo: string;
+}
+
+/**
+ * Calculates the next 5 upcoming security duty dates for a given merchant/shop number or name.
+ */
+export function getUpcomingDutiesForMerchant(
+  shopNo: string,
+  ownerName: string
+): UpcomingDutyDate[] {
+  const upcoming: UpcomingDutyDate[] = [];
+
+  const cleanShop = (shopNo || '').trim();
+  const cleanOwner = (ownerName || '').trim();
+
+  // Find matching pair in OFFICIAL_ROSTER_PAIRS
+  const matchedPair = OFFICIAL_ROSTER_PAIRS.find((p) => {
+    const s1Matches = cleanShop && p.guard1ShopNo && p.guard1ShopNo.trim() === cleanShop;
+    const s2Matches = cleanShop && p.guard2ShopNo && p.guard2ShopNo.trim() === cleanShop;
+    const name1Matches = cleanOwner && p.guard1Name.toLowerCase().includes(cleanOwner.toLowerCase());
+    const name2Matches = cleanOwner && p.guard2Name.toLowerCase().includes(cleanOwner.toLowerCase());
+    return s1Matches || s2Matches || name1Matches || name2Matches;
+  });
+
+  const pairToUse = matchedPair || OFFICIAL_ROSTER_PAIRS[0];
+
+  const isGuard1 =
+    (pairToUse.guard1ShopNo && pairToUse.guard1ShopNo.trim() === cleanShop) ||
+    (cleanOwner && pairToUse.guard1Name.toLowerCase().includes(cleanOwner.toLowerCase()));
+
+  const partnerName = isGuard1 ? pairToUse.guard2Name : pairToUse.guard1Name;
+  const partnerShopNo = isGuard1 ? pairToUse.guard2ShopNo || '' : pairToUse.guard1ShopNo || '';
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Search through current & future rounds (Round 3 to Round 9)
+  for (let r = 3; r <= 9; r++) {
+    const dStr = getDateForPairAndRound(pairToUse.serialNo, r);
+    if (dStr >= todayStr || upcoming.length === 0) {
+      // Simple Bangla date formatter helper call or ISO parse
+      const [y, m, d] = dStr.split('-');
+      const monthNames = [
+        'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+        'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+      ];
+      const mBengali = monthNames[parseInt(m, 10) - 1] || m;
+      const formattedDate = `${d} ${mBengali} ${y}`;
+
+      upcoming.push({
+        dateStr: dStr,
+        formattedDate,
+        roundNumber: r,
+        serialNo: pairToUse.serialNo,
+        partnerName: partnerName || 'নির্ধারিত সঙ্গী',
+        partnerShopNo: partnerShopNo ? `দোকান #${partnerShopNo}` : '',
+      });
+    }
+    if (upcoming.length >= 5) break;
+  }
+
+  return upcoming;
+}

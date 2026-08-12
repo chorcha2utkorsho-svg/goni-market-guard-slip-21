@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Store,
   ShieldCheck,
@@ -259,8 +259,36 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
     setPostImageUrl('');
     setPostVideoUrl('');
     setShowMediaInput(false);
-    showToast('আপনার পোস্ট সফলভাবে ওয়ালে প্রকাশিত হয়েছে!');
+    showToast('আপনার পোস্ট সফলভাবে ১০ম সেকশন (ফেসবুক ওয়ালে) প্রকাশিত হয়েছে!');
   };
+
+  useEffect(() => {
+    const handleQuickPostEvent = (e: any) => {
+      if (!e.detail || !e.detail.content) return;
+      const { content, category } = e.detail;
+      const authorShopNo = currentMerchant ? currentMerchant.shopNo : '৬৪';
+      const authorName = currentMerchant ? currentMerchant.ownerName : 'গণি মার্কেট ব্যবসায়ী';
+      const authorShopTitle = currentMerchant ? (currentMerchant.shopTitle || `দোকান #${currentMerchant.shopNo}`) : 'ব্যবসায়ী সদস্য';
+
+      const newPost: SocialFeedPost = {
+        id: 'fp_' + Date.now(),
+        authorShopNo,
+        authorName,
+        authorShopTitle,
+        category: category || 'সাধারণ আলোচনা',
+        content: content.trim(),
+        createdAt: new Date().toISOString(),
+        likes: 0,
+        likedBy: [],
+        comments: [],
+      };
+      setFeedPosts((prev) => [newPost, ...prev]);
+      showToast('আপনার পোস্ট সফলভাবে ১০ম সেকশন (ফেসবুক ওয়ালে) যোগ হয়েছে!');
+    };
+
+    window.addEventListener('goni_market_quick_post', handleQuickPostEvent);
+    return () => window.removeEventListener('goni_market_quick_post', handleQuickPostEvent);
+  }, [currentMerchant]);
 
   const handleToggleLikePost = (postId: string) => {
     if (!currentMerchant) {
@@ -919,9 +947,40 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
         </div>
       )}
 
-      {/* TAB 3: FACEBOOK-STYLE MERCHANT SOCIAL FEED & WALL */}
-      {activeTab === 'FEED' && (
-        <div className="space-y-6 animate-in fade-in duration-200 max-w-4xl mx-auto">
+      {/* TAB 3 / SECTION 10: FACEBOOK-STYLE MERCHANT SOCIAL FEED & WALL */}
+      {(activeTab === 'FEED' || activeTab === 'OVERVIEW') && (
+        <div id="sec-10" className="space-y-6 animate-in fade-in duration-200 max-w-4xl mx-auto scroll-mt-20 pt-4">
+          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-black shadow-md shrink-0">
+                <Globe className="w-5 h-5 text-slate-950" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 font-black px-2 py-0.5 rounded border border-amber-500/30">
+                    ১০ম সেকশন
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold text-white">
+                    গণি মার্কেট ব্যবসায়ীদের সামাজিক প্ল্যাটফর্ম (ফেসবুক পেজ / ওয়াল)
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  গণি মার্কেটের সাধারণ ব্যবসায়ীদের ফেসবুকের মতো সোশ্যাল মিডিয়া ওয়াল। আপনার দোকানের অফার, সিকিউরিটি পোস্ট বা প্রস্তাব প্রকাশ করুন।
+                </p>
+              </div>
+            </div>
+
+            {!currentMerchant && (
+              <button
+                type="button"
+                onClick={onOpenMerchantAuth}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md cursor-pointer transition flex items-center gap-1.5 shrink-0"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>🔑 ব্যবসায়ী পিন দিয়ে লগইন</span>
+              </button>
+            )}
+          </div>
           {/* Toast Notification Alert */}
           {toastMessage && (
             <div className="fixed top-16 right-4 z-50 bg-emerald-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center gap-2 border border-emerald-300 animate-in slide-in-from-top-2">

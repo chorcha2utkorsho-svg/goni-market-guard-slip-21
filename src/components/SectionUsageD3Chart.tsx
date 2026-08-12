@@ -20,6 +20,7 @@ const DEFAULT_SECTION_STATS: SectionStatItem[] = [
   { id: 'sec-7', name: '৭ম সেকশন: সেলুন ও বেডিং', shortName: '৭ম সেকশন', visits: 1450, clicks: 1020 },
   { id: 'sec-8', name: '৮ম সেকশন: ফার্মেসী স্বাস্থ্যসেবা', shortName: '৮ম সেকশন', visits: 2980, clicks: 2190 },
   { id: 'sec-9', name: '৯ম সেকশন: ভূমি সেবা চেম্বার', shortName: '৯ম সেকশন', visits: 1760, clicks: 1230 },
+  { id: 'sec-10', name: '১০ম সেকশন: ফেসবুক সোশ্যাল ওয়াল', shortName: '১০ম সেকশন', visits: 3820, clicks: 2940 },
 ];
 
 const STORAGE_KEY = 'goni_market_section_usage_stats_v1';
