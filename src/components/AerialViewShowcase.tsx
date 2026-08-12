@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MapPin,
   Maximize2,
@@ -12,10 +12,12 @@ import {
   Radio,
   Copy,
   Check,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Video,
 } from 'lucide-react';
 import defaultAerialImg from '../assets/images/goni_market_aerial_1786112079418.jpg';
 import hdMapImg from '../assets/images/goni_market_map_hd_1786113634394.jpg';
+import { getDevSectionContent, parseYouTubeEmbedUrl } from '../utils/devCustomContent';
 
 interface MarkerPin {
   id: string;
@@ -37,11 +39,26 @@ export const AerialViewShowcase: React.FC = () => {
   const [customImageUrl, setCustomImageUrl] = useState<string>('');
   const [activeImageSrc, setActiveImageSrc] = useState<string>(() => {
     try {
+      const dev = getDevSectionContent('sec-3');
+      if (dev && dev.items && dev.items[0]?.imageUrl) {
+        return dev.items[0].imageUrl;
+      }
       return localStorage.getItem('goni_market_custom_aerial_img') || hdMapImg;
     } catch {
       return hdMapImg;
     }
   });
+
+  useEffect(() => {
+    const handleDevUpdate = () => {
+      const dev = getDevSectionContent('sec-3');
+      if (dev && dev.items && dev.items[0]?.imageUrl) {
+        setActiveImageSrc(dev.items[0].imageUrl);
+      }
+    };
+    window.addEventListener('goni_dev_content_updated', handleDevUpdate);
+    return () => window.removeEventListener('goni_dev_content_updated', handleDevUpdate);
+  }, []);
 
   const detailedEnglishPrompt = `Top-down 90-degree orthogonal satellite aerial photograph of "Goni Market" (গণি মার্কেট) and surrounding rural Bangladeshi village landscape in Google Maps / Google Earth high-resolution style.
 
@@ -108,7 +125,7 @@ Key Spatial Layout Details:
       topPct: 45,
       leftPct: 38,
       color: 'bg-sky-500 border-sky-300 text-sky-100',
-      description: 'গুণিমার্কেটের ৩৫টি নিবন্ধিত দোকান ও নৈশ নিরাপত্তার মূল কেন্দ্রবিন্দু।',
+      description: 'গণিমার্কেটের ৩৫টি নিবন্ধিত দোকান ও নৈশ নিরাপত্তার মূল কেন্দ্রবিন্দু।',
       details: 'R313 আঞ্চলিক সড়কের পার্শ্ববর্তী প্রধান কাঁচা ও পাকা বাজার ভবন এলাকা।',
     },
     {
@@ -184,7 +201,7 @@ Key Spatial Layout Details:
           </div>
 
           <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
-            <span>পাখির চোখে দেখা ঝলমলে গুণিমার্কেট ও চারপাশ</span>
+            <span>পাখির চোখে দেখা ঝলমলে গণিমার্কেট ও চারপাশ</span>
             <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
           </h3>
           <p className="text-xs text-slate-400">
@@ -230,7 +247,7 @@ Key Spatial Layout Details:
         {/* Top Overlay Badge */}
         <div className="absolute top-3 left-3 z-20 bg-slate-950/80 backdrop-blur-md border border-slate-800 px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-200 flex items-center gap-2 shadow-lg">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>লোকেশন: গুণিমার্কেট, R313 রোড ক্যাটালগ</span>
+          <span>লোকেশন: গণিমার্কেট, R313 রোড ক্যাটালগ</span>
         </div>
 
         {/* Satellite Image */}
@@ -278,7 +295,7 @@ Key Spatial Layout Details:
               <Navigation className="w-3 h-3" />
               চিহ্নিত এলাকা:
             </span>
-            <span className="text-slate-300 shrink-0">🛒 গুণিমার্কেট মূল ভবন</span>
+            <span className="text-slate-300 shrink-0">🛒 গণিমার্কেট মূল ভবন</span>
             <span className="text-slate-300 shrink-0">🏪 আল-আমীন স্টোর</span>
             <span className="text-slate-300 shrink-0">🛠️ জয়নাল ট্রেডার্স</span>
             <span className="text-slate-300 shrink-0">🎓 Euro Bangla Tech</span>
@@ -454,7 +471,7 @@ Key Spatial Layout Details:
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-white">
-                  পাখির চোখে গুণিমার্কেট ও আশেপাশের ভৌগোলিক মানচিত্র
+                  পাখির চোখে গণিমার্কেট ও আশেপাশের ভৌগোলিক মানচিত্র
                 </h3>
                 <p className="text-xs text-slate-400">
                   R313 সড়ক, বাজার ভবন, ট্রেডার্স, ট্রেনিং সেন্টার ও মসজিদ পয়েন্ট
@@ -501,7 +518,7 @@ Key Spatial Layout Details:
           <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 pt-3 border-t border-slate-800">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>গুণিমার্কেট বাজার সমিতি কর্তৃক অনুমোদিত নৈশ নিরাপত্তা সীমানা মানচিত্র</span>
+              <span>গণিমার্কেট বাজার সমিতি কর্তৃক অনুমোদিত নৈশ নিরাপত্তা সীমানা মানচিত্র</span>
             </div>
 
             <button

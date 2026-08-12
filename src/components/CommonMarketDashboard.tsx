@@ -19,7 +19,19 @@ import {
   ChevronRight,
   LogIn,
   Layers,
+  Share2,
+  Image as ImageIcon,
+  Video,
+  Heart,
+  MessageCircle,
+  Tag,
+  Globe,
+  Plus,
+  Edit3,
+  Youtube,
+  Settings,
 } from 'lucide-react';
+import { DeveloperContentModal } from './DeveloperContentModal';
 import {
   ResponsiveContainer,
   LineChart,
@@ -35,6 +47,36 @@ import { getScheduledPairForDate } from '../data/rosterData';
 import { MerchantProfile } from './MerchantAuthModal';
 import { AerialViewShowcase } from './AerialViewShowcase';
 import { ClassifiedStoreDirectory } from './ClassifiedStoreDirectory';
+import { MarketHeroSlider } from './MarketHeroSlider';
+import { MarketVideoSpeechSlider } from './MarketVideoSpeechSlider';
+import { FishVegMarketSlider } from './FishVegMarketSlider';
+import { GroceryStoresSlider } from './GroceryStoresSlider';
+import { SalonBeautyBeddingSection } from './SalonBeautyBeddingSection';
+import { ComputerShopsSlider } from './ComputerShopsSlider';
+import { RodCementFurnitureSection } from './RodCementFurnitureSection';
+import { PharmacyHealthcareSlider } from './PharmacyHealthcareSlider';
+import { LandServicesConsultantSection } from './LandServicesConsultantSection';
+
+export interface SocialFeedPost {
+  id: string;
+  authorShopNo: string;
+  authorName: string;
+  authorShopTitle: string;
+  category: 'সমস্যা ও সংস্কার' | 'ব্যবসার সম্ভাবনা' | 'পণ্যের খবর ও অফার' | 'সাধারণ আলোচনা';
+  content: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  createdAt: string;
+  likes: number;
+  likedBy: string[]; // shop numbers
+  comments: {
+    id: string;
+    authorShopNo: string;
+    authorName: string;
+    content: string;
+    createdAt: string;
+  }[];
+}
 
 interface ProposalItem {
   id: string;
@@ -68,6 +110,18 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
   const tomorrowDate = getTomorrowDateString();
   const todaySchedule = getScheduledPairForDate(tomorrowDate);
 
+  const [isDevContentModalOpen, setIsDevContentModalOpen] = useState(false);
+  const [devModalSectionId, setDevModalSectionId] = useState('sec-1');
+
+  const openDevContentEditor = (sectionId: string = 'sec-1') => {
+    if (!isDevUnlocked) {
+      onOpenDevAuth();
+      return;
+    }
+    setDevModalSectionId(sectionId);
+    setIsDevContentModalOpen(true);
+  };
+
   // Default Proposals for Market Development & Prosperity
   const [proposals, setProposals] = useState<ProposalItem[]>([
     {
@@ -99,9 +153,176 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
     },
   ]);
 
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'CLASSIFIED' | 'PROPOSALS' | 'COMMENTS' | 'SECURITY'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'CLASSIFIED' | 'FEED' | 'PROPOSALS' | 'SECURITY'>('OVERVIEW');
   const [newCommentInput, setNewCommentInput] = useState('');
   const [selectedRecordId, setSelectedRecordId] = useState<string>(records[0]?.id || 'global');
+
+  // Facebook-style Social Feed State
+  const [feedPosts, setFeedPosts] = useState<SocialFeedPost[]>([
+    {
+      id: 'fp1',
+      authorShopNo: '64',
+      authorName: 'রফিক আহমেদ',
+      authorShopTitle: 'মেসার্স রফিক ইলেকট্রনিক্স',
+      category: 'পণ্যের খবর ও অফার',
+      content: 'আমাদের ৬৪ নম্বর দোকানে নতুন হাই-পাওয়ার নাইট এলইডি লাইট, সিসিটিভি নাইট ভিশন ক্যামেরা ও আইপিএস ইনভার্টারের পাইকারি কালেকশন এসেছে। গণি মার্কেটের যেকোনো ব্যবসায়ী ভাইদের জন্য বিশেষ মূল্য ছাড় দেওয়া হবে!',
+      imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80',
+      createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+      likes: 15,
+      likedBy: ['7'],
+      comments: [
+        {
+          id: 'c1',
+          authorShopNo: '7',
+          authorName: 'সামসুল হুদা',
+          content: 'সুন্দর কালেকশন! চালের গুদামের সামনে ১টি এলইডি সোলার লাইট লাগাবো, কাল সকালে আসছি।',
+          createdAt: new Date(Date.now() - 3600000).toISOString(),
+        },
+      ],
+    },
+    {
+      id: 'fp2',
+      authorShopNo: '7',
+      authorName: 'সামসুল হুদা',
+      authorShopTitle: 'সামসুল হুদা চাউল ভান্ডার ও রাইস মিল',
+      category: 'ব্যবসার সম্ভাবনা',
+      content: 'আসন্ন মরসুমে বাজারে দূর-দূরান্তের পাইকারি ক্রেতারা আসছেন। মার্কেটের প্রধান গেটে একটি ডিজিটাল গাইডবোর্ড এবং আলোকসজ্জা থাকলে ব্যবসা আরও প্রসারিত হবে।',
+      imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800&auto=format&fit=crop&q=80',
+      createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+      likes: 22,
+      likedBy: ['64', '49'],
+      comments: [
+        {
+          id: 'c2',
+          authorShopNo: '49',
+          authorName: 'মিজান রহমান',
+          content: 'চমৎকার আইডিয়া! দোকান নম্বর ও ক্যাটাগরি লেখা থাকলে কাস্টমার সহজেই খুঁজে পাবে।',
+          createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+        },
+      ],
+    },
+    {
+      id: 'fp3',
+      authorShopNo: '49',
+      authorName: 'মিজান রহমান',
+      authorShopTitle: 'মেসার্স মিজান চাউলের আড়ৎ',
+      category: 'সমস্যা ও সংস্কার',
+      content: 'রাতের বেলায় উত্তর গলির ড্রেন ও আবর্জনা ফেলার বিন পরিস্কার রাখা দরকার। পাহারাদার ভাইদের সহায়তায় রাতের বর্জ্য সঠিক স্থানে ফেলার জন্য ব্যবসায়ীদের আহ্বান জানাচ্ছি।',
+      createdAt: new Date(Date.now() - 3600000 * 20).toISOString(),
+      likes: 11,
+      likedBy: ['64'],
+      comments: [],
+    },
+  ]);
+
+  // Social Feed Composer State
+  const [postText, setPostText] = useState('');
+  const [postCategory, setPostCategory] = useState<'সমস্যা ও সংস্কার' | 'ব্যবসার সম্ভাবনা' | 'পণ্যের খবর ও অফার' | 'সাধারণ আলোচনা'>('সাধারণ আলোচনা');
+  const [postImageUrl, setPostImageUrl] = useState('');
+  const [postVideoUrl, setPostVideoUrl] = useState('');
+  const [showMediaInput, setShowMediaInput] = useState(false);
+  const [postCommentInputs, setPostCommentInputs] = useState<Record<string, string>>({});
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleCreateFeedPost = () => {
+    if (!currentMerchant) {
+      onOpenMerchantAuth();
+      return;
+    }
+    if (!postText.trim()) {
+      showToast('অনুগ্রহ করে কিছু লিখুন!');
+      return;
+    }
+
+    const newPost: SocialFeedPost = {
+      id: 'fp_' + Date.now(),
+      authorShopNo: currentMerchant.shopNo,
+      authorName: currentMerchant.ownerName,
+      authorShopTitle: currentMerchant.shopTitle || `দোকান #${currentMerchant.shopNo}`,
+      category: postCategory,
+      content: postText.trim(),
+      imageUrl: postImageUrl.trim() || undefined,
+      videoUrl: postVideoUrl.trim() || undefined,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+      likedBy: [],
+      comments: [],
+    };
+
+    setFeedPosts([newPost, ...feedPosts]);
+    setPostText('');
+    setPostImageUrl('');
+    setPostVideoUrl('');
+    setShowMediaInput(false);
+    showToast('আপনার পোস্ট সফলভাবে ওয়ালে প্রকাশিত হয়েছে!');
+  };
+
+  const handleToggleLikePost = (postId: string) => {
+    if (!currentMerchant) {
+      onOpenMerchantAuth();
+      return;
+    }
+
+    setFeedPosts((prev) =>
+      prev.map((p) => {
+        if (p.id === postId) {
+          const hasLiked = p.likedBy.includes(currentMerchant.shopNo);
+          if (hasLiked) {
+            return {
+              ...p,
+              likes: Math.max(0, p.likes - 1),
+              likedBy: p.likedBy.filter((s) => s !== currentMerchant.shopNo),
+            };
+          } else {
+            return {
+              ...p,
+              likes: p.likes + 1,
+              likedBy: [...p.likedBy, currentMerchant.shopNo],
+            };
+          }
+        }
+        return p;
+      })
+    );
+  };
+
+  const handleAddPostComment = (postId: string) => {
+    if (!currentMerchant) {
+      onOpenMerchantAuth();
+      return;
+    }
+    const text = postCommentInputs[postId]?.trim();
+    if (!text) return;
+
+    setFeedPosts((prev) =>
+      prev.map((p) => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            comments: [
+              ...p.comments,
+              {
+                id: 'c_' + Date.now(),
+                authorShopNo: currentMerchant.shopNo,
+                authorName: currentMerchant.ownerName,
+                content: text,
+                createdAt: new Date().toISOString(),
+              },
+            ],
+          };
+        }
+        return p;
+      })
+    );
+
+    setPostCommentInputs((prev) => ({ ...prev, [postId]: '' }));
+    showToast('মন্তব্য যুক্ত হয়েছে!');
+  };
 
   // Handle Voting on Proposals
   const handleVoteProposal = (proposalId: string) => {
@@ -197,6 +418,72 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
 
   return (
     <div className="space-y-6 pb-12">
+      {/* TOP CMS BANNER CONTROL */}
+      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-2 border-amber-500/80 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-lg">
+            <Edit3 className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-black text-white">
+                🛠️ সেকশন কন্টেন্ট ম্যানেজমেন্ট (CMS) পোর্টাল
+              </h3>
+              {isDevUnlocked ? (
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                  আনলকড ⚡
+                </span>
+              ) : (
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                  পাসওয়ার্ড প্রয়োজন 🔒
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-amber-200/90 mt-0.5">
+              ১ম সেকশন থেকে ৯মে সেকশন পর্যন্ত যেকোনো টেক্সট, ছবি (Image URL) ও ইউটিউব ভিডিও (YouTube Link) এডিট করুন।
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => openDevContentEditor('sec-1')}
+          className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg cursor-pointer transition active:scale-95 shrink-0"
+        >
+          <Edit3 className="w-4 h-4" />
+          <span>সকল সেকশন কন্টেন্ট এডিট করুন (১-৯)</span>
+        </button>
+      </div>
+
+      {/* SECTION 1: Featured Market Photo Slider (Hero Carousel) */}
+      <MarketHeroSlider
+        onExploreDirectory={() => setActiveTab('CLASSIFIED')}
+        onOpenFeed={() => setActiveTab('FEED')}
+      />
+
+      {/* SECTION 2: 20-Second Video Speech Slider (President, Key Merchants, My Speech) */}
+      <MarketVideoSpeechSlider />
+
+      {/* SECTION 3: Fish & Vegetable Market Exceptional Slider (Photos, Captions & Eye-Catchy Facts) */}
+      <FishVegMarketSlider />
+
+      {/* SECTION 4: Grocery Stores Slider with Product List & Infographics */}
+      <GroceryStoresSlider />
+
+      {/* SECTION 5: Salon, Beauty Parlors, Groom Dressing & Hannan Bedding Store Advertisement */}
+      <SalonBeautyBeddingSection />
+
+      {/* SECTION 6: 3 Computer Shops Slider with Busy Activity Photos & Digital Services */}
+      <ComputerShopsSlider />
+
+      {/* SECTION 7: Rod & Cement Depot Advertisement & All Furniture Shops Gallery with Order System */}
+      <RodCementFurnitureSection />
+
+      {/* SECTION 8: All Pharmacies Healthcare Slider with Special Services & Medicine Order System */}
+      <PharmacyHealthcareSlider />
+
+      {/* SECTION 9: Land Services & Legal Consultant Chamber with AI Voice Text Converter */}
+      <LandServicesConsultantSection />
+
       {/* Top Banner & Title */}
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/50 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -358,27 +645,25 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span className="font-semibold flex items-center gap-1">
               <MessageSquare className="w-3.5 h-3.5 text-sky-400" />
-              ব্যবসায়ীদের সরাসরি মতামত
+              ব্যবসায়ীদের সোশ্যাল পোস্ট ও ওয়াল
             </span>
             <span className="text-[10px] bg-sky-500/20 text-sky-300 font-bold px-1.5 py-0.5 rounded">
-              উন্মুক্ত ফোরাম
+              ফেসবুক ইন্টারফেস
             </span>
           </div>
           <div className="text-2xl font-black text-sky-400 flex items-baseline gap-2">
             <span>
-              {toBengaliNumerals(
-                records.reduce((acc, r) => acc + (r.comments?.length || 0), 0)
-              )}
+              {toBengaliNumerals(feedPosts.length)}
             </span>
-            <span className="text-xs text-slate-400 font-normal">টি রেজিস্টার্ড কমেন্ট</span>
+            <span className="text-xs text-slate-400 font-normal">টি সামাজিক পোস্ট</span>
           </div>
           <div className="text-[11px] text-slate-400 pt-1 border-t border-slate-800/80 flex items-center justify-between">
-            <span>ব্যবসায়ী সাইন-ইন করে মন্তব্য করুন</span>
+            <span>পোস্ট প্রকাশ ও মত প্রকাশ করুন</span>
             <button
-              onClick={() => setActiveTab('COMMENTS')}
-              className="text-sky-400 hover:underline font-bold"
+              onClick={() => setActiveTab('FEED')}
+              className="text-sky-400 hover:underline font-bold cursor-pointer"
             >
-              কমেন্ট লিখুন &rarr;
+              সোশ্যাল ওয়ালে যান &rarr;
             </button>
           </div>
         </div>
@@ -411,6 +696,18 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
         </button>
 
         <button
+          onClick={() => setActiveTab('FEED')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 ${
+            activeTab === 'FEED'
+              ? 'bg-amber-500 text-slate-950 shadow-md'
+              : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4 text-sky-400" />
+          <span>📱 সামাজিক ফিড ও মতামত ওয়াল (Facebook Style)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('PROPOSALS')}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 ${
             activeTab === 'PROPOSALS'
@@ -423,18 +720,6 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
         </button>
 
         <button
-          onClick={() => setActiveTab('COMMENTS')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 ${
-            activeTab === 'COMMENTS'
-              ? 'bg-amber-500 text-slate-950 shadow-md'
-              : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
-          }`}
-        >
-          <MessageSquare className="w-4 h-4" />
-          <span>ব্যবসায়ীদের সরাসরি মুক্ত মতামত স্থান</span>
-        </button>
-
-        <button
           onClick={() => setActiveTab('SECURITY')}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer shrink-0 ${
             activeTab === 'SECURITY'
@@ -443,7 +728,7 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
           }`}
         >
           <Lock className="w-4 h-4" />
-          <span>ডেভেলপার নিরাপত্তা ও ইনপুট নির্দেশিকা</span>
+          <span>ডেভেলপার নিরাপত্তা নির্দেশিকা</span>
         </button>
       </div>
 
@@ -671,122 +956,381 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
         </div>
       )}
 
-      {/* TAB 3: MERCHANT GENERAL DISCUSSION & COMMENTS */}
-      {activeTab === 'COMMENTS' && (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-amber-400" />
-                  <span>ব্যবসায়ীদের মুক্ত আলোচনা ও সরাসরি পরামর্শ ফোরাম</span>
-                </h3>
-                <p className="text-xs text-slate-400">
-                  বাজারের যে কোনো সমস্যা, পরামর্শ বা নৈশ পাহারা সংক্রান্ত মতামত সরাসরি এখানে পোস্ট করুন।
-                </p>
-              </div>
-
-              {currentMerchant ? (
-                <div className="text-xs text-amber-300 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20 font-bold flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-amber-400" />
-                  <span>
-                    সাইন-ইন: {currentMerchant.ownerName} (দোকান #{currentMerchant.shopNo})
-                  </span>
-                </div>
-              ) : (
-                <button
-                  onClick={onOpenMerchantAuth}
-                  className="text-xs text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-1.5 rounded-xl border border-amber-500/30 font-bold flex items-center gap-1.5 cursor-pointer transition"
-                >
-                  <LogIn className="w-3.5 h-3.5 text-amber-400" />
-                  <span>মন্তব্য করতে সাইন-ইন করুন</span>
-                </button>
-              )}
+      {/* TAB 3: FACEBOOK-STYLE MERCHANT SOCIAL FEED & WALL */}
+      {activeTab === 'FEED' && (
+        <div className="space-y-6 animate-in fade-in duration-200 max-w-4xl mx-auto">
+          {/* Toast Notification Alert */}
+          {toastMessage && (
+            <div className="fixed top-16 right-4 z-50 bg-emerald-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-xl text-xs flex items-center gap-2 border border-emerald-300 animate-in slide-in-from-top-2">
+              <CheckCircle2 className="w-4 h-4 text-slate-950" />
+              <span>{toastMessage}</span>
             </div>
+          )}
 
-            {/* Comment Post Box */}
-            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2.5">
-              <label className="block text-xs font-semibold text-slate-300">
-                নতুন মতামত / সংস্কার বার্তা লিখুন:
-              </label>
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={newCommentInput}
-                  onChange={(e) => setNewCommentInput(e.target.value)}
-                  placeholder={
-                    currentMerchant
-                      ? `দোকান #${currentMerchant.shopNo} এর পক্ষে মতামত লিখুন...`
-                      : "প্রথমে 'ব্যবসায়ী সাইন-ইন' করে কথা লিখুন..."
-                  }
-                  className="flex-1 bg-slate-900 border border-slate-700 text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-amber-400"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handlePostComment();
-                  }}
-                />
-                <button
-                  onClick={handlePostComment}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition shrink-0 shadow-md"
-                >
-                  <span>মন্তব্য পোস্ট করুন</span>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
+          {/* Facebook-style Create Post Composer Card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-3.5">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-black shadow-md border border-amber-300">
+                  {currentMerchant ? currentMerchant.shopNo : <User className="w-5 h-5" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs sm:text-sm font-bold text-white">
+                      {currentMerchant ? currentMerchant.ownerName : 'অতিথি ব্যবসায়ী / ভিজিটর'}
+                    </h3>
+                    {currentMerchant && (
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 font-extrabold px-2 py-0.5 rounded-full border border-amber-500/30">
+                        দোকান #{currentMerchant.shopNo}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    {currentMerchant
+                      ? (currentMerchant.shopTitle || 'গণি মার্কেট সদস্য')
+                      : 'পোস্ট ও সোশ্যাল ফিডে অংশ নিতে সাইন-ইন করুন'}
+                  </p>
+                </div>
               </div>
 
               {!currentMerchant && (
-                <p className="text-[10.5px] text-amber-400/90 italic flex items-center gap-1">
-                  <Info className="w-3 h-3 text-amber-400 shrink-0" />
-                  <span>মন্তব্য পোস্ট করার আগে অনুগ্রহ করে নিজের 'দোকান নম্বর' দিয়ে সাইন-ইন করুন।</span>
-                </p>
+                <button
+                  onClick={onOpenMerchantAuth}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-xs font-bold shadow-md hover:from-amber-400 hover:to-amber-500 transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>ব্যবসায়ী সাইন-ইন</span>
+                </button>
               )}
             </div>
 
-            {/* Existing Comments List */}
-            <div className="space-y-3 pt-2">
-              <h4 className="text-xs font-bold text-slate-300">সাম্প্রতিক প্রকাশ্য মন্তব্যসমূহ:</h4>
+            {/* Post Input Textarea */}
+            <div className="space-y-2">
+              <textarea
+                value={postText}
+                onChange={(e) => setPostText(e.target.value)}
+                rows={3}
+                placeholder={
+                  currentMerchant
+                    ? `দোকান #${currentMerchant.shopNo} হিসেবে ফেসবুকে যেমন পোস্ট দেন: আপনার নতুন পণ্যের খবর, বাজারের সমস্যা বা ব্যবসার সম্ভাবনা প্রকাশ করুন...`
+                    : "প্রথমে 'ব্যবসায়ী সাইন-ইন' করে মনের কথা বা বাজারের আপডেট পোস্ট করুন..."
+                }
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/30 transition resize-none leading-relaxed"
+              ></textarea>
 
-              {records.length === 0 ? (
-                <div className="text-center py-8 text-xs text-slate-500 bg-slate-950/40 rounded-xl">
-                  এখনো কোনো রেজিস্টার্ড রেকর্ড নেই।
+              {/* Category Selector Pills */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[10.5px] text-slate-400 font-medium mr-1 flex items-center gap-1">
+                  <Tag className="w-3 h-3 text-amber-400" />
+                  বিভাগ:
+                </span>
+                {(
+                  [
+                    'সাধারণ আলোচনা',
+                    'পণ্যের খবর ও অফার',
+                    'ব্যবসার সম্ভাবনা',
+                    'সমস্যা ও সংস্কার',
+                  ] as const
+                ).map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setPostCategory(cat)}
+                    className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition cursor-pointer ${
+                      postCategory === cat
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Media Attachments Sub-box */}
+              {showMediaInput && (
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2 text-xs animate-in fade-in">
+                  <div className="flex items-center justify-between text-slate-400 font-medium text-[11px]">
+                    <span className="flex items-center gap-1 text-amber-300 font-bold">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      মিডিয়া (ছবি ও ভিডিও) লিংক সংযোজন
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowMediaInput(false)}
+                      className="text-slate-500 hover:text-slate-300 cursor-pointer"
+                    >
+                      বন্ধ করুন ✕
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input
+                      type="url"
+                      value={postImageUrl}
+                      onChange={(e) => setPostImageUrl(e.target.value)}
+                      placeholder="ছবি লিংক URL (যেমন: https://...)"
+                      className="bg-slate-900 border border-slate-800 text-white text-xs px-3 py-1.5 rounded-lg outline-none focus:border-amber-500"
+                    />
+                    <input
+                      type="url"
+                      value={postVideoUrl}
+                      onChange={(e) => setPostVideoUrl(e.target.value)}
+                      placeholder="ভিডিও/ইউটিউব লিংক URL"
+                      className="bg-slate-900 border border-slate-800 text-white text-xs px-3 py-1.5 rounded-lg outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  {/* Preset quick image choices */}
+                  <div className="flex items-center gap-2 pt-1 text-[10px] text-slate-400">
+                    <span>প্রিসেট ছবি বেছে নিন:</span>
+                    <button
+                      type="button"
+                      onClick={() => setPostImageUrl('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80')}
+                      className="text-amber-400 hover:underline cursor-pointer"
+                    >
+                      ইলেকট্রনিক্স
+                    </button>
+                    •
+                    <button
+                      type="button"
+                      onClick={() => setPostImageUrl('https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800&auto=format&fit=crop&q=80')}
+                      className="text-amber-400 hover:underline cursor-pointer"
+                    >
+                      চাল ও আড়ৎ
+                    </button>
+                    •
+                    <button
+                      type="button"
+                      onClick={() => setPostImageUrl('https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?w=800&auto=format&fit=crop&q=80')}
+                      className="text-amber-400 hover:underline cursor-pointer"
+                    >
+                      দোকান ও বাজার
+                    </button>
+                  </div>
                 </div>
-              ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
-                  {records.flatMap((r) => r.comments || []).length === 0 ? (
-                    <div className="text-center py-8 text-xs text-slate-500 bg-slate-950/40 rounded-xl">
-                      এখনো কোনো সাধারণ মন্তব্য জমা পড়েনি। আপনার মূল্যবান প্রস্তাবনা প্রথম লিখুন!
-                    </div>
-                  ) : (
-                    records
-                      .flatMap((r) => r.comments || [])
-                      .map((comm) => (
-                        <div
-                          key={comm.id}
-                          className="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5 text-xs"
-                        >
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="font-bold text-amber-300 flex items-center gap-1.5">
-                              <User className="w-3.5 h-3.5 text-amber-400" />
-                              {comm.authorName}
-                            </span>
-                            <span className="text-slate-500 text-[10px]">
-                              {new Date(comm.createdAt).toLocaleString('bn-BD', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                day: '2-digit',
-                                month: 'short',
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-slate-200 text-xs leading-relaxed pl-5 border-l-2 border-amber-500/40">
-                            {comm.commentText}
-                          </p>
+              )}
+            </div>
+
+            {/* Composer Footer Actions */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setShowMediaInput(!showMediaInput)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 font-semibold border border-slate-800 transition cursor-pointer"
+                >
+                  <ImageIcon className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline">ছবি/ভিডিও যুক্ত করুন</span>
+                  <span className="sm:hidden">মিডিয়া</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCreateFeedPost}
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-950/40 transition cursor-pointer active:scale-95"
+              >
+                <span>পোস্ট প্রকাশ করুন</span>
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Facebook Feed Stream Posts */}
+          <div className="space-y-5">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
+              <span className="flex items-center gap-1.5 text-amber-400">
+                <Globe className="w-4 h-4" />
+                <span>ব্যবসায়ীদের সর্বশেষ সামাজিক পোস্টসমূহ ({toBengaliNumerals(feedPosts.length)})</span>
+              </span>
+              <span className="text-[11px] font-normal text-slate-500">লাইভ ওয়াল</span>
+            </div>
+
+            {feedPosts.map((post) => {
+              const isLikedByMe = currentMerchant ? post.likedBy.includes(currentMerchant.shopNo) : false;
+
+              return (
+                <div
+                  key={post.id}
+                  className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-3 hover:border-slate-700/80 transition"
+                >
+                  {/* Post Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-slate-950 font-black shadow-md border border-amber-300/60 shrink-0 text-sm">
+                        {post.authorShopNo}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="text-xs sm:text-sm font-bold text-white">{post.authorShopTitle}</h4>
+                          <span className="text-[10px] bg-slate-800 text-amber-300 px-2 py-0.5 rounded-md font-semibold border border-slate-700">
+                            দোকান #{post.authorShopNo}
+                          </span>
                         </div>
-                      ))
+                        <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                          <span>{post.authorName}</span>
+                          <span>•</span>
+                          <span>
+                            {new Date(post.createdAt).toLocaleTimeString('bn-BD', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <span className="text-[10px] font-bold bg-amber-500/10 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/20 shrink-0">
+                      {post.category}
+                    </span>
+                  </div>
+
+                  {/* Post Text Content */}
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line pt-1">
+                    {post.content}
+                  </p>
+
+                  {/* Post Attached Media Image */}
+                  {post.imageUrl && (
+                    <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 max-h-80 flex items-center justify-center">
+                      <img
+                        src={post.imageUrl}
+                        alt="Post media"
+                        className="w-full h-full object-cover max-h-80 hover:scale-102 transition duration-300"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
                   )}
+
+                  {/* Post Attached Video Link */}
+                  {post.videoUrl && (
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-amber-300 flex items-center justify-between">
+                      <span className="flex items-center gap-2 font-semibold">
+                        <Video className="w-4 h-4 text-red-400" />
+                        <span>সংযুক্ত ভিডিও ক্লিপ রয়েছে</span>
+                      </span>
+                      <a
+                        href={post.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-amber-400 underline font-bold"
+                      >
+                        ভিডিও দেখুন &rarr;
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Post Stats & Reactions Bar */}
+                  <div className="flex items-center justify-between text-xs text-slate-400 py-2 border-y border-slate-800/80">
+                    <span className="flex items-center gap-1 text-slate-300">
+                      <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" />
+                      <span>{toBengaliNumerals(post.likes)} জন লাইক করেছেন</span>
+                    </span>
+
+                    <span className="text-slate-400 text-[11px]">
+                      {toBengaliNumerals(post.comments.length)} টি মন্তব্য
+                    </span>
+                  </div>
+
+                  {/* Post Action Buttons (Facebook Style) */}
+                  <div className="grid grid-cols-3 gap-2 text-xs font-semibold pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleLikePost(post.id)}
+                      className={`py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                        isLikedByMe
+                          ? 'bg-red-500/10 text-red-400 border border-red-500/30'
+                          : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                      }`}
+                    >
+                      <ThumbsUp className={`w-4 h-4 ${isLikedByMe ? 'text-red-400 fill-red-400' : ''}`} />
+                      <span>{isLikedByMe ? 'লাইক দেওয়া হয়েছে' : 'লাইক'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 text-sky-400" />
+                      <span>মন্তব্য করুন</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(window.location.href);
+                          showToast('পোস্টের লিংক কপি করা হয়েছে!');
+                        }
+                      }}
+                      className="py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <Share2 className="w-4 h-4 text-amber-400" />
+                      <span>শেয়ার</span>
+                    </button>
+                  </div>
+
+                  {/* Comment Thread List */}
+                  <div className="pt-2 space-y-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                    {post.comments.length > 0 && (
+                      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        {post.comments.map((comm) => (
+                          <div
+                            key={comm.id}
+                            className="bg-slate-900 border border-slate-800 p-2.5 rounded-xl space-y-1 text-xs"
+                          >
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                                <User className="w-3.5 h-3.5 text-amber-400" />
+                                <span>{comm.authorName} (দোকান #{comm.authorShopNo})</span>
+                              </span>
+                              <span className="text-[10px] text-slate-500">
+                                {new Date(comm.createdAt).toLocaleTimeString('bn-BD', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-slate-200 leading-relaxed pl-5 border-l-2 border-amber-500/40">
+                              {comm.content}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Post Comment Input */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="text"
+                        value={postCommentInputs[post.id] || ''}
+                        onChange={(e) =>
+                          setPostCommentInputs((prev) => ({
+                            ...prev,
+                            [post.id]: e.target.value,
+                          }))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleAddPostComment(post.id);
+                        }}
+                        placeholder={
+                          currentMerchant
+                            ? `দোকান #${currentMerchant.shopNo} হিসেবে উত্তর দিন...`
+                            : "মন্তব্য করতে 'ব্যবসায়ী সাইন-ইন' করুন..."
+                        }
+                        className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-amber-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleAddPostComment(post.id)}
+                        className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 shrink-0 transition cursor-pointer"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -864,6 +1408,69 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Developer Master CMS Control Banner (Positioned at the very bottom) */}
+      <div className="mt-8 bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 border-2 border-amber-500/60 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center shadow-lg shrink-0">
+            <Edit3 className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-black text-white">
+                🛠️ ডেভেলপার কন্টেন্ট ম্যানেজমেন্ট (CMS) পোর্টাল
+              </h3>
+              {isDevUnlocked ? (
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                  পিন আনলকড (লগইন সম্পন্ন)
+                </span>
+              ) : (
+                <span className="text-[10px] bg-red-500/20 text-red-300 font-bold px-2.5 py-0.5 rounded-full border border-red-500/30">
+                  ডেভেলপার পিন প্রয়োজন
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-amber-200/90 mt-0.5">
+              ১ম থেকে ৯মে সেকশন পর্যন্ত যেকোনো টেক্সট, ছবি (Image URL) ও ইউটিউব ভিডিও (YouTube Link) ইনপুট ও এডিট করুন।
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap shrink-0 relative z-10">
+          <button
+            onClick={() => openDevContentEditor('sec-1')}
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs flex items-center gap-1.5 shadow-lg cursor-pointer transition active:scale-95"
+          >
+            <Edit3 className="w-4 h-4" />
+            <span>সকল সেকশন কন্টেন্ট এডিট করুন (১-৯)</span>
+          </button>
+
+          {isDevUnlocked ? (
+            <button
+              onClick={onGoToDevDashboard}
+              className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-600/60 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>নৈশ পাহারাদার স্লিপ এডমিন</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenDevAuth}
+              className="px-3.5 py-2 bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
+            >
+              <Lock className="w-4 h-4 text-red-400" />
+              <span>ডেভেলপার পিন টাইপ করুন (🔒)</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Developer Content Manager Modal */}
+      <DeveloperContentModal
+        isOpen={isDevContentModalOpen}
+        onClose={() => setIsDevContentModalOpen(false)}
+        initialSectionId={devModalSectionId}
+      />
     </div>
   );
 };

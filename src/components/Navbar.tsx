@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Printer, Download, History, Users, Sparkles, ShieldAlert, Store, Lock, LogIn, LayoutDashboard, FileText } from 'lucide-react';
+import { ShieldCheck, Printer, Download, History, Users, Sparkles, ShieldAlert, Store, Lock, LogIn, LayoutDashboard, FileText, Edit3 } from 'lucide-react';
 import { MerchantProfile } from './MerchantAuthModal';
 
 interface NavbarProps {
@@ -14,6 +14,7 @@ interface NavbarProps {
   onOpenAuditBoard?: () => void;
   onOpenMerchantAuth: () => void;
   onOpenDevAuth: () => void;
+  onOpenDevContentEditor?: () => void;
   currentMerchant: MerchantProfile | null;
   isDevUnlocked: boolean;
   isDownloading: boolean;
@@ -33,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuditBoard,
   onOpenMerchantAuth,
   onOpenDevAuth,
+  onOpenDevContentEditor,
   currentMerchant,
   isDevUnlocked,
   isDownloading,
@@ -59,83 +61,47 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Navigation Mode Switcher Tabs */}
-        <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-          <button
-            onClick={() => onSelectView('COMMON_DASHBOARD')}
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition cursor-pointer ${
-              currentView === 'COMMON_DASHBOARD'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>কমন ড্যাশবোর্ড</span>
-          </button>
-
-          <button
-            onClick={() => {
-              if (isDevUnlocked) {
-                onSelectView('SLIP_GENERATOR');
-              } else {
-                onOpenDevAuth();
-              }
-            }}
-            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition cursor-pointer ${
-              currentView === 'SLIP_GENERATOR'
-                ? 'bg-emerald-500 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-            title={isDevUnlocked ? 'ডেভেলপার স্লিপ জেনারেটর' : 'পিন লক করা জেনারেটর'}
-          >
-            {isDevUnlocked ? (
-              <FileText className="w-3.5 h-3.5 text-emerald-950" />
-            ) : (
-              <Lock className="w-3.5 h-3.5 text-red-400" />
-            )}
-            <span>ডেভেলপার জেনারেটর</span>
-            {!isDevUnlocked && (
-              <span className="text-[9px] bg-red-500/20 text-red-300 font-extrabold px-1 py-0.2 rounded border border-red-500/30">
-                🔒
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Action Buttons */}
+        {/* Action Buttons & Merchant Sign-in */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Merchant Auth Button */}
+          {/* Prominent CMS Content Editor Button */}
+          {onOpenDevContentEditor && (
+            <button
+              onClick={onOpenDevContentEditor}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-xs font-bold transition cursor-pointer shadow-md active:scale-95"
+              title="সকল ৯টি সেকশনের লেখা, ছবি ও ভিডিও সম্পাদনা করুন (CMS)"
+            >
+              <Edit3 className="w-4 h-4 text-amber-400" />
+              <span>🛠️ সেকশন এডিটর (১-৯)</span>
+            </button>
+          )}
+
+          {/* If in Slip Generator mode, show back to Common Dashboard button */}
+          {currentView === 'SLIP_GENERATOR' && (
+            <button
+              onClick={() => onSelectView('COMMON_DASHBOARD')}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-md transition cursor-pointer"
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span>← কমন ড্যাশবোর্ডে ফিরুন</span>
+            </button>
+          )}
+
+          {/* Prominent Merchant Sign In Button */}
           <button
             onClick={onOpenMerchantAuth}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer shadow-md ${
               currentMerchant
-                ? 'bg-amber-500/10 border-amber-500/40 text-amber-300 hover:bg-amber-500/20'
-                : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                ? 'bg-amber-500/10 border-amber-500/50 text-amber-300 hover:bg-amber-500/20 shadow-amber-950/30'
+                : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 border-amber-400 shadow-amber-950/40'
             }`}
-            title="ব্যবসায়ীদের ড্যাশবোর্ড সাইন-ইন"
+            title="ব্যবসায়ীদের ড্যাশবোর্ড সাইন-ইন ও প্রোফাইল"
           >
-            <Store className="w-4 h-4 text-amber-400" />
-            <span>{currentMerchant ? `দোকান #${currentMerchant.shopNo}` : 'ব্যবসায়ী সাইন-ইন'}</span>
-          </button>
-
-          {/* Dev Lock/Unlock Button */}
-          <button
-            onClick={() => {
-              if (isDevUnlocked) {
-                onSelectView('SLIP_GENERATOR');
-              } else {
-                onOpenDevAuth();
-              }
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition cursor-pointer ${
-              isDevUnlocked
-                ? 'bg-emerald-950/80 border-emerald-600 text-emerald-300'
-                : 'bg-red-950/70 border-red-800 text-red-300 hover:bg-red-900'
-            }`}
-            title={isDevUnlocked ? 'ডেভেলপার এক্সেস সক্রিয়' : 'ডেভেলপার এক্সেস আনলক করতে পিন দিন'}
-          >
-            {isDevUnlocked ? <Sparkles className="w-4 h-4 text-emerald-400" /> : <Lock className="w-4 h-4 text-red-400" />}
-            <span className="hidden sm:inline">{isDevUnlocked ? 'ডেভেলপার মোড ⚡' : 'ডেভেলপার লকিং 🔒'}</span>
+            <Store className={`w-4 h-4 ${currentMerchant ? 'text-amber-400' : 'text-slate-950'}`} />
+            <span>
+              {currentMerchant
+                ? `দোকান #${currentMerchant.shopNo} (${currentMerchant.ownerName})`
+                : '🔑 ব্যবসায়ী সাইন-ইন'}
+            </span>
           </button>
 
           {/* Public Audit Board & Feedback Button */}
@@ -192,26 +158,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          <div className="h-5 w-px bg-slate-800 my-auto hidden sm:block"></div>
+          {/* Quick Print & Download PDF (Developer Dashboard Only) */}
+          {currentView === 'SLIP_GENERATOR' && (
+            <>
+              <div className="h-5 w-px bg-slate-800 my-auto hidden sm:block"></div>
 
-          {/* Quick Print */}
-          <button
-            onClick={onPrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold border border-slate-600 transition cursor-pointer active:scale-97"
-          >
-            <Printer className="w-4 h-4 text-slate-200" />
-            <span>প্রিন্ট</span>
-          </button>
+              {/* Quick Print */}
+              <button
+                onClick={onPrint}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold border border-slate-600 transition cursor-pointer active:scale-97"
+                title="সরাসরি প্রিন্ট করুন (ডেভেলপার জেনারেটর)"
+              >
+                <Printer className="w-4 h-4 text-slate-200" />
+                <span>প্রিন্ট</span>
+              </button>
 
-          {/* Download PDF */}
-          <button
-            onClick={onDownloadPDF}
-            disabled={isDownloading}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold shadow-md shadow-red-950/40 transition cursor-pointer disabled:opacity-50 active:scale-97"
-          >
-            <Download className="w-4 h-4 text-amber-200" />
-            <span>{isDownloading ? 'প্রসেসিং...' : 'A5 PDF'}</span>
-          </button>
+              {/* Download PDF */}
+              <button
+                onClick={onDownloadPDF}
+                disabled={isDownloading}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold shadow-md shadow-red-950/40 transition cursor-pointer disabled:opacity-50 active:scale-97"
+                title="A5 PDF ডাউনলোড করুন (ডেভেলপার জেনারেটর)"
+              >
+                <Download className="w-4 h-4 text-amber-200" />
+                <span>{isDownloading ? 'প্রসেসিং...' : 'A5 PDF'}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

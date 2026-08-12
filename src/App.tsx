@@ -10,11 +10,12 @@ import { VerificationModal } from './components/VerificationModal';
 import { PublicAuditBoard } from './components/PublicAuditBoard';
 import { CommonMarketDashboard } from './components/CommonMarketDashboard';
 import { DevAuthModal } from './components/DevAuthModal';
+import { DeveloperContentModal } from './components/DeveloperContentModal';
 import { MerchantAuthModal, MerchantProfile } from './components/MerchantAuthModal';
 import { GuardDutySlipInput, SavedSlipRecord, DutyComment, GuardStatus } from './types';
 import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
 import { downloadElementAsA5PDF, downloadElementAsA4PDF, triggerPrintWindow } from './utils/pdfGenerator';
-import { Sparkles, Lock, ShieldCheck, ArrowRight, Store } from 'lucide-react';
+import { Sparkles, Lock, ShieldCheck, ArrowRight, Store, Edit3 } from 'lucide-react';
 import { getScheduledPairForDate } from './data/rosterData';
 import { fetchSlipsFromSupabase, saveSlipToSupabase, isSupabaseConfigured } from './utils/supabase';
 
@@ -43,9 +44,18 @@ export default function App() {
     }
   });
 
-  // Auth Modals
+  // Auth Modals & CMS Content Editor
   const [isDevAuthModalOpen, setIsDevAuthModalOpen] = useState(false);
+  const [isDevContentModalOpen, setIsDevContentModalOpen] = useState(false);
   const [isMerchantAuthModalOpen, setIsMerchantAuthModalOpen] = useState(false);
+
+  const handleOpenDevContentEditor = () => {
+    if (!isDevUnlocked) {
+      setIsDevAuthModalOpen(true);
+    } else {
+      setIsDevContentModalOpen(true);
+    }
+  };
 
   // Form State initialized with restored draft or defaults
   const [formData, setFormData] = useState<GuardDutySlipInput>(() => {
@@ -310,6 +320,7 @@ export default function App() {
         onOpenAuditBoard={() => setIsAuditBoardOpen(true)}
         onOpenMerchantAuth={() => setIsMerchantAuthModalOpen(true)}
         onOpenDevAuth={() => setIsDevAuthModalOpen(true)}
+        onOpenDevContentEditor={handleOpenDevContentEditor}
         currentMerchant={currentMerchant}
         isDevUnlocked={isDevUnlocked}
         isDownloading={isDownloading}
@@ -343,7 +354,7 @@ export default function App() {
                       <span>ডেভেলপার ইনপুট সিকিউরিটি লক করা (LOCKED)</span>
                     </h4>
                     <p className="text-[11px] text-red-300">
-                      বাজারের নিরাপত্তার স্বার্থে নতুন ইনপুট প্রদান বা স্লিপ সেভ করতে পিন (1234) দিয়ে ডেভেলপার এক্সেস আনলক করুন।
+                      বাজারের নিরাপত্তার স্বার্থে নতুন ইনপুট প্রদান বা কন্টেন্ট সেভ করতে সিক্রেট পাসওয়ার্ড দিয়ে এক্সেস আনলক করুন।
                     </p>
                   </div>
                 </div>
@@ -447,6 +458,36 @@ export default function App() {
         )}
       </main>
 
+      {/* Footer with Subtle Developer Access at bottom corner */}
+      <footer className="no-print border-t border-slate-800/80 bg-slate-950/90 py-6 px-4 sm:px-6 text-xs text-slate-400 mt-12">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-slate-300">
+            <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
+            <span>© ২০২৬ গণি মার্কেট ব্যবসায়ী সমিতি | কেন্দ্রীয় ব্যবসায়ীদের কমন ড্যাশবোর্ড ও সোশ্যাল হাব</span>
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <span>সহায়তা ও হটলাইন: ০১৯৪৭-৩৯৭৭৫২</span>
+
+            {/* Subtle Developer Access Link at bottom right corner */}
+            <button
+              onClick={() => {
+                if (isDevUnlocked) {
+                  setCurrentView(currentView === 'SLIP_GENERATOR' ? 'COMMON_DASHBOARD' : 'SLIP_GENERATOR');
+                } else {
+                  setIsDevAuthModalOpen(true);
+                }
+              }}
+              className="text-slate-500 hover:text-amber-400 transition cursor-pointer flex items-center gap-1.5 opacity-80 hover:opacity-100 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-amber-500/30"
+              title="প্রিন্টেড স্লিপ জেনারেটর প্যানেল (লক করা)"
+            >
+              <Lock className={`w-3.5 h-3.5 ${isDevUnlocked ? 'text-emerald-400' : 'text-slate-500'}`} />
+              <span>{isDevUnlocked ? 'ডেভেলপার মোড ⚡' : 'ডেভেলপার এক্সেস'}</span>
+            </button>
+          </div>
+        </div>
+      </footer>
+
       {/* Hidden Print-Only Container for browser window.print() */}
       <div className="hidden print-only-container">
         {paperSize === 'a4' ? (
@@ -475,9 +516,26 @@ export default function App() {
           } catch {
             // ignore
           }
-          setCurrentView('SLIP_GENERATOR');
+          setIsDevContentModalOpen(true);
         }}
       />
+
+      {/* CMS Content Editor Modal */}
+      <DeveloperContentModal
+        isOpen={isDevContentModalOpen}
+        onClose={() => setIsDevContentModalOpen(false)}
+        initialSectionId="sec-1"
+      />
+
+      {/* Floating Quick CMS Edit Button */}
+      <button
+        onClick={handleOpenDevContentEditor}
+        className="fixed bottom-5 right-5 z-40 bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 py-3 rounded-2xl shadow-2xl border-2 border-amber-300 flex items-center gap-2 transition transform hover:scale-105 active:scale-95 cursor-pointer"
+        title="সকল ৯টি সেকশনের লেখা, ছবি ও ইউটিউব ভিডিও এডিট করার জন্য ক্লিক করুন (CMS)"
+      >
+        <Edit3 className="w-5 h-5 text-slate-950" />
+        <span className="text-xs font-black">🛠️ সেকশন এডিটর (১-৯)</span>
+      </button>
 
       <MerchantAuthModal
         isOpen={isMerchantAuthModalOpen}

@@ -236,7 +236,7 @@ export const ClassifiedStoreDirectory: React.FC = () => {
           </div>
 
           <h3 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2 pt-1">
-            <span>গুণিমার্কেট শ্রেণিভিত্তিক ব্যবসায়ী ও দোকান ক্যাটালগ</span>
+            <span>গণিমার্কেট শ্রেণিভিত্তিক ব্যবসায়ী ও দোকান ক্যাটালগ</span>
             <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
           </h3>
           <p className="text-xs text-slate-400 max-w-2xl">

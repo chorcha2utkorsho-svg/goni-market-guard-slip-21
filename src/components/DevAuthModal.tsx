@@ -10,19 +10,18 @@ interface DevAuthModalProps {
 export const DevAuthModal: React.FC<DevAuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
-  const [showHint, setShowHint] = useState(false);
 
   if (!isOpen) return null;
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === '1234' || pin === 'admin123' || pin === 'goni2026') {
+    if (pin.trim() === 'Hira$Moni#Mukta@7278') {
       setError('');
       setPin('');
       onSuccess();
       onClose();
     } else {
-      setError('ভুল সিকিউরিটি PIN! সঠিক ডেভেলপার PIN প্রদান করুন।');
+      setError('ভুল সিকিউরিটি পাসওয়ার্ড/PIN! সঠিক পাসওয়ার্ড দিন।');
     }
   };
 
@@ -57,7 +56,7 @@ export const DevAuthModal: React.FC<DevAuthModalProps> = ({ isOpen, onClose, onS
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
               <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-              <span>ডেভেলপার সিকিউরিটি PIN দিন:</span>
+              <span>সিক্রেট ডেভেলপার পাসওয়ার্ড দিন:</span>
             </label>
             <input
               type="password"
@@ -66,10 +65,10 @@ export const DevAuthModal: React.FC<DevAuthModalProps> = ({ isOpen, onClose, onS
                 setPin(e.target.value);
                 setError('');
               }}
-              placeholder="••••"
-              maxLength={12}
+              placeholder="সিক্রেট পাসওয়ার্ড টাইপ করুন..."
+              maxLength={50}
               autoFocus
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg tracking-widest text-white outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono"
+              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-sm tracking-wider text-white outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-mono"
             />
           </div>
 
@@ -81,23 +80,12 @@ export const DevAuthModal: React.FC<DevAuthModalProps> = ({ isOpen, onClose, onS
           )}
 
           <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3 text-[11px] text-slate-400 space-y-1">
-            <div className="flex items-center justify-between text-slate-300 font-semibold">
-              <span>ডিফল্ট ডেভেলপার সিকিউরিটি PIN:</span>
-              <button
-                type="button"
-                onClick={() => setShowHint(!showHint)}
-                className="text-amber-400 hover:underline cursor-pointer"
-              >
-                {showHint ? 'পিন লুকান' : 'পিন দেখুন'}
-              </button>
-            </div>
-            {showHint && (
-              <p className="text-amber-300 font-mono font-bold bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20 text-center text-xs">
-                1234
-              </p>
-            )}
+            <p className="text-[11px] text-amber-300/90 font-medium flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>সুরক্ষিত সিকিউরিটি এনক্রিপ্টেড ইনপুট</span>
+            </p>
             <p className="text-[10px] text-slate-500">
-              ব্যবসায়ীদের নিরাপত্তার সুবিধার্থে সাধারণ ইউজারগণ শুধুমাত্র ড্যাশবোর্ড দেখতে ও মন্তব্য করতে পারবেন।
+              সাইট ও কন্টেন্টের নিরাপত্তা নিশ্চিত করতে শুধুমাত্র পাসওয়ার্ড ধারণকারী ডেভেলপারগণ কন্টেন্ট সম্পাদনা করতে পারবেন।
             </p>
           </div>
 
