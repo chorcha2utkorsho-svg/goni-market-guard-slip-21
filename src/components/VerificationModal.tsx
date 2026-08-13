@@ -29,7 +29,7 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     dutyDate,
     roundNumber,
     serialIndex,
-    mobileNumber = '01947399752',
+    mobileNumber = '01333601029',
   } = data;
 
   const formattedDate = formatBengaliFullDate(dutyDate);

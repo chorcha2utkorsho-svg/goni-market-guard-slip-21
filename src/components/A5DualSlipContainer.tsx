@@ -24,6 +24,8 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
         width: '210mm',
         height: '148mm',
         boxSizing: 'border-box',
+        backgroundColor: '#ffffff',
+        color: '#0f172a',
       }}
     >
       {/* Left Slip (1st Partner Copy) */}
@@ -41,7 +43,10 @@ export const A5DualSlipContainer: React.FC<A5DualSlipContainerProps> = ({
         <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">
           <Scissors className="w-3 h-3 rotate-90" />
         </div>
-        <div className="writing-mode-vertical text-[8px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-1 my-auto">
+        <div
+          className="text-[8px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-0.5 my-auto"
+          style={{ writingMode: 'vertical-lr' }}
+        >
           ✂️ এখান থেকে কাটুন • CUT HERE ✂️
         </div>
         <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">

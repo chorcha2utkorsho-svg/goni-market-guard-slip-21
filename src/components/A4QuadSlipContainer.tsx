@@ -61,12 +61,14 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
         width: '210mm',
         height: '297mm',
         boxSizing: 'border-box',
+        backgroundColor: '#ffffff',
+        color: '#0f172a',
       }}
     >
       {/* ================= TOP HALF (DAY 1: 2 SLIPS - 148.5mm HEIGHT) ================= */}
-      <div className="w-[210mm] h-[148.5mm] flex relative border-b border-dashed border-amber-600/70">
-        {/* Day 1 Label Badge */}
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 z-20 bg-amber-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-full shadow-xs tracking-wider uppercase opacity-90 no-print">
+      <div className="w-[210mm] h-[148.5mm] flex relative border-b-2 border-dashed border-amber-600/70" style={{ backgroundColor: '#ffffff' }}>
+        {/* Day 1 Label Badge (screen only) - Centered over divider axis */}
+        <div className="absolute top-1 left-1/2 -translate-x-1/2 z-20 bg-amber-600 text-white font-bold text-[8px] px-2 py-0.5 rounded-full shadow-xs tracking-wider uppercase opacity-95 no-print">
           ১ম দিন (Day 1)
         </div>
 
@@ -81,15 +83,18 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
         </div>
 
         {/* Center Vertical Divider Line */}
-        <div className="relative w-0 h-full border-r border-dashed border-neutral-400 z-10 flex flex-col justify-between items-center py-2 -ml-[0.5px]">
+        <div className="relative w-0 h-full border-r border-dashed border-neutral-400 z-10 flex flex-col justify-between items-center py-1 -ml-[0.5px]">
           <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">
-            <Scissors className="w-3 h-3 rotate-90" />
+            <Scissors className="w-2.5 h-2.5 rotate-90" />
           </div>
-          <div className="writing-mode-vertical text-[8px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-1 my-auto">
-            ✂️ এখান থেকে কাটুন • CUT HERE ✂️
+          <div
+            className="text-[7.5px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-0.5 my-auto"
+            style={{ writingMode: 'vertical-lr' }}
+          >
+            ✂️ এখান থেকে কাটুন ✂️
           </div>
           <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">
-            <Scissors className="w-3 h-3 -rotate-90" />
+            <Scissors className="w-2.5 h-2.5 -rotate-90" />
           </div>
         </div>
 
@@ -104,18 +109,10 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
         </div>
       </div>
 
-      {/* ================= HORIZONTAL MIDDLE CUT LINE (A4 CENTER CUT) ================= */}
-      <div className="relative w-full h-0 z-30 flex items-center justify-between px-3 bg-neutral-100 -mt-[1px]">
-        <div className="flex items-center gap-1 text-[8px] font-mono text-neutral-500 bg-white px-2 py-0.5 border border-dashed border-neutral-400 rounded-full shadow-2xs -mt-[9px]">
-          <Scissors className="w-3 h-3 text-amber-600" />
-          <span>✂️ ১ম ও ২য় দিনের মাঝখানের কর্তন রেখা (A4 Middle Cut - Zero Waste) ✂️</span>
-        </div>
-      </div>
-
       {/* ================= BOTTOM HALF (DAY 2: 2 SLIPS - 148.5mm HEIGHT) ================= */}
-      <div className="w-[210mm] h-[148.5mm] flex relative bg-slate-50/20">
-        {/* Day 2 Label Badge */}
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 z-20 bg-sky-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-full shadow-xs tracking-wider uppercase opacity-90 no-print">
+      <div className="w-[210mm] h-[148.5mm] flex relative bg-white" style={{ backgroundColor: '#ffffff' }}>
+        {/* Day 2 Label Badge (screen only) - Centered over divider axis */}
+        <div className="absolute top-1 left-1/2 -translate-x-1/2 z-20 bg-sky-600 text-white font-bold text-[8px] px-2 py-0.5 rounded-full shadow-xs tracking-wider uppercase opacity-95 no-print">
           ২য় দিন (Day 2)
         </div>
 
@@ -130,15 +127,18 @@ export const A4QuadSlipContainer: React.FC<A4QuadSlipContainerProps> = ({
         </div>
 
         {/* Center Vertical Divider Line */}
-        <div className="relative w-0 h-full border-r border-dashed border-neutral-400 z-10 flex flex-col justify-between items-center py-2 -ml-[0.5px]">
+        <div className="relative w-0 h-full border-r border-dashed border-neutral-400 z-10 flex flex-col justify-between items-center py-1 -ml-[0.5px]">
           <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">
-            <Scissors className="w-3 h-3 rotate-90" />
+            <Scissors className="w-2.5 h-2.5 rotate-90" />
           </div>
-          <div className="writing-mode-vertical text-[8px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-1 my-auto">
-            ✂️ এখান থেকে কাটুন • CUT HERE ✂️
+          <div
+            className="text-[7.5px] text-neutral-400 font-mono tracking-widest uppercase select-none opacity-80 whitespace-nowrap bg-white px-0.5 my-auto"
+            style={{ writingMode: 'vertical-lr' }}
+          >
+            ✂️ এখান থেকে কাটুন ✂️
           </div>
           <div className="bg-white border border-neutral-300 p-0.5 rounded-full text-neutral-500 shadow-xs -mr-[0.5px]">
-            <Scissors className="w-3 h-3 -rotate-90" />
+            <Scissors className="w-2.5 h-2.5 -rotate-90" />
           </div>
         </div>
 

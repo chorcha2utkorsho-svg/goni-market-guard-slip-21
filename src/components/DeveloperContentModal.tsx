@@ -17,6 +17,7 @@ import {
   FileText,
   AlertCircle,
   BarChart2,
+  FileSpreadsheet,
 } from 'lucide-react';
 import {
   getDevSectionContent,
@@ -26,6 +27,7 @@ import {
   SectionContentOverride,
 } from '../utils/devCustomContent';
 import { SectionUsageD3Chart } from './SectionUsageD3Chart';
+import { CsvRosterImporter } from './CsvRosterImporter';
 
 interface DeveloperContentModalProps {
   isOpen: boolean;
@@ -52,7 +54,7 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
   initialSectionId = 'sec-1',
 }) => {
   const [selectedSectionId, setSelectedSectionId] = useState<string>(initialSectionId);
-  const [activeTabMode, setActiveTabMode] = useState<'editor' | 'analytics'>('editor');
+  const [activeTabMode, setActiveTabMode] = useState<'editor' | 'analytics' | 'csv_roster'>('editor');
   const [items, setItems] = useState<
     Array<{
       id: string;
@@ -229,31 +231,57 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Navigation Tabs: Editor vs D3 Analytics */}
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <button
-            onClick={() => setActiveTabMode('editor')}
-            className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
-              activeTabMode === 'editor'
-                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
-                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-            }`}
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>✏️ কন্টেন্ট এডিটর</span>
-          </button>
+        {/* Modal Navigation Tabs: Editor vs D3 Analytics vs Slip Generator */}
+        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setActiveTabMode('editor')}
+              className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+                activeTabMode === 'editor'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>✏️ সেকশন কন্টেন্ট এডিটর</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTabMode('analytics')}
-            className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
-              activeTabMode === 'analytics'
-                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
-                : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
-            }`}
-          >
-            <BarChart2 className="w-4 h-4 text-emerald-400" />
-            <span>📊 সেকশন ইউজ ও ট্রাফিক অ্যানালিটিক্স (D3 Chart)</span>
-          </button>
+            <button
+              onClick={() => setActiveTabMode('analytics')}
+              className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+                activeTabMode === 'analytics'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <BarChart2 className="w-4 h-4 text-emerald-400" />
+              <span>📊 ট্রাফিক ও ইউজ অ্যানালিটিক্স</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTabMode('csv_roster')}
+              className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+                activeTabMode === 'csv_roster'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>📋 রস্টার CSV ইম্পোর্টার</span>
+            </button>
+
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('goni_market_open_slip_generator'));
+                onClose();
+              }}
+              className="px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white shadow-md transition cursor-pointer border border-amber-300"
+              title="নাইট গার্ড ডিউটি স্লিপ জেনারেটরে যান"
+            >
+              <FileText className="w-4 h-4 text-amber-200" />
+              <span>📄 নাইট গার্ড স্লিপ জেনারেটর</span>
+            </button>
+          </div>
         </div>
 
         {activeTabMode === 'analytics' ? (
@@ -265,6 +293,10 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
                 setActiveTabMode('editor');
               }}
             />
+          </div>
+        ) : activeTabMode === 'csv_roster' ? (
+          <div className="my-auto overflow-y-auto max-h-[70vh] pr-1">
+            <CsvRosterImporter />
           </div>
         ) : (
           <>

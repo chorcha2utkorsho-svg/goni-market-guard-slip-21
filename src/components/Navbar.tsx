@@ -15,6 +15,7 @@ interface NavbarProps {
   onOpenMerchantAuth: () => void;
   onOpenDevAuth: () => void;
   onOpenDevContentEditor?: () => void;
+  onLockDev?: () => void;
   currentMerchant: MerchantProfile | null;
   isDevUnlocked: boolean;
   isDownloading: boolean;
@@ -35,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMerchantAuth,
   onOpenDevAuth,
   onOpenDevContentEditor,
+  onLockDev,
   currentMerchant,
   isDevUnlocked,
   isDownloading,
@@ -63,17 +65,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Buttons & Merchant Sign-in */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* If in Slip Generator mode, show back to Common Dashboard button */}
-          {currentView === 'SLIP_GENERATOR' && (
-            <button
-              onClick={() => onSelectView('COMMON_DASHBOARD')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-md transition cursor-pointer"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>← কমন ড্যাশবোর্ডে ফিরুন</span>
-            </button>
-          )}
-
           {/* Prominent Merchant Sign In Button */}
           <button
             onClick={onOpenMerchantAuth}
@@ -165,13 +156,96 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onDownloadPDF}
                 disabled={isDownloading}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold shadow-md shadow-red-950/40 transition cursor-pointer disabled:opacity-50 active:scale-97"
-                title="A5 PDF ডাউনলোড করুন (ডেভেলপার জেনারেটর)"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-slate-700 text-slate-950 font-bold text-xs border border-amber-300 shadow-sm transition cursor-pointer disabled:cursor-not-allowed"
+                title="পিডিএফ বা পিকচার হিসেবে ডাউনলোড করুন"
               >
-                <Download className="w-4 h-4 text-amber-200" />
-                <span>{isDownloading ? 'প্রসেসিং...' : 'A5 PDF'}</span>
+                <Download className="w-4 h-4 text-slate-950" />
+                <span>{isDownloading ? 'ডাউনলোড হচ্ছে...' : 'PDF ডাউনলোড'}</span>
               </button>
             </>
+          )}
+        </div>
+      </div>
+
+      {/* Primary Navigation Tabs Sub-Bar */}
+      <div className="bg-slate-950 border-t border-slate-800/80 px-4 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 flex-wrap text-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Tab 1: Common Dashboard */}
+            <button
+              onClick={() => onSelectView('COMMON_DASHBOARD')}
+              className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-2 transition cursor-pointer ${
+                currentView === 'COMMON_DASHBOARD'
+                  ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                  : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-700'
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span>📊 কমন ড্যাশবোর্ড</span>
+            </button>
+
+            {/* Tab 2: Night Guard Slip Generator */}
+            <button
+              onClick={() => {
+                if (isDevUnlocked) {
+                  onSelectView('SLIP_GENERATOR');
+                } else {
+                  onOpenDevAuth();
+                }
+              }}
+              className={`px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-2 transition cursor-pointer ${
+                currentView === 'SLIP_GENERATOR'
+                  ? 'bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 text-white font-black shadow-md border border-amber-300'
+                  : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-700'
+              }`}
+            >
+              <FileText className="w-4 h-4 text-amber-400" />
+              <span>📄 নাইট গার্ড স্লিপ জেনারেটর {!isDevUnlocked && '🔒'}</span>
+            </button>
+
+            {/* Tab 3: Section Content Editor */}
+            {onOpenDevContentEditor && (
+              <button
+                onClick={() => {
+                  if (isDevUnlocked) {
+                    onOpenDevContentEditor();
+                  } else {
+                    onOpenDevAuth();
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-2 bg-slate-900 text-emerald-300 hover:bg-slate-800 border border-emerald-700/60 transition cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>⚡ সেকশন কন্টেন্ট এডিটর {!isDevUnlocked && '🔒'}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Admin Lock / Unlock Status Indicator */}
+          {isDevUnlocked ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-700 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                এডমিন এক্সেস আনলকড
+              </span>
+              {onLockDev && (
+                <button
+                  onClick={onLockDev}
+                  className="px-2.5 py-1 bg-red-950 hover:bg-red-900 text-red-200 border border-red-700 rounded-lg font-bold text-[11px] flex items-center gap-1 transition cursor-pointer shadow-md"
+                >
+                  <Lock className="w-3 h-3 text-red-400" />
+                  <span>🔒 লক করুন</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={onOpenDevAuth}
+              className="text-[11px] font-semibold text-red-300 bg-red-950/60 border border-red-800/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 hover:bg-red-900/80 transition cursor-pointer"
+            >
+              <Lock className="w-3 h-3 text-red-400" />
+              <span>এডমিন এক্সেস (পাসওয়ার্ড)</span>
+            </button>
           )}
         </div>
       </div>

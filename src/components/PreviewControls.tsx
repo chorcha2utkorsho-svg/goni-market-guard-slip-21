@@ -1,5 +1,5 @@
 import React from 'react';
-import { ZoomIn, ZoomOut, Maximize2, Printer, Download, Layers, FileCheck } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Printer, Download, Layers, FileCheck, Image as ImageIcon } from 'lucide-react';
 
 interface PreviewControlsProps {
   paperSize: 'a4' | 'a5';
@@ -10,6 +10,7 @@ interface PreviewControlsProps {
   onResetZoom: () => void;
   onPrint: () => void;
   onDownloadPDF: () => void;
+  onDownloadPNG?: () => void;
   onOpenVerification?: () => void;
   isDownloading: boolean;
 }
@@ -23,6 +24,7 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
   onResetZoom,
   onPrint,
   onDownloadPDF,
+  onDownloadPNG,
   onOpenVerification,
   isDownloading,
 }) => {
@@ -94,7 +96,7 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
       </div>
 
       {/* Direct Action Buttons */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {onOpenVerification && (
           <button
             onClick={onOpenVerification}
@@ -105,23 +107,36 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
           </button>
         )}
 
+        {onDownloadPNG && (
+          <button
+            onClick={onDownloadPNG}
+            disabled={isDownloading}
+            className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold border border-sky-400 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
+            title="মোবাইল/হোয়াটসঅ্যাপে পাঠানোর জন্য এইচডি ছবি ডাউনলোড করুন"
+          >
+            <ImageIcon className="w-3.5 h-3.5 text-sky-200" />
+            <span>HD ছবি (PNG)</span>
+          </button>
+        )}
+
         <button
           onClick={onPrint}
           className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold border border-slate-600 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+          title="সরাসরি প্রিন্ট সিলেক্ট করুন"
         >
           <Printer className="w-3.5 h-3.5 text-amber-300" />
-          <span>সরাসরি প্রিন্ট</span>
+          <span>প্রিন্ট করুন</span>
         </button>
+
         <button
           onClick={onDownloadPDF}
           disabled={isDownloading}
           className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>{isDownloading ? 'প্রসেসিং...' : `${paperSize.toUpperCase()} PDF ডাউনলোড`}</span>
+          <span>{isDownloading ? 'প্রসেসিং...' : `${paperSize.toUpperCase()} PDF`}</span>
         </button>
       </div>
     </div>
   );
 };
-

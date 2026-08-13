@@ -49,6 +49,15 @@ export const RosterCalendar: React.FC<RosterCalendarProps> = ({
   const initialDate = parseDateStr(selectedDate);
   const [viewYear, setViewYear] = useState<number>(initialDate.getFullYear());
   const [viewMonth, setViewMonth] = useState<number>(initialDate.getMonth()); // 0-indexed
+  const [, setRosterVersion] = useState<number>(0);
+
+  React.useEffect(() => {
+    const handleUpdate = () => {
+      setRosterVersion((v) => v + 1);
+    };
+    window.addEventListener('goni_market_roster_updated', handleUpdate);
+    return () => window.removeEventListener('goni_market_roster_updated', handleUpdate);
+  }, []);
 
   const todayStr = getTodayDateString();
 

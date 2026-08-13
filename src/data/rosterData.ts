@@ -16,52 +16,109 @@ export const ROUND_2_EXPLICIT_ROSTER: Record<string, RosterPair & { roundNumber:
 /**
  * OFFICIAL FINALIZED ROSTER (35 PAIRS / 35 DAYS PER ROUND)
  * Includes Shop/Stall numbers (দোকান নং) and finalized calendar sequence for Rounds 3, 4, 5, 6 onwards.
- * Round 3: Aug 18, 2026 - Sep 21, 2026
- * Round 4: Sep 22, 2026 - Oct 26, 2026
- * Round 5: Oct 27, 2026 - Nov 30, 2026
- * Round 6: Dec 01, 2026 - Jan 04, 2027
+ * Round 3: Aug 14, 2026 - Sep 17, 2026 (১৪ আগস্ট থেকে ৩য় রাউন্ড শুরু)
+ * Round 4: Sep 18, 2026 - Oct 22, 2026
+ * Round 5: Oct 23, 2026 - Nov 26, 2026
+ * Round 6: Nov 27, 2026 - Dec 31, 2026
  */
 export const OFFICIAL_ROSTER_PAIRS: RosterPair[] = [
-  { serialNo: 1, guard1Name: 'খোরশেদ', guard1BusinessType: 'ওয়ার্কশপ', guard1ShopNo: '', guard2Name: 'কাজল', guard2BusinessType: 'হোটেল', guard2ShopNo: '64', baseDateRound1: '2026-08-18' },
-  { serialNo: 2, guard1Name: 'মাহফুজ', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'অনুকুল', guard2BusinessType: 'জুয়েলারী', guard2ShopNo: '63', baseDateRound1: '2026-08-19' },
-  { serialNo: 3, guard1Name: 'কামাল', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'রেডোয়ান', guard2BusinessType: 'কম্পিউটার', guard2ShopNo: '62', baseDateRound1: '2026-08-20' },
-  { serialNo: 4, guard1Name: 'বোরহান', guard1BusinessType: 'টেইলার', guard1ShopNo: '', guard2Name: 'হারুন', guard2BusinessType: 'অফিস', guard2ShopNo: '61', baseDateRound1: '2026-08-21' },
-  { serialNo: 5, guard1Name: 'রঞ্জন', guard1BusinessType: 'ফার্মেসী', guard1ShopNo: '', guard2Name: 'হান্নান', guard2BusinessType: 'বেডিং', guard2ShopNo: '60', baseDateRound1: '2026-08-22' },
-  { serialNo: 6, guard1Name: 'স্বপন', guard1BusinessType: 'টেইলার', guard1ShopNo: '', guard2Name: 'দুই্যা', guard2BusinessType: 'সেলুন', guard2ShopNo: '59', baseDateRound1: '2026-08-23' },
-  { serialNo: 7, guard1Name: 'সামসুল হুদা', guard1BusinessType: 'চাল', guard1ShopNo: '', guard2Name: 'এনামুল', guard2BusinessType: 'মুদী', guard2ShopNo: '58', baseDateRound1: '2026-08-24' },
-  { serialNo: 8, guard1Name: 'বাবুল', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'ফারুক', guard2BusinessType: 'মুদী', guard2ShopNo: '57', baseDateRound1: '2026-08-25' },
-  { serialNo: 9, guard1Name: 'মনির', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'আলামিন', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '56', baseDateRound1: '2026-08-26' },
-  { serialNo: 10, guard1Name: 'রিপন', guard1BusinessType: 'গোডাউন', guard1ShopNo: '', guard2Name: 'রতন', guard2BusinessType: 'ফল', guard2ShopNo: '55', baseDateRound1: '2026-08-27' },
-  { serialNo: 11, guard1Name: 'সাইফুল', guard1BusinessType: 'ভেটেরিনারী', guard1ShopNo: '', guard2Name: 'শাহাদাৎ', guard2BusinessType: 'ফার্নিচার', guard2ShopNo: '54', baseDateRound1: '2026-08-28' },
-  { serialNo: 12, guard1Name: 'শাকিল', guard1BusinessType: 'মেকার', guard1ShopNo: '', guard2Name: 'শামীম', guard2BusinessType: 'মুদী', guard2ShopNo: '53', baseDateRound1: '2026-08-29' },
-  { serialNo: 13, guard1Name: 'শাহাদত', guard1BusinessType: 'ইলেকট্রিক', guard1ShopNo: '', guard2Name: 'বিল্লাল', guard2BusinessType: 'মুদী', guard2ShopNo: '52', baseDateRound1: '2026-08-30' },
-  { serialNo: 14, guard1Name: 'ডা: বিল্লাল', guard1BusinessType: 'ফার্মেসী', guard1ShopNo: '', guard2Name: 'রয়েল', guard2BusinessType: 'মুদী', guard2ShopNo: '51', baseDateRound1: '2026-08-31' },
-  { serialNo: 15, guard1Name: 'মিলন প্রধান', guard1BusinessType: 'রডসিমেন্ট', guard1ShopNo: '', guard2Name: 'হিরন', guard2BusinessType: 'ব্রয়লার', guard2ShopNo: '50', baseDateRound1: '2026-09-01' },
-  { serialNo: 16, guard1Name: 'রবি', guard1BusinessType: 'জুতা', guard1ShopNo: '', guard2Name: 'মিজান', guard2BusinessType: 'চাল', guard2ShopNo: '49', baseDateRound1: '2026-09-02' },
-  { serialNo: 17, guard1Name: 'সোয়ায়েব', guard1BusinessType: 'চা', guard1ShopNo: '', guard2Name: 'ফাইজ উদ্দিন', guard2BusinessType: 'ব্রয়লার', guard2ShopNo: '48', baseDateRound1: '2026-09-03' },
-  { serialNo: 18, guard1Name: 'ইউসুফ', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'রুবেল ডাক্তার', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '47', baseDateRound1: '2026-09-04' },
-  { serialNo: 19, guard1Name: 'আবু হোসেন', guard1BusinessType: 'মেকার', guard1ShopNo: '', guard2Name: 'রতন মেকার', guard2BusinessType: 'পান সুপারী', guard2ShopNo: '46', baseDateRound1: '2026-09-05' },
-  { serialNo: 20, guard1Name: 'ফারুক অটো মেকার', guard1BusinessType: 'অটো মেকার', guard1ShopNo: '', guard2Name: 'কাউসার', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '45', baseDateRound1: '2026-09-06' },
-  { serialNo: 21, guard1Name: 'শফিকুল', guard1BusinessType: 'মিষ্টি', guard1ShopNo: '', guard2Name: 'সেলিম', guard2BusinessType: 'মিষ্টি', guard2ShopNo: '44', baseDateRound1: '2026-09-07' },
-  { serialNo: 22, guard1Name: 'আরিফ', guard1BusinessType: 'কম্পিউটার', guard1ShopNo: '', guard2Name: 'জয়নাল', guard2BusinessType: 'ফার্নিচার', guard2ShopNo: '43', baseDateRound1: '2026-09-08' },
-  { serialNo: 23, guard1Name: 'সালাম', guard1BusinessType: 'মুদীর', guard1ShopNo: '', guard2Name: 'বকুল', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '65', baseDateRound1: '2026-09-09' },
-  { serialNo: 24, guard1Name: 'সবুজ', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'কাউছার', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '66', baseDateRound1: '2026-09-10' },
-  { serialNo: 25, guard1Name: 'জসী', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'মানিক', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '67', baseDateRound1: '2026-09-11' },
-  { serialNo: 26, guard1Name: 'মাসুম বিল্লাহ্', guard1BusinessType: 'মোবাইল সার্ভিস', guard1ShopNo: '', guard2Name: 'বোরহান', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '68', baseDateRound1: '2026-09-12' },
-  { serialNo: 27, guard1Name: 'মনির', guard1BusinessType: 'হোটেল', guard1ShopNo: '', guard2Name: 'হাবিজ উদ্দিন', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '69', baseDateRound1: '2026-09-13' },
-  { serialNo: 28, guard1Name: 'ফজলু', guard1BusinessType: 'কলা', guard1ShopNo: '', guard2Name: 'মাহতাব', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '70', baseDateRound1: '2026-09-14' },
-  { serialNo: 29, guard1Name: 'প্রিন্স', guard1BusinessType: 'কম্পিউটার', guard1ShopNo: '', guard2Name: 'গোস্ত', guard2BusinessType: 'গোস্ত', guard2ShopNo: '71', baseDateRound1: '2026-09-15' },
-  { serialNo: 30, guard1Name: 'শাকিল', guard1BusinessType: 'হোটেল', guard1ShopNo: '', guard2Name: 'রিয়াজ উদ্দিন', guard2BusinessType: 'সার ডিলার', guard2ShopNo: '42', baseDateRound1: '2026-09-16' },
-  { serialNo: 31, guard1Name: 'হাসেন', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'দিদার', guard2BusinessType: 'ডেকোরেটর', guard2ShopNo: '41', baseDateRound1: '2026-09-17' },
-  { serialNo: 32, guard1Name: 'আলামিন', guard1BusinessType: 'মুদীর', guard1ShopNo: '', guard2Name: 'আলামিন', guard2BusinessType: 'মুড়ি', guard2ShopNo: '40', baseDateRound1: '2026-09-18' },
-  { serialNo: 33, guard1Name: 'তারেক', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'আলম', guard2BusinessType: 'ভাঙারী', guard2ShopNo: '39', baseDateRound1: '2026-09-19' },
-  { serialNo: 34, guard1Name: 'ফিরোজ', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'আনার', guard2BusinessType: 'মুদী', guard2ShopNo: '38', baseDateRound1: '2026-09-20' },
-  { serialNo: 35, guard1Name: 'হাবুল্লা', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'বাশার', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '37', baseDateRound1: '2026-09-21' },
+  { serialNo: 1, guard1Name: 'খোরশেদ', guard1BusinessType: 'ওয়ার্কশপ', guard1ShopNo: '', guard2Name: 'কাজল', guard2BusinessType: 'হোটেল', guard2ShopNo: '64', baseDateRound1: '2026-08-14' },
+  { serialNo: 2, guard1Name: 'মাহফুজ', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'অনুকুল', guard2BusinessType: 'জুয়েলারী', guard2ShopNo: '63', baseDateRound1: '2026-08-15' },
+  { serialNo: 3, guard1Name: 'কামাল', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'রেডোয়ান', guard2BusinessType: 'কম্পিউটার', guard2ShopNo: '62', baseDateRound1: '2026-08-16' },
+  { serialNo: 4, guard1Name: 'বোরহান', guard1BusinessType: 'টেইলার', guard1ShopNo: '', guard2Name: 'হারুন', guard2BusinessType: 'অফিস', guard2ShopNo: '61', baseDateRound1: '2026-08-17' },
+  { serialNo: 5, guard1Name: 'রঞ্জন', guard1BusinessType: 'ফার্মেসী', guard1ShopNo: '', guard2Name: 'হান্নান', guard2BusinessType: 'বেডিং', guard2ShopNo: '60', baseDateRound1: '2026-08-18' },
+  { serialNo: 6, guard1Name: 'স্বপন', guard1BusinessType: 'টেইলার', guard1ShopNo: '', guard2Name: 'দুই্যা', guard2BusinessType: 'সেলুন', guard2ShopNo: '59', baseDateRound1: '2026-08-19' },
+  { serialNo: 7, guard1Name: 'সামসুল হুদা', guard1BusinessType: 'চাল', guard1ShopNo: '', guard2Name: 'এনামুল', guard2BusinessType: 'মুদী', guard2ShopNo: '58', baseDateRound1: '2026-08-20' },
+  { serialNo: 8, guard1Name: 'বাবুল', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'ফারুক', guard2BusinessType: 'মুদী', guard2ShopNo: '57', baseDateRound1: '2026-08-21' },
+  { serialNo: 9, guard1Name: 'মনির', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'আলামিন', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '56', baseDateRound1: '2026-08-22' },
+  { serialNo: 10, guard1Name: 'রিপন', guard1BusinessType: 'গোডাউন', guard1ShopNo: '', guard2Name: 'রতন', guard2BusinessType: 'ফল', guard2ShopNo: '55', baseDateRound1: '2026-08-23' },
+  { serialNo: 11, guard1Name: 'সাইফুল', guard1BusinessType: 'ভেটেরিনারী', guard1ShopNo: '', guard2Name: 'শাহাদাৎ', guard2BusinessType: 'ফার্নিচার', guard2ShopNo: '54', baseDateRound1: '2026-08-24' },
+  { serialNo: 12, guard1Name: 'শাকিল', guard1BusinessType: 'মেকার', guard1ShopNo: '', guard2Name: 'শামীম', guard2BusinessType: 'মুদী', guard2ShopNo: '53', baseDateRound1: '2026-08-25' },
+  { serialNo: 13, guard1Name: 'শাহাদত', guard1BusinessType: 'ইলেকট্রিক', guard1ShopNo: '', guard2Name: 'বিল্লাল', guard2BusinessType: 'মুদী', guard2ShopNo: '52', baseDateRound1: '2026-08-26' },
+  { serialNo: 14, guard1Name: 'ডা: বিল্লাল', guard1BusinessType: 'ফার্মেসী', guard1ShopNo: '', guard2Name: 'রয়েল', guard2BusinessType: 'মুদী', guard2ShopNo: '51', baseDateRound1: '2026-08-27' },
+  { serialNo: 15, guard1Name: 'মিলন প্রধান', guard1BusinessType: 'রডসিমেন্ট', guard1ShopNo: '', guard2Name: 'হিরন', guard2BusinessType: 'ব্রয়লার', guard2ShopNo: '50', baseDateRound1: '2026-08-28' },
+  { serialNo: 16, guard1Name: 'রবি', guard1BusinessType: 'জুতা', guard1ShopNo: '', guard2Name: 'মিজান', guard2BusinessType: 'চাল', guard2ShopNo: '49', baseDateRound1: '2026-08-29' },
+  { serialNo: 17, guard1Name: 'সোয়ায়েব', guard1BusinessType: 'চা', guard1ShopNo: '', guard2Name: 'ফাইজ উদ্দিন', guard2BusinessType: 'ব্রয়লার', guard2ShopNo: '48', baseDateRound1: '2026-08-30' },
+  { serialNo: 18, guard1Name: 'ইউসুফ', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'রুবেল ডাক্তার', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '47', baseDateRound1: '2026-08-31' },
+  { serialNo: 19, guard1Name: 'আবু হোসেন', guard1BusinessType: 'মেকার', guard1ShopNo: '', guard2Name: 'রতন মেকার', guard2BusinessType: 'পান সুপারী', guard2ShopNo: '46', baseDateRound1: '2026-09-01' },
+  { serialNo: 20, guard1Name: 'ফারুক অটো মেকার', guard1BusinessType: 'অটো মেকার', guard1ShopNo: '', guard2Name: 'কাউসার', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '45', baseDateRound1: '2026-09-02' },
+  { serialNo: 21, guard1Name: 'শফিকুল', guard1BusinessType: 'মিষ্টি', guard1ShopNo: '', guard2Name: 'সেলিম', guard2BusinessType: 'মিষ্টি', guard2ShopNo: '44', baseDateRound1: '2026-09-03' },
+  { serialNo: 22, guard1Name: 'আরিফ', guard1BusinessType: 'কম্পিউটার', guard1ShopNo: '', guard2Name: 'জয়নাল', guard2BusinessType: 'ফার্নিচার', guard2ShopNo: '43', baseDateRound1: '2026-09-04' },
+  { serialNo: 23, guard1Name: 'সালাম', guard1BusinessType: 'মুদীর', guard1ShopNo: '', guard2Name: 'বকুল', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '65', baseDateRound1: '2026-09-05' },
+  { serialNo: 24, guard1Name: 'সবুজ', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'কাউছার', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '66', baseDateRound1: '2026-09-06' },
+  { serialNo: 25, guard1Name: 'জসী', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'মানিক', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '67', baseDateRound1: '2026-09-07' },
+  { serialNo: 26, guard1Name: 'মাসুম বিল্লাহ্', guard1BusinessType: 'মোবাইল সার্ভিস', guard1ShopNo: '', guard2Name: 'বোরহান', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '68', baseDateRound1: '2026-09-08' },
+  { serialNo: 27, guard1Name: 'মনির', guard1BusinessType: 'হোটেল', guard1ShopNo: '', guard2Name: 'হাবিজ উদ্দিন', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '69', baseDateRound1: '2026-09-09' },
+  { serialNo: 28, guard1Name: 'ফজলু', guard1BusinessType: 'কলা', guard1ShopNo: '', guard2Name: 'মাহতাব', guard2BusinessType: 'কাঁচামাল', guard2ShopNo: '70', baseDateRound1: '2026-09-10' },
+  { serialNo: 29, guard1Name: 'প্রিন্স', guard1BusinessType: 'কম্পিউটার', guard1ShopNo: '', guard2Name: 'গোস্ত', guard2BusinessType: 'গোস্ত', guard2ShopNo: '71', baseDateRound1: '2026-09-11' },
+  { serialNo: 30, guard1Name: 'শাকিল', guard1BusinessType: 'হোটেল', guard1ShopNo: '', guard2Name: 'রিয়াজ উদ্দিন', guard2BusinessType: 'সার ডিলার', guard2ShopNo: '42', baseDateRound1: '2026-09-12' },
+  { serialNo: 31, guard1Name: 'হাসেন', guard1BusinessType: 'ফার্নিচার', guard1ShopNo: '', guard2Name: 'দিদার', guard2BusinessType: 'ডেকোরেটর', guard2ShopNo: '41', baseDateRound1: '2026-09-13' },
+  { serialNo: 32, guard1Name: 'আলামিন', guard1BusinessType: 'মুদীর', guard1ShopNo: '', guard2Name: 'আলামিন', guard2BusinessType: 'মুড়ি', guard2ShopNo: '40', baseDateRound1: '2026-09-14' },
+  { serialNo: 33, guard1Name: 'তারেক', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'আলম', guard2BusinessType: 'ভাঙারী', guard2ShopNo: '39', baseDateRound1: '2026-09-15' },
+  { serialNo: 34, guard1Name: 'ফিরোজ', guard1BusinessType: 'সেলুন', guard1ShopNo: '', guard2Name: 'আনার', guard2BusinessType: 'মুদী', guard2ShopNo: '38', baseDateRound1: '2026-09-16' },
+  { serialNo: 35, guard1Name: 'হাবুল্লা', guard1BusinessType: 'মুদী', guard1ShopNo: '', guard2Name: 'বাশার', guard2BusinessType: 'ফার্মেসী', guard2ShopNo: '37', baseDateRound1: '2026-09-17' },
 ];
 
+export const CUSTOM_ROSTER_STORAGE_KEY = 'goni_market_custom_roster';
+
+/**
+ * Returns active roster pairs (custom pasted CSV roster if set, or default official roster).
+ */
+export function getActiveRosterPairs(): RosterPair[] {
+  try {
+    const custom = localStorage.getItem(CUSTOM_ROSTER_STORAGE_KEY);
+    if (custom) {
+      const parsed = JSON.parse(custom);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading custom roster from localStorage', e);
+  }
+  return OFFICIAL_ROSTER_PAIRS;
+}
+
+/**
+ * Saves custom roster pairs to localStorage and dispatches global update event.
+ */
+export function saveCustomRosterPairs(pairs: RosterPair[]): boolean {
+  try {
+    localStorage.setItem(CUSTOM_ROSTER_STORAGE_KEY, JSON.stringify(pairs));
+    window.dispatchEvent(new Event('goni_market_roster_updated'));
+    return true;
+  } catch (e) {
+    console.error('Error saving custom roster to localStorage', e);
+    return false;
+  }
+}
+
+/**
+ * Resets custom roster back to official default roster.
+ */
+export function resetCustomRosterPairs(): void {
+  try {
+    localStorage.removeItem(CUSTOM_ROSTER_STORAGE_KEY);
+    window.dispatchEvent(new Event('goni_market_roster_updated'));
+  } catch (e) {
+    console.error('Error resetting custom roster', e);
+  }
+}
+
+/**
+ * Checks if custom roster is active.
+ */
+export function isCustomRosterActive(): boolean {
+  try {
+    return !!localStorage.getItem(CUSTOM_ROSTER_STORAGE_KEY);
+  } catch {
+    return false;
+  }
+}
+
 const CYCLE_LENGTH = 35; // 35 days per full round
-// Round 3 starts on 2026-08-18 (as per official schedule), so Round 1 started 70 days earlier on 2026-06-09
-const ROUND_1_START = new Date('2026-06-09T00:00:00');
+// Round 3 starts on 2026-08-14 (as per official schedule), so Round 1 started 70 days earlier on 2026-06-05
+const ROUND_1_START = new Date('2026-06-05T00:00:00');
 
 /**
  * Calculates the exact YYYY-MM-DD date for a given serial number (1-35) and round number (1, 2, 3...)
@@ -87,9 +144,11 @@ export function getScheduledPairForDate(dateString: string): {
   roundNumber: number;
   serialNo: number;
 } {
+  const activePairs = getActiveRosterPairs();
+
   if (!dateString) {
     return {
-      pair: OFFICIAL_ROSTER_PAIRS[0],
+      pair: activePairs[0] || OFFICIAL_ROSTER_PAIRS[0],
       roundNumber: 1,
       serialNo: 1,
     };
@@ -123,7 +182,7 @@ export function getScheduledPairForDate(dateString: string): {
 
   if (isNaN(diffDays)) {
     return {
-      pair: OFFICIAL_ROSTER_PAIRS[0],
+      pair: activePairs[0] || OFFICIAL_ROSTER_PAIRS[0],
       roundNumber: 1,
       serialNo: 1,
     };
@@ -137,7 +196,7 @@ export function getScheduledPairForDate(dateString: string): {
   const roundNumber = Math.floor(adjustedDiff / CYCLE_LENGTH) + 1;
   const dayIndex = adjustedDiff % CYCLE_LENGTH;
   const serialNo = dayIndex + 1;
-  const pair = OFFICIAL_ROSTER_PAIRS[dayIndex] || OFFICIAL_ROSTER_PAIRS[0];
+  const pair = activePairs[dayIndex] || activePairs[0] || OFFICIAL_ROSTER_PAIRS[0];
 
   return {
     pair,
@@ -167,8 +226,10 @@ export function getUpcomingDutiesForMerchant(
   const cleanShop = (shopNo || '').trim();
   const cleanOwner = (ownerName || '').trim();
 
-  // Find matching pair in OFFICIAL_ROSTER_PAIRS
-  const matchedPair = OFFICIAL_ROSTER_PAIRS.find((p) => {
+  const activePairs = getActiveRosterPairs();
+
+  // Find matching pair in active roster pairs
+  const matchedPair = activePairs.find((p) => {
     const s1Matches = cleanShop && p.guard1ShopNo && p.guard1ShopNo.trim() === cleanShop;
     const s2Matches = cleanShop && p.guard2ShopNo && p.guard2ShopNo.trim() === cleanShop;
     const name1Matches = cleanOwner && p.guard1Name.toLowerCase().includes(cleanOwner.toLowerCase());
@@ -176,7 +237,7 @@ export function getUpcomingDutiesForMerchant(
     return s1Matches || s2Matches || name1Matches || name2Matches;
   });
 
-  const pairToUse = matchedPair || OFFICIAL_ROSTER_PAIRS[0];
+  const pairToUse = matchedPair || activePairs[0] || OFFICIAL_ROSTER_PAIRS[0];
 
   const isGuard1 =
     (pairToUse.guard1ShopNo && pairToUse.guard1ShopNo.trim() === cleanShop) ||

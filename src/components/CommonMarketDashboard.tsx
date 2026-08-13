@@ -28,6 +28,7 @@ import {
   Globe,
   Plus,
   Edit3,
+  FileText,
   Youtube,
   Settings,
 } from 'lucide-react';
@@ -96,6 +97,7 @@ interface CommonMarketDashboardProps {
   isDevUnlocked: boolean;
   onGoToDevDashboard: () => void;
   onPostGlobalComment: (recordId: string, comment: DutyComment) => void;
+  onLockDev?: () => void;
 }
 
 export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
@@ -106,6 +108,7 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
   isDevUnlocked,
   onGoToDevDashboard,
   onPostGlobalComment,
+  onLockDev,
 }) => {
   const tomorrowDate = getTomorrowDateString();
   const todaySchedule = getScheduledPairForDate(tomorrowDate);
@@ -534,23 +537,41 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
               </button>
             )}
 
-            {/* Developer Access Button */}
             {isDevUnlocked ? (
-              <button
-                onClick={onGoToDevDashboard}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-600 text-xs font-bold cursor-pointer transition shadow-md"
-              >
-                <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
-                <span>⚡ ডেভেলপার স্লিপ ড্যাশবোর্ড</span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={onGoToDevDashboard}
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white font-black text-xs cursor-pointer transition shadow-lg border border-amber-300"
+                >
+                  <FileText className="w-4 h-4 text-amber-200" />
+                  <span>📄 ১৪ই নাইট গার্ড স্লিপ ও মেসেজ প্যানেল</span>
+                </button>
+                <button
+                  onClick={() => openDevContentEditor('sec-1')}
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-600 text-xs font-bold cursor-pointer transition shadow-md"
+                >
+                  <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
+                  <span>⚡ কন্টেন্ট এডিটর</span>
+                </button>
+                {onLockDev && (
+                  <button
+                    onClick={onLockDev}
+                    className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-700 text-xs font-bold cursor-pointer transition shadow-md"
+                    title="এডমিন মোড সিকিউর লক করুন"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-red-400" />
+                    <span>🔒 লক করুন</span>
+                  </button>
+                )}
+              </div>
             ) : (
               <button
                 onClick={onOpenDevAuth}
-                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-800/80 text-xs font-bold cursor-pointer transition"
-                title="কেবলমাত্র পিনধারী ডেভেলপার ও এডমিনের জন্য লকিং এক্সেস"
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-700 text-xs font-bold cursor-pointer transition shadow-md"
+                title="কেবলমাত্র গোপন সিকিউরিটি পাসওয়ার্ড ধারণকারী এডমিন ও ডেভেলপারগণের জন্য"
               >
                 <Lock className="w-4 h-4 text-red-400" />
-                <span>ডেভেলপার এক্সেস (🔒)</span>
+                <span>🔒 নাইট গার্ড স্লিপ ও সেকশন এডিটর (পাসওয়ার্ড আবশ্যক)</span>
               </button>
             )}
           </div>
@@ -1404,7 +1425,7 @@ export const CommonMarketDashboard: React.FC<CommonMarketDashboardProps> = ({
                 <span>৩. ডেভেলপার প্যানেল খোলার নিয়ম</span>
               </h4>
               <p className="text-slate-400">
-                উপরে ডানদিকের <strong className="text-red-300">"ডেভেলপার এক্সেস (🔒)"</strong> বাটনে ক্লিক করে সিকিউরিটি পিন (ডিফল্ট: <code className="bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded font-mono">1234</code>) প্রদান করলেই মূল স্লিপ জেনারেটর ফর্ম সক্রিয় হবে।
+                উপরে ডানদিকের <strong className="text-red-300">"ডেভেলপার এক্সেস (🔒)"</strong> বাটনে ক্লিক করে নির্দিষ্ট সিকিউরিটি পাসওয়ার্ড প্রদান করলেই নাইট গার্ড ডিউটি স্লিপ জেনারেটর ফর্ম সক্রিয় হবে।
               </p>
             </div>
           </div>

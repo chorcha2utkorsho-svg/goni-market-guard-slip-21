@@ -18,10 +18,13 @@ import {
   CheckCircle2,
   DollarSign,
   AlertTriangle,
+  MessageSquare,
+  Copy,
+  Send,
 } from 'lucide-react';
 import { GuardDutySlipInput } from '../types';
 import { getTomorrowDateString, getTodayDateString, getOffsetDateString, formatBengaliFullDate, toBengaliNumerals } from '../utils/bengaliUtils';
-import { OFFICIAL_ROSTER_PAIRS, getScheduledPairForDate } from '../data/rosterData';
+import { OFFICIAL_ROSTER_PAIRS, getActiveRosterPairs, getScheduledPairForDate, getDateForPairAndRound } from '../data/rosterData';
 import { RosterCalendar } from './RosterCalendar';
 
 interface InputFormProps {
@@ -44,6 +47,57 @@ export const InputForm: React.FC<InputFormProps> = ({
   const tomorrowDate = getTomorrowDateString();
   const todayDate = getTodayDateString();
   const [showCalendar, setShowCalendar] = useState(true);
+  const [copiedSms, setCopiedSms] = useState(false);
+  const [selectedRound, setSelectedRound] = useState<number>(formData.roundNumber || 3);
+  const [rosterVersion, setRosterVersion] = useState<number>(0);
+
+  // Sync selectedRound if formData.roundNumber changes
+  React.useEffect(() => {
+    if (formData.roundNumber && formData.roundNumber !== selectedRound) {
+      setSelectedRound(formData.roundNumber);
+    }
+  }, [formData.roundNumber]);
+
+  // Listen for global roster updates (e.g. from CSV Importer)
+  React.useEffect(() => {
+    const handleRosterUpdate = () => {
+      setRosterVersion((v) => v + 1);
+    };
+    window.addEventListener('goni_market_roster_updated', handleRosterUpdate);
+    return () => window.removeEventListener('goni_market_roster_updated', handleRosterUpdate);
+  }, []);
+
+  // Generate 18 2-day pair batches for the selected round
+  const roundTwoDayBatches = React.useMemo(() => {
+    const activePairs = getActiveRosterPairs();
+    const batches = [];
+    for (let s = 1; s <= 35; s += 2) {
+      const s1 = s;
+      const s2 = s + 1 <= 35 ? s + 1 : null;
+      const date1 = getDateForPairAndRound(s1, selectedRound);
+      const date2 = s2 ? getDateForPairAndRound(s2, selectedRound) : '';
+      const pair1 = activePairs[s1 - 1] || OFFICIAL_ROSTER_PAIRS[s1 - 1];
+      const pair2 = s2 ? (activePairs[s2 - 1] || OFFICIAL_ROSTER_PAIRS[s2 - 1]) : null;
+      batches.push({
+        batchIndex: Math.ceil(s / 2),
+        s1,
+        s2,
+        date1,
+        date2,
+        pair1,
+        pair2,
+      });
+    }
+    return batches;
+  }, [selectedRound, rosterVersion]);
+
+  // Helper to construct 14th date string of current month
+  const get14thDateString = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}-14`;
+  };
 
   // Auto calculate when date changes
   const handleDateChange = (newDate: string) => {
@@ -112,10 +166,65 @@ export const InputForm: React.FC<InputFormProps> = ({
 
       {/* Duty Date Picker with Auto-Schedule */}
       <div className="bg-slate-900/60 border border-slate-700/70 p-3 rounded-xl space-y-3">
+        {/* Round & 2-Day Pair Direct Selector */}
+        <div className="bg-gradient-to-r from-amber-950/70 via-slate-900 to-slate-950 border border-amber-500/50 rounded-xl p-3 space-y-2.5">
+          <div className="flex items-center justify-between flex-wrap gap-1">
+            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>একপাতায় ৪টি স্লিপের জন্য ২-দিনের জোড়া সিলেক্টর:</span>
+            </span>
+            <span className="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded border border-amber-500/30 font-semibold">
+              ১টি A4 পাতায় ২ দিনের ৪টি স্লিপ
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {/* Step 1: Select Round */}
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                ১. রাউন্ড নম্বর সিলেক্ট করুন:
+              </label>
+              <select
+                value={selectedRound}
+                onChange={(e) => {
+                  const r = Number(e.target.value);
+                  setSelectedRound(r);
+                  const firstDate = getDateForPairAndRound(1, r);
+                  handleDateChange(firstDate);
+                }}
+                className="w-full bg-slate-950 border border-amber-500/40 text-amber-300 text-xs rounded-lg px-2.5 py-2 font-bold outline-none cursor-pointer"
+              >
+                <option value={3}>রাউন্ড-৩ (১৪ই আগস্ট - ১৭ই সেপ্টেম্বর)</option>
+                <option value={4}>রাউন্ড-৪ (১৮ই সেপ্টেম্বর - ২২ই অক্টোবর)</option>
+                <option value={5}>রাউন্ড-৫ (২৩ই অক্টোবর - ২৬ই নভেম্বর)</option>
+                <option value={6}>রাউন্ড-৬ (২৭ই নভেম্বর - ৩১ই ডিসেম্বর)</option>
+              </select>
+            </div>
+
+            {/* Step 2: Select 2-Day Pair / Set */}
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                ২. দুদিনের জোড়া সেট সিলেক্ট করুন (১ম ও ২য় দিন একসাথে):
+              </label>
+              <select
+                value={formData.dutyDate}
+                onChange={(e) => handleDateChange(e.target.value)}
+                className="w-full bg-slate-950 border border-amber-500/30 focus:border-amber-400 text-white text-xs rounded-lg px-2.5 py-2 font-medium outline-none cursor-pointer"
+              >
+                {roundTwoDayBatches.map((b) => (
+                  <option key={b.date1} value={b.date1}>
+                    {`জোড়া #${b.batchIndex}: ${formatBengaliFullDate(b.date1)} ${b.date2 ? '& ' + formatBengaliFullDate(b.date2) : ''} ➔ [${b.pair1.guard1Name} & ${b.pair1.guard2Name}] ${b.pair2 ? '+ [' + b.pair2.guard1Name + ' & ' + b.pair2.guard2Name + ']' : ''}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-wrap justify-between items-center gap-2">
           <label className="block text-xs font-bold text-amber-400 flex items-center gap-1.5">
             <Calendar className="w-4 h-4 text-amber-400" />
-            <span>ডিউটির তারিখ ও রাউন্ড নির্বাচন (Date & Round):</span>
+            <span>অথবা সরাসরি নির্দিষ্ট তারিখ নির্বাচন করুন:</span>
           </label>
           <div className="flex items-center gap-1.5 flex-wrap">
             <button
@@ -128,41 +237,31 @@ export const InputForm: React.FC<InputFormProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, -1))}
+              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, -2))}
               className="text-[10px] px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
-              title="পূর্ববর্তী দিনের পাহারাদার"
+              title="আগের ২ দিন"
             >
-              ◄ -১ দিন
+              ◄ -২ দিন
             </button>
             <button
               type="button"
-              onClick={() => handleDateChange(todayDate)}
-              className={`text-[10px] px-2 py-1 rounded transition cursor-pointer font-medium ${
-                formData.dutyDate === todayDate
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              onClick={() => handleDateChange(get14thDateString())}
+              className={`text-[10px] px-2 py-1 rounded transition cursor-pointer font-bold border ${
+                formData.dutyDate === get14thDateString()
+                  ? 'bg-gradient-to-r from-red-600 to-amber-600 text-white border-amber-300 shadow-md ring-2 ring-amber-400/50'
+                  : 'bg-red-950/80 text-red-200 border-red-700 hover:bg-red-900'
               }`}
+              title="১৪ ও ১৫ই আগস্ট ৩য় রাউন্ড শুরু (একচান্সে ২ দিনের ৪টি স্লিপ)"
             >
-              আজকে
+              ★ ১৪ ও ১৫ই আগস্ট (রাউন্ড-৩ শুরু)
             </button>
             <button
               type="button"
-              onClick={() => handleDateChange(tomorrowDate)}
-              className={`text-[10px] px-2 py-1 rounded transition cursor-pointer font-medium ${
-                formData.dutyDate === tomorrowDate
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              আগামীকাল
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, 1))}
+              onClick={() => handleDateChange(getOffsetDateString(formData.dutyDate, 2))}
               className="text-[10px] px-2 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold border border-amber-300 shadow-xs transition cursor-pointer flex items-center gap-1"
-              title="পরবর্তী দিনের পাহারাদার অটো-পরামর্শ"
+              title="পরবর্তী ২ দিন (+২ দিন)"
             >
-              <span>+১ দিন (পরবর্তী)</span>
+              <span>+২ দিন ►</span>
               <Sparkles className="w-3 h-3" />
             </button>
           </div>
@@ -189,45 +288,73 @@ export const InputForm: React.FC<InputFormProps> = ({
           </div>
         </div>
 
-        {/* Auto-Suggestion Roster Continuity Card */}
+        {/* Auto-Suggestion 2-Day Batch Roster Continuity Card */}
         {(() => {
-          const autoScheduled = getScheduledPairForDate(formData.dutyDate);
-          const isMatchingAuto =
-            formData.guard1Name === autoScheduled.pair.guard1Name &&
-            formData.guard2Name === autoScheduled.pair.guard2Name &&
-            formData.roundNumber === autoScheduled.roundNumber;
+          const autoScheduledDay1 = getScheduledPairForDate(formData.dutyDate);
+          
+          // Day 2 calculation (+1 day)
+          const d1Obj = new Date(`${formData.dutyDate}T00:00:00`);
+          d1Obj.setDate(d1Obj.getDate() + 1);
+          const y2 = d1Obj.getFullYear();
+          const m2 = String(d1Obj.getMonth() + 1).padStart(2, '0');
+          const d2 = String(d1Obj.getDate()).padStart(2, '0');
+          const day2DateStr = `${y2}-${m2}-${d2}`;
+          const autoScheduledDay2 = getScheduledPairForDate(day2DateStr);
 
           return (
-            <div className="bg-slate-950/80 border border-amber-500/30 rounded-lg p-2.5 space-y-1 text-xs">
-              <div className="flex items-center justify-between text-[11px]">
+            <div className="bg-slate-950/90 border border-amber-500/40 rounded-xl p-3 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-[11px] border-b border-amber-500/20 pb-1.5">
                 <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>
-                    স্বয়ংক্রিয় রোস্টার পরামর্শ (ধারাবাহিকতা বজায় রাখা হয়েছে):
+                    একচান্সে ২ দিনের ৪টি স্লিপ (A4 জিরো পেপার ওয়েস্টেজ):
                   </span>
                 </div>
-                {!isMatchingAuto && (
-                  <button
-                    type="button"
-                    onClick={() => handleDateChange(formData.dutyDate)}
-                    className="text-[10px] text-amber-400 hover:underline bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 cursor-pointer"
-                  >
-                    পুনরায় অটো-পরামর্শ ব্যবহার করুন
-                  </button>
-                )}
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                  ১টি A4 পেপারে ২টি দিন প্রিন্ট হবে
+                </span>
               </div>
-              <div className="text-slate-200 text-[11px] leading-relaxed">
-                রাউন্ড-<strong>{toBengaliNumerals(autoScheduled.roundNumber)}</strong> • ক্রমিক #<strong>{toBengaliNumerals(autoScheduled.serialNo)}</strong>: <span className="text-amber-300 font-bold">{autoScheduled.pair.guard1Name || 'খালি'} ({autoScheduled.pair.guard1BusinessType || '-'})</span> এবং <span className="text-amber-300 font-bold">{autoScheduled.pair.guard2Name || 'খালি'} ({autoScheduled.pair.guard2BusinessType || '-'})</span>
+
+              {/* Day 1 & Day 2 Roster Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-0.5">
+                {/* Day 1 Box */}
+                <div className="bg-slate-900 border border-amber-500/30 p-2 rounded-lg space-y-0.5">
+                  <div className="text-amber-400 font-bold flex items-center justify-between">
+                    <span>🗓️ ১ম দিন ({formatBengaliFullDate(formData.dutyDate)})</span>
+                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded">রাউন্ড-{toBengaliNumerals(autoScheduledDay1.roundNumber)}</span>
+                  </div>
+                  <div className="text-slate-200">
+                    ১ম: <strong className="text-amber-300">{autoScheduledDay1.pair.guard1Name}</strong> ({autoScheduledDay1.pair.guard1BusinessType || '-'})
+                  </div>
+                  <div className="text-slate-200">
+                    ২য়: <strong className="text-amber-300">{autoScheduledDay1.pair.guard2Name}</strong> ({autoScheduledDay1.pair.guard2BusinessType || '-'} {autoScheduledDay1.pair.guard2ShopNo ? `• দোকান #${autoScheduledDay1.pair.guard2ShopNo}` : ''})
+                  </div>
+                </div>
+
+                {/* Day 2 Box */}
+                <div className="bg-slate-900 border border-sky-500/30 p-2 rounded-lg space-y-0.5">
+                  <div className="text-sky-400 font-bold flex items-center justify-between">
+                    <span>🗓️ ২য় দিন ({formatBengaliFullDate(day2DateStr)})</span>
+                    <span className="text-[10px] bg-sky-500/20 text-sky-300 px-1 rounded">রাউন্ড-{toBengaliNumerals(autoScheduledDay2.roundNumber)}</span>
+                  </div>
+                  <div className="text-slate-200">
+                    ১ম: <strong className="text-sky-300">{autoScheduledDay2.pair.guard1Name}</strong> ({autoScheduledDay2.pair.guard1BusinessType || '-'})
+                  </div>
+                  <div className="text-slate-200">
+                    ২য়: <strong className="text-sky-300">{autoScheduledDay2.pair.guard2Name}</strong> ({autoScheduledDay2.pair.guard2BusinessType || '-'} {autoScheduledDay2.pair.guard2ShopNo ? `• দোকান #${autoScheduledDay2.pair.guard2ShopNo}` : ''})
+                  </div>
+                </div>
               </div>
-              <div className="text-[10px] text-slate-400">
-                তারিখ পরিবর্তন করলে এই রোস্টার জোড়টি ফর্মের ঘরে স্বয়ংক্রিয়ভাবে সাজেস্ট ও লোড হয়।
+
+              <div className="text-[10px] text-slate-400 bg-slate-900/60 p-1.5 rounded border border-slate-800 flex items-center gap-1">
+                <span>💡 ১টি A4 পেপারে ২ দিনের মোট ৪টি স্লিপ একসঙ্গে সুন্দরভাবে প্রিন্ট হয়ে দুইভাগে ভাগ হবে।</span>
               </div>
             </div>
           );
         })()}
 
         <p className="text-[11px] text-slate-300">
-          তারিখ: <strong className="text-amber-300">{formatBengaliFullDate(formData.dutyDate)}</strong>
+          বর্তমান ডিউটি শুরুর তারিখ: <strong className="text-amber-300">{formatBengaliFullDate(formData.dutyDate)}</strong>
         </p>
 
         {/* Interactive Roster Calendar Visualization */}
@@ -239,6 +366,51 @@ export const InputForm: React.FC<InputFormProps> = ({
             />
           </div>
         )}
+      </div>
+
+      {/* Guard Duty Notification SMS / Message Generator Card (Morning before duty) */}
+      <div className="bg-slate-900/90 border border-emerald-500/40 rounded-xl p-3.5 space-y-2.5">
+        <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
+          <span className="flex items-center gap-1.5">
+            <MessageSquare className="w-4 h-4 text-emerald-400" />
+            <span>পাহারাদারের এসএমএস ও নোটিশ বার্তা (Duty SMS Alert)</span>
+          </span>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">
+            আগের দিন সকালে পাঠানোর জন্য
+          </span>
+        </div>
+        <p className="text-[11px] text-slate-300 leading-relaxed">
+          <strong className="text-amber-300">{formatBengaliFullDate(formData.dutyDate)}</strong>-এর নৈশকালীন পাহারার জন্য দায়িত্বপ্রাপ্ত সদস্যকে আগের দিন সকালে নোটিশ পাঠানোর জন্য মেসেজটি কপি করুন:
+        </p>
+        <div className="bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-[11px] font-mono text-emerald-200 leading-relaxed select-all">
+          {`সম্মানিত সদস্য, গণি মার্কেট নৈশকালীন নিরাপত্তা পাহারায় আপনার ডিউটি নির্ধারিত হয়েছে।\n• ডিউটির তারিখ: ${formatBengaliFullDate(formData.dutyDate)} (রাউন্ড-${toBengaliNumerals(formData.roundNumber)})\n• ১মে পাহারাদার: ${formData.guard1Name || 'অনির্ধারিত'} (${formData.guard1ShopNo ? 'দোকান #' + formData.guard1ShopNo : ''})\n• ২য় পাহারাদার: ${formData.guard2Name || 'অনির্ধারিত'} (${formData.guard2ShopNo ? 'দোকান #' + formData.guard2ShopNo : ''})\nঅনুগ্রহ করে সময়মতো পাহারার প্রস্তুতি গ্রহণ করুন।\n- গণি মার্কেট ব্যবসায়ী সমিতি`}
+        </div>
+        <div className="flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              const text = `সম্মানিত সদস্য, গণি মার্কেট নৈশকালীন নিরাপত্তা পাহারায় আপনার ডিউটি নির্ধারিত হয়েছে।\n• ডিউটির তারিখ: ${formatBengaliFullDate(formData.dutyDate)} (রাউন্ড-${toBengaliNumerals(formData.roundNumber)})\n• ১মে পাহারাদার: ${formData.guard1Name || 'অনির্ধারিত'} (${formData.guard1ShopNo ? 'দোকান #' + formData.guard1ShopNo : ''})\n• ২য় পাহারাদার: ${formData.guard2Name || 'অনির্ধারিত'} (${formData.guard2ShopNo ? 'দোকান #' + formData.guard2ShopNo : ''})\nঅনুগ্রহ করে সময়মতো পাহারার প্রস্তুতি গ্রহণ করুন।\n- গণি মার্কেট ব্যবসায়ী সমিতি`;
+              navigator.clipboard.writeText(text);
+              setCopiedSms(true);
+              setTimeout(() => setCopiedSms(false), 2000);
+            }}
+            className="flex-1 py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 border border-slate-700 transition cursor-pointer"
+          >
+            <Copy className="w-3.5 h-3.5 text-amber-400" />
+            <span>{copiedSms ? 'কপি হয়েছে! ✓' : '📋 মেসেজ কপি করুন'}</span>
+          </button>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(
+              `সম্মানিত সদস্য, গণি মার্কেট নৈশকালীন নিরাপত্তা পাহারায় আপনার ডিউটি নির্ধারিত হয়েছে।\n• ডিউটির তারিখ: ${formatBengaliFullDate(formData.dutyDate)} (রাউন্ড-${toBengaliNumerals(formData.roundNumber)})\n• ১মে পাহারাদার: ${formData.guard1Name || 'অনির্ধারিত'} (${formData.guard1ShopNo ? 'দোকান #' + formData.guard1ShopNo : ''})\n• ২য় পাহারাদার: ${formData.guard2Name || 'অনির্ধারিত'} (${formData.guard2ShopNo ? 'দোকান #' + formData.guard2ShopNo : ''})\nঅনুগ্রহ করে সময়মতো পাহারার প্রস্তুতি গ্রহণ করুন।\n- গণি মার্কেট ব্যবসায়ী সমিতি`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md transition cursor-pointer"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>💬 WhatsApp-এ পাঠান</span>
+          </a>
+        </div>
       </div>
 
       {/* Official 35-Pair Quick Roster Selector */}
@@ -494,7 +666,7 @@ export const InputForm: React.FC<InputFormProps> = ({
               type="tel"
               value={formData.mobileNumber}
               onChange={(e) => onChange({ mobileNumber: e.target.value })}
-              placeholder="যেমন: 01947399752"
+              placeholder="যেমন: 01333601029"
               className="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 text-white text-xs font-mono rounded-xl pl-9 pr-3 py-2.5 outline-none"
               required
             />

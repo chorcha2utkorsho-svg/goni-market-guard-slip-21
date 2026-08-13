@@ -1,13 +1,18 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    font-family: 'Kalpurush', 'Tiro Bangla', 'Hind Siliguri', 'Noto Sans Bengali', system-ui, sans-serif;
-  }
+:root {
+  color-scheme: light !important;
+}
+
+body, html {
+  color-scheme: light !important;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Tiro Bangla', system-ui, sans-serif;
 }
 
 .font-kalpurush {
-  font-family: 'Kalpurush', 'Tiro Bangla', 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Tiro Bangla', sans-serif;
 }
 
 /* Custom Security Border Styles */
@@ -27,36 +32,61 @@
   box-shadow: inset 0 0 0 2px #ecfdf5, inset 0 0 0 4px #065f46;
 }
 
+/* Screen Mode: keep print container in DOM layout but hidden visually so html2canvas can capture it cleanly */
+@media screen {
+  .print-only-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 210mm !important;
+    pointer-events: none !important;
+    z-index: -9999 !important;
+    opacity: 0.001 !important;
+    background: #ffffff !important;
+  }
+}
+
 /* Print CSS setup for exact A5 Landscape (210mm x 148mm) & A4 Portrait (210mm x 297mm) */
 @media print {
   @page {
+    size: auto;
     margin: 0;
   }
 
-  body {
-    background: white !important;
-    color: black !important;
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Hide everything except print container */
+  /* Hide everything marked as no-print */
   .no-print {
     display: none !important;
   }
 
+  /* Show print container prominently */
   .print-only-container {
     display: block !important;
+    width: 210mm !important;
     margin: 0 auto !important;
     padding: 0 !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    opacity: 1 !important;
+    z-index: 99999 !important;
+    background: #ffffff !important;
   }
 
   .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
     page-break-inside: avoid !important;
     page-break-after: always !important;
-    box-shadow: none !important;
   }
 
   .print-page.print-a4 {
@@ -64,4 +94,3 @@
     height: 297mm !important;
   }
 }
-

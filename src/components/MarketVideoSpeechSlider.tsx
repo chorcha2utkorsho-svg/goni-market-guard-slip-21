@@ -244,11 +244,35 @@ export const MarketVideoSpeechSlider: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-slate-950">
         {/* Left/Main Player Box */}
         <div className="lg:col-span-8 relative bg-black min-h-[300px] sm:min-h-[380px] flex items-center justify-center overflow-hidden group">
-          {/* HTML5 Video Element */}
+          {/* HTML5 Video Element or Photo Overlay */}
+          {!isPlaying && (
+            <div className="absolute inset-0 z-10 bg-slate-950 flex items-center justify-center overflow-hidden">
+              <img
+                src={currentSpeech.posterUrl || currentSpeech.avatarUrl}
+                alt={currentSpeech.speakerName}
+                className="w-full h-full object-cover object-center animate-in fade-in duration-300"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1000&auto=format&fit=crop&q=80';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30" />
+              
+              {/* Center Play Button Prompt */}
+              <button
+                onClick={togglePlay}
+                className="absolute z-20 px-5 py-3 rounded-2xl bg-amber-500/90 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-2xl flex items-center gap-2.5 backdrop-blur-md cursor-pointer border border-amber-300 transform transition hover:scale-105 active:scale-95"
+              >
+                <Play className="w-5 h-5 fill-slate-950 text-slate-950" />
+                <span>২০ সেকেন্ডের বক্তব্য শুনুন</span>
+              </button>
+            </div>
+          )}
+
           <video
             ref={videoRef}
             src={currentSpeech.videoUrl}
-            poster={currentSpeech.posterUrl}
+            poster={currentSpeech.posterUrl || currentSpeech.avatarUrl}
             muted={isMuted}
             playsInline
             loop

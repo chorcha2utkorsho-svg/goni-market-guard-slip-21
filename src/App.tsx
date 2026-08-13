@@ -11,10 +11,11 @@ import { PublicAuditBoard } from './components/PublicAuditBoard';
 import { CommonMarketDashboard } from './components/CommonMarketDashboard';
 import { DevAuthModal } from './components/DevAuthModal';
 import { DeveloperContentModal } from './components/DeveloperContentModal';
+import { PrintDownloadModal } from './components/PrintDownloadModal';
 import { MerchantAuthModal, MerchantProfile } from './components/MerchantAuthModal';
 import { GuardDutySlipInput, SavedSlipRecord, DutyComment, GuardStatus } from './types';
 import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
-import { downloadElementAsA5PDF, downloadElementAsA4PDF, triggerPrintWindow } from './utils/pdfGenerator';
+import { downloadElementAsA5PDF, downloadElementAsA4PDF, downloadElementAsPNG, triggerPrintWindow } from './utils/pdfGenerator';
 import { Sparkles, Lock, ShieldCheck, ArrowRight, Store, Edit3 } from 'lucide-react';
 import { getScheduledPairForDate } from './data/rosterData';
 import { fetchSlipsFromSupabase, saveSlipToSupabase, isSupabaseConfigured } from './utils/supabase';
@@ -36,26 +37,54 @@ export default function App() {
     }
   });
 
-  const [isDevUnlocked, setIsDevUnlocked] = useState<boolean>(() => {
-    try {
-      return sessionStorage.getItem('goni_market_dev_unlocked') === 'true';
-    } catch {
-      return false;
-    }
-  });
+  const [isDevUnlocked, setIsDevUnlocked] = useState<boolean>(false);
 
   // Auth Modals & CMS Content Editor
   const [isDevAuthModalOpen, setIsDevAuthModalOpen] = useState(false);
   const [isDevContentModalOpen, setIsDevContentModalOpen] = useState(false);
   const [isMerchantAuthModalOpen, setIsMerchantAuthModalOpen] = useState(false);
+  const [pendingDevAction, setPendingDevAction] = useState<'SLIP_GENERATOR' | 'SLIP_GENERATOR_14TH' | 'SECTION_EDITOR' | null>(null);
 
   const handleOpenDevContentEditor = () => {
     if (!isDevUnlocked) {
+      setPendingDevAction('SECTION_EDITOR');
       setIsDevAuthModalOpen(true);
     } else {
       setIsDevContentModalOpen(true);
     }
   };
+
+  const handleOpenSlipGenerator = () => {
+    if (!isDevUnlocked) {
+      setPendingDevAction('SLIP_GENERATOR');
+      setIsDevAuthModalOpen(true);
+    } else {
+      setCurrentView('SLIP_GENERATOR');
+    }
+  };
+
+  const handleLockDev = () => {
+    setIsDevUnlocked(false);
+    setCurrentView('COMMON_DASHBOARD');
+    setIsDevContentModalOpen(false);
+  };
+
+  // Safety guard: if not unlocked, never allow SLIP_GENERATOR view
+  useEffect(() => {
+    if (!isDevUnlocked && currentView === 'SLIP_GENERATOR') {
+      setCurrentView('COMMON_DASHBOARD');
+    }
+  }, [isDevUnlocked, currentView]);
+
+  useEffect(() => {
+    const handleOpenSlipGenEvent = () => {
+      handleOpenSlipGenerator();
+    };
+    window.addEventListener('goni_market_open_slip_generator', handleOpenSlipGenEvent);
+    return () => {
+      window.removeEventListener('goni_market_open_slip_generator', handleOpenSlipGenEvent);
+    };
+  }, [isDevUnlocked]);
 
   // Form State initialized with restored draft or defaults
   const [formData, setFormData] = useState<GuardDutySlipInput>(() => {
@@ -64,6 +93,9 @@ export default function App() {
       if (savedDraft) {
         const parsed = JSON.parse(savedDraft);
         if (parsed && typeof parsed === 'object' && parsed.dutyDate) {
+          if (parsed.mobileNumber === '01947399752' || !parsed.mobileNumber) {
+            parsed.mobileNumber = '01333601029';
+          }
           return parsed;
         }
       }
@@ -80,7 +112,7 @@ export default function App() {
       dutyDate: tomorrowDate,
       roundNumber: initialSchedule.roundNumber,
       serialIndex: initialSchedule.serialNo,
-      mobileNumber: '01947399752',
+      mobileNumber: '01333601029',
       qrCodeUrl: 'https://gonimarket.org/report',
       customInstruction: '',
       theme: 'classic',
@@ -109,8 +141,9 @@ export default function App() {
   const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
   const [isAuditBoardOpen, setIsAuditBoardOpen] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
-  // Auto open verification modal if URL query has ?verify=1
+  // Auto open verification modal if URL query has ?verify=1 or handle 14th Slip Generator request
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -118,6 +151,28 @@ export default function App() {
         setIsVerificationOpen(true);
       }
     }
+
+    const handleOpen14thSlip = () => {
+      if (!isDevUnlocked) {
+        setPendingDevAction('SLIP_GENERATOR_14TH');
+        setIsDevAuthModalOpen(true);
+        return;
+      }
+      setCurrentView('SLIP_GENERATOR');
+      // Set date to 14th of current month (e.g., 2026-08-14)
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const date14Str = `${year}-${month}-14`;
+      setFormData((prev) => ({
+        ...prev,
+        dutyDate: date14Str,
+      }));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('goni_market_open_slip_generator_14th', handleOpen14thSlip);
+    return () => window.removeEventListener('goni_market_open_slip_generator_14th', handleOpen14thSlip);
   }, []);
 
   // History State
@@ -223,7 +278,7 @@ export default function App() {
       dutyDate: tomorrowDate,
       roundNumber: sched.roundNumber,
       serialIndex: sched.serialNo,
-      mobileNumber: '01947399752',
+      mobileNumber: '01333601029',
       qrCodeUrl: 'https://gonimarket.org/report',
       customInstruction: '',
       theme: 'classic',
@@ -239,17 +294,53 @@ export default function App() {
   };
 
   const handleSaveToHistory = async () => {
-    const newRecord: SavedSlipRecord = {
+    const newRecordDay1: SavedSlipRecord = {
       ...formData,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       serialNumber,
     };
 
-    setHistoryRecords((prev) => [newRecord, ...prev]);
+    // Calculate Day 2 data for 2-day batch storage
+    const d1Obj = new Date(`${formData.dutyDate}T00:00:00`);
+    d1Obj.setDate(d1Obj.getDate() + 1);
+    const y2 = d1Obj.getFullYear();
+    const m2 = String(d1Obj.getMonth() + 1).padStart(2, '0');
+    const d2 = String(d1Obj.getDate()).padStart(2, '0');
+    const day2DateStr = `${y2}-${m2}-${d2}`;
+    const sched2 = getScheduledPairForDate(day2DateStr);
 
-    if (isSupabaseActive) {
-      await saveSlipToSupabase(newRecord);
+    const newRecordDay2: SavedSlipRecord = {
+      ...formData,
+      id: (Date.now() + 1).toString(),
+      dutyDate: day2DateStr,
+      roundNumber: sched2.roundNumber,
+      serialIndex: sched2.serialNo,
+      guard1Name: sched2.pair.guard1Name,
+      guard1BusinessType: sched2.pair.guard1BusinessType,
+      guard1ShopNo: sched2.pair.guard1ShopNo || '',
+      guard1Status: 'PRESENT',
+      guard2Name: sched2.pair.guard2Name,
+      guard2BusinessType: sched2.pair.guard2BusinessType,
+      guard2ShopNo: sched2.pair.guard2ShopNo || '',
+      guard2Status: 'PRESENT',
+      createdAt: new Date().toISOString(),
+      serialNumber: `${serialNumber}-DAY2`,
+    };
+
+    if (paperSize === 'a4') {
+      setHistoryRecords((prev) => [newRecordDay1, newRecordDay2, ...prev]);
+
+      if (isSupabaseActive) {
+        await saveSlipToSupabase(newRecordDay1);
+        await saveSlipToSupabase(newRecordDay2);
+      }
+    } else {
+      setHistoryRecords((prev) => [newRecordDay1, ...prev]);
+
+      if (isSupabaseActive) {
+        await saveSlipToSupabase(newRecordDay1);
+      }
     }
 
     setIsSavedSuccess(true);
@@ -258,14 +349,50 @@ export default function App() {
 
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
-    if (paperSize === 'a4') {
-      const fileName = `Goni_Market_Guard_Slips_A4_4Up_${formData.dutyDate}.pdf`;
-      await downloadElementAsA4PDF('a4-quad-slip-container', fileName);
-    } else {
-      const fileName = `Goni_Market_Guard_Slip_A5_${formData.dutyDate}.pdf`;
-      await downloadElementAsA5PDF('a5-dual-slip-container', fileName);
+    try {
+      let success = false;
+      const dateStr = formData.dutyDate || 'date';
+      const targetId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
+      if (paperSize === 'a4') {
+        const fileName = `Goni_Market_Guard_Slips_A4_4Up_${dateStr}.pdf`;
+        success = await downloadElementAsA4PDF(targetId, fileName);
+      } else {
+        const fileName = `Goni_Market_Guard_Slip_A5_${dateStr}.pdf`;
+        success = await downloadElementAsA5PDF(targetId, fileName);
+      }
+
+      if (!success) {
+        setIsPrintModalOpen(true);
+      }
+    } catch (err) {
+      console.error('PDF Download Error:', err);
+      setIsPrintModalOpen(true);
+    } finally {
+      setIsDownloading(false);
     }
-    setIsDownloading(false);
+  };
+
+  const handleDownloadPNG = async () => {
+    setIsDownloading(true);
+    try {
+      const dateStr = formData.dutyDate || 'date';
+      const targetId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
+      const fileName = `Goni_Market_Guard_Slip_${paperSize.toUpperCase()}_${dateStr}.png`;
+      const success = await downloadElementAsPNG(targetId, fileName);
+      if (!success) {
+        setIsPrintModalOpen(true);
+      }
+    } catch (err) {
+      console.error('PNG Download Error:', err);
+      setIsPrintModalOpen(true);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleTriggerPrint = () => {
+    triggerPrintWindow();
+    setIsPrintModalOpen(true);
   };
 
   const handleDeleteHistoryRecord = (id: string) => {
@@ -307,26 +434,38 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-['Hind_Siliguri',sans-serif] antialiased">
-      {/* Top Navbar */}
-      <Navbar
-        currentView={currentView}
-        onSelectView={setCurrentView}
-        onPrint={triggerPrintWindow}
-        onDownloadPDF={handleDownloadPDF}
-        onOpenHistory={() => setIsHistoryPanelOpen(true)}
-        onOpenBatch={() => setIsBatchModalOpen(true)}
-        onOpenPresets={() => {}}
-        onOpenVerification={() => setIsVerificationOpen(true)}
-        onOpenAuditBoard={() => setIsAuditBoardOpen(true)}
-        onOpenMerchantAuth={() => setIsMerchantAuthModalOpen(true)}
-        onOpenDevAuth={() => setIsDevAuthModalOpen(true)}
-        onOpenDevContentEditor={handleOpenDevContentEditor}
-        currentMerchant={currentMerchant}
-        isDevUnlocked={isDevUnlocked}
-        isDownloading={isDownloading}
-        historyCount={historyRecords.length}
-        unpaidCount={unpaidCount}
-      />
+      {/* Screen Interactive UI Wrapper (Hidden during print) */}
+      <div className="no-print flex-1 flex flex-col">
+        {/* Top Navbar */}
+        <Navbar
+          currentView={currentView}
+          onSelectView={(view) => {
+            if (view === 'SLIP_GENERATOR') {
+              handleOpenSlipGenerator();
+            } else {
+              setCurrentView('COMMON_DASHBOARD');
+            }
+          }}
+          onPrint={handleTriggerPrint}
+          onDownloadPDF={handleDownloadPDF}
+          onOpenHistory={() => setIsHistoryPanelOpen(true)}
+          onOpenBatch={() => setIsBatchModalOpen(true)}
+          onOpenPresets={() => {}}
+          onOpenVerification={() => setIsVerificationOpen(true)}
+          onOpenAuditBoard={() => setIsAuditBoardOpen(true)}
+          onOpenMerchantAuth={() => setIsMerchantAuthModalOpen(true)}
+          onOpenDevAuth={() => {
+            setPendingDevAction('SECTION_EDITOR');
+            setIsDevAuthModalOpen(true);
+          }}
+          onOpenDevContentEditor={handleOpenDevContentEditor}
+          onLockDev={handleLockDev}
+          currentMerchant={currentMerchant}
+          isDevUnlocked={isDevUnlocked}
+          isDownloading={isDownloading}
+          historyCount={historyRecords.length}
+          unpaidCount={unpaidCount}
+        />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
@@ -336,40 +475,44 @@ export default function App() {
             records={historyRecords}
             currentMerchant={currentMerchant}
             onOpenMerchantAuth={() => setIsMerchantAuthModalOpen(true)}
-            onOpenDevAuth={() => setIsDevAuthModalOpen(true)}
+            onOpenDevAuth={() => {
+              setPendingDevAction('SLIP_GENERATOR');
+              setIsDevAuthModalOpen(true);
+            }}
             isDevUnlocked={isDevUnlocked}
-            onGoToDevDashboard={() => setCurrentView('SLIP_GENERATOR')}
+            onGoToDevDashboard={handleOpenSlipGenerator}
             onPostGlobalComment={handleAddComment}
+            onLockDev={handleLockDev}
           />
         ) : (
           /* DEVELOPER SLIP GENERATOR VIEW */
-          <div className="space-y-4">
-            {/* Developer Lock Status Alert Bar */}
-            {!isDevUnlocked && (
-              <div className="bg-red-950/80 border border-red-700/80 rounded-2xl p-4 text-xs text-red-200 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
-                <div className="flex items-center gap-2.5">
-                  <Lock className="w-5 h-5 text-red-400 shrink-0" />
-                  <div>
-                    <h4 className="font-bold text-white flex items-center gap-1.5">
-                      <span>ডেভেলপার ইনপুট সিকিউরিটি লক করা (LOCKED)</span>
-                    </h4>
-                    <p className="text-[11px] text-red-300">
-                      বাজারের নিরাপত্তার স্বার্থে নতুন ইনপুট প্রদান বা কন্টেন্ট সেভ করতে সিক্রেট পাসওয়ার্ড দিয়ে এক্সেস আনলক করুন।
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setIsDevAuthModalOpen(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md shrink-0"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>PIN দিয়ে আনলক করুন</span>
-                </button>
+          !isDevUnlocked ? (
+            <div className="bg-slate-900/90 border border-red-500/40 rounded-2xl p-8 max-w-lg mx-auto my-12 text-center space-y-5 shadow-2xl backdrop-blur-md">
+              <div className="w-16 h-16 rounded-2xl bg-red-950/80 border border-red-500/40 mx-auto flex items-center justify-center text-red-400">
+                <Lock className="w-8 h-8 text-red-400" />
               </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-white">
+                  নাইট গার্ড সিকিউরিটি স্লিপ প্যানেল লক করা 🔒
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  অফিশিয়াল স্লিপ তৈরি, প্রিন্ট ও ডেটাবেজে সংরক্ষণের জন্য অ্যাডমিন/ডেভেলপার সিকিউরিটি পাসওয়ার্ড দিয়ে এক্সেস আনলক করতে হবে।
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setPendingDevAction('SLIP_GENERATOR');
+                  setIsDevAuthModalOpen(true);
+                }}
+                className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-white font-bold text-xs shadow-lg transition cursor-pointer flex items-center justify-center gap-2 border border-amber-300/40"
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-200" />
+                <span>সিক্রেট পাসওয়ার্ড দিয়ে স্লিপ প্যানেল আনলক করুন</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Form & Inputs (5 cols) */}
               <section className="no-print lg:col-span-5 space-y-4">
                 <InputForm
@@ -403,8 +546,9 @@ export default function App() {
                     onZoomIn={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.3))}
                     onZoomOut={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.4))}
                     onResetZoom={() => setZoomLevel(paperSize === 'a4' ? 0.65 : 0.85)}
-                    onPrint={triggerPrintWindow}
+                    onPrint={handleTriggerPrint}
                     onDownloadPDF={handleDownloadPDF}
+                    onDownloadPNG={handleDownloadPNG}
                     onOpenVerification={() => setIsVerificationOpen(true)}
                     isDownloading={isDownloading}
                   />
@@ -455,7 +599,8 @@ export default function App() {
               </section>
             </div>
           </div>
-        )}
+        )
+      )}
       </main>
 
       {/* Footer with Subtle Developer Access at bottom corner */}
@@ -467,7 +612,7 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
-            <span>সহায়তা ও হটলাইন: ০১৯৪৭-৩৯৭৭৫২</span>
+            <span>সহায়তা ও হটলাইন: ০১৩৩৩-৬০১০২৯</span>
 
             {/* Subtle Developer Access Link at bottom right corner */}
             <div className="flex items-center gap-2">
@@ -492,9 +637,10 @@ export default function App() {
           </div>
         </div>
       </footer>
+      </div> {/* End of screen interactive UI wrapper */}
 
-      {/* Hidden Print-Only Container for browser window.print() */}
-      <div className="hidden print-only-container">
+      {/* Print-Only Container for browser window.print() */}
+      <div className="print-only-container">
         {paperSize === 'a4' ? (
           <A4QuadSlipContainer
             id="a4-quad-slip-container-print"
@@ -513,7 +659,10 @@ export default function App() {
       {/* Auth & Security Modals */}
       <DevAuthModal
         isOpen={isDevAuthModalOpen}
-        onClose={() => setIsDevAuthModalOpen(false)}
+        onClose={() => {
+          setIsDevAuthModalOpen(false);
+          setPendingDevAction(null);
+        }}
         onSuccess={() => {
           setIsDevUnlocked(true);
           try {
@@ -521,7 +670,25 @@ export default function App() {
           } catch {
             // ignore
           }
-          setIsDevContentModalOpen(true);
+          if (pendingDevAction === 'SECTION_EDITOR') {
+            setIsDevContentModalOpen(true);
+          } else if (pendingDevAction === 'SLIP_GENERATOR') {
+            setCurrentView('SLIP_GENERATOR');
+          } else if (pendingDevAction === 'SLIP_GENERATOR_14TH') {
+            setCurrentView('SLIP_GENERATOR');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date14Str = `${year}-${month}-14`;
+            setFormData((prev) => ({
+              ...prev,
+              dutyDate: date14Str,
+            }));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            setIsDevContentModalOpen(true);
+          }
+          setPendingDevAction(null);
         }}
       />
 
@@ -596,6 +763,14 @@ export default function App() {
         }
         onAddComment={handleAddComment}
         onUpdateGuardStatus={handleUpdateGuardStatus}
+      />
+
+      <PrintDownloadModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        paperSize={paperSize}
+        formData={formData}
+        serialNumber={serialNumber}
       />
     </div>
   );
