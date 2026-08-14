@@ -70,47 +70,41 @@ export const PreviewControls: React.FC<PreviewControlsProps> = ({
         </div>
 
         {/* Page Side Switcher (Front vs Back vs Both) */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-slate-300 flex items-center gap-1">
-            <RotateCw className="w-3.5 h-3.5 text-emerald-400" />
-            <span>কাগজের পিঠ:</span>
-          </span>
-          <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-700">
-            <button
-              onClick={() => onSideChange('front')}
-              className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer flex items-center gap-1 ${
-                activeSide === 'front'
-                  ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="পাহারাদার স্লিপের সামনের মূল পেজ"
-            >
-              <span>📄 সামনের পিঠ (Front)</span>
-            </button>
-            <button
-              onClick={() => onSideChange('back')}
-              className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer flex items-center gap-1 ${
-                activeSide === 'back'
-                  ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="ব্যবসায়ী ও উদ্যোক্তা অনুপ্রেরণা (৭টি মূলমন্ত্র সমৃদ্ধ উল্টোপিঠ)"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>🔄 উল্টোপিঠ (Back)</span>
-            </button>
-            <button
-              onClick={() => onSideChange('both')}
-              className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer flex items-center gap-1 ${
-                activeSide === 'both'
-                  ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="সামনে ও উল্টোপিঠ উভয় একসাথে দেখুন"
-            >
-              <span>📑 উভয় পিঠ (Duplex)</span>
-            </button>
-          </div>
+        <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-slate-700/80">
+          <button
+            onClick={() => onSideChange('front')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+              activeSide === 'front'
+                ? 'bg-amber-500 text-slate-950 shadow-md ring-1 ring-amber-300'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="পাহারাদার স্লিপের সামনের মূল পেজ"
+          >
+            <span>📄 ১ম পৃষ্ঠা: সামনে</span>
+          </button>
+          <button
+            onClick={() => onSideChange('back')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+              activeSide === 'back'
+                ? 'bg-emerald-500 text-slate-950 shadow-md ring-1 ring-emerald-300'
+                : 'text-emerald-400 hover:text-emerald-300 hover:bg-slate-800'
+            }`}
+            title="ব্যবসায়ী ও উদ্যোক্তা অনুপ্রেরণা (৭টি মূলমন্ত্র সমৃদ্ধ উল্টোপিঠ)"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>🔄 ২য় পৃষ্ঠা: উল্টোপিঠ (৭টি মূলমন্ত্র)</span>
+          </button>
+          <button
+            onClick={() => onSideChange('both')}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+              activeSide === 'both'
+                ? 'bg-sky-500 text-slate-950 shadow-md ring-1 ring-sky-300'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            }`}
+            title="সামনে ও উল্টোপিঠ উভয় পৃষ্ঠা নিচে নিচে দেখুন"
+          >
+            <span>📑 উভয় পৃষ্ঠা (Duplex)</span>
+          </button>
         </div>
 
         {/* Zoom controls */}

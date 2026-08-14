@@ -75,59 +75,63 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
           className="p-1.5 rounded-xs shadow-xs text-white"
           style={{ backgroundColor: getHeaderBgStyle(), color: '#ffffff' }}
         >
-          <div className="flex items-center justify-center gap-1 text-center">
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0" style={{ color: '#fde047' }} />
-            <h1 className="text-[12px] font-bold leading-tight tracking-tight" style={{ color: '#ffffff' }}>
+          <div className="flex items-center justify-center gap-1.5 text-center w-full py-0.5">
+            <ShieldCheck className="w-4 h-4 shrink-0" style={{ color: '#fde047' }} />
+            <h1 className="text-[12px] font-bold leading-none tracking-tight" style={{ color: '#ffffff' }}>
               গণি মার্কেট নৈশকালীন নিরাপত্তা পাহারাদার স্লিপ
             </h1>
           </div>
-          <div className="flex items-center justify-between gap-1 text-[8.5px] mt-1 pt-1 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.25)' }}>
+          <div className="flex items-center justify-between gap-1.5 text-[8.5px] mt-1 pt-1.5 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.25)' }}>
             <span
-              className="px-1.5 py-0.5 rounded font-medium truncate max-w-[55%]"
-              style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: '#fef3c7' }}
+              className="inline-flex items-center justify-center text-center px-2.5 rounded font-semibold truncate max-w-[55%]"
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.22)', color: '#fef3c7', height: '21px' }}
             >
-              {copyLabel}
+              <span className="relative -top-[1px]">{copyLabel}</span>
             </span>
             <span
-              className="font-bold px-1.5 py-0.5 rounded shrink-0"
-              style={{ backgroundColor: '#fbbf24', color: '#000000' }}
+              className="inline-flex items-center justify-center text-center font-bold px-2.5 rounded shrink-0 shadow-xs"
+              style={{ backgroundColor: '#fbbf24', color: '#0f172a', height: '21px' }}
             >
-              রাউন্ড-{displayRound} {displaySerialIdx ? `(#${displaySerialIdx})` : ''}
+              <span className="relative -top-[1px]">রাউন্ড-{displayRound} {displaySerialIdx ? `(#${displaySerialIdx})` : ''}</span>
             </span>
           </div>
         </div>
 
         {/* Date & Time Bar */}
         <div
-          className="px-1.5 py-1 rounded-xs text-[9px] flex items-center justify-between font-medium"
-          style={{ backgroundColor: '#0f172a', color: '#ffffff' }}
+          className="px-2.5 rounded-xs text-[9px] flex items-center justify-between font-medium"
+          style={{ backgroundColor: '#0f172a', color: '#ffffff', minHeight: '24px' }}
         >
-          <div className="flex items-center gap-1">
+          <div className="inline-flex items-center gap-1.5">
             <Calendar className="w-3 h-3 shrink-0" style={{ color: '#fbbf24' }} />
-            <span>তারিখ: <strong style={{ color: '#fef08a' }}>{formattedDate}</strong></span>
+            <span className="relative -top-[0.5px] flex items-center">
+              তারিখ: <strong className="ml-1" style={{ color: '#fef08a' }}>{formattedDate}</strong>
+            </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="inline-flex items-center gap-1.5">
             <Clock className="w-3 h-3 shrink-0" style={{ color: '#34d399' }} />
-            <span>সময়: <strong style={{ color: '#a7f3d0' }}>রাত ১০টা - সকাল ৬টা</strong></span>
+            <span className="relative -top-[0.5px] flex items-center">
+              সময়: <strong className="ml-1" style={{ color: '#a7f3d0' }}>রাত ১০টা - সকাল ৬টা</strong>
+            </span>
           </div>
         </div>
 
         {/* Status Highlight Banner if Paid Substitute or Absent Unpaid */}
         {(guard1Status === 'ABSENT_UNPAID' || guard2Status === 'ABSENT_UNPAID') && (
           <div
-            className="p-1 rounded-xs text-[8.5px] font-bold text-center shadow-2xs flex items-center justify-center gap-1"
-            style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
+            className="px-2 rounded-xs text-[8.5px] font-bold text-center shadow-2xs flex items-center justify-center gap-1"
+            style={{ backgroundColor: '#dc2626', color: '#ffffff', minHeight: '22px' }}
           >
             <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: '#fde047' }} />
-            <span>সতর্কবার্তা: পাহারাদার অনুপস্থিত এবং ফি পরিশোধ করেননি (বকেয়া)!</span>
+            <span className="relative -top-[0.5px]">সতর্কবার্তা: পাহারাদার অনুপস্থিত এবং ফি পরিশোধ করেননি (বকেয়া)!</span>
           </div>
         )}
         {(guard1Status === 'PAID_SUBSTITUTE' || guard2Status === 'PAID_SUBSTITUTE') && guard1Status !== 'ABSENT_UNPAID' && guard2Status !== 'ABSENT_UNPAID' && (
           <div
-            className="p-0.5 rounded-xs text-[8.5px] font-bold text-center border"
-            style={{ backgroundColor: '#fef3c7', borderColor: '#f59e0b', color: '#78350f' }}
+            className="px-2 rounded-xs text-[8.5px] font-bold text-center border flex items-center justify-center gap-1"
+            style={{ backgroundColor: '#fef3c7', borderColor: '#f59e0b', color: '#78350f', minHeight: '22px' }}
           >
-            💰 বিশেষ নোটিশ: পাহারাদার নিজে অনুপস্থিত থেকে বিকল্প টাকা পরিশোধ করেছেন।
+            <span className="relative -top-[0.5px]">💰 বিশেষ নোটিশ: পাহারাদার নিজে অনুপস্থিত থেকে বিকল্প টাকা পরিশোধ করেছেন।</span>
           </div>
         )}
 
@@ -138,7 +142,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
         >
           <div className="flex items-center gap-1 border-b pb-0.5 font-bold text-[10px]" style={{ color: '#1e293b', borderColor: '#e2e8f0' }}>
             <Users className="w-3.5 h-3.5 shrink-0" style={{ color: '#b91c1c' }} />
-            <span>নৈশ পাহারাদার দ্বয় (Guard Duty Pair):</span>
+            <span className="leading-tight">নৈশ পাহারাদার দ্বয় (Guard Duty Pair):</span>
           </div>
 
           <div className="grid grid-cols-2 gap-1 text-[9px]">
@@ -151,31 +155,31 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
                 color: '#0f172a',
               }}
             >
-              <div className="font-bold flex items-center justify-between text-[8.5px]">
+              <div className="font-bold flex items-center justify-between text-[8.5px] leading-none">
                 <span style={{ color: '#991b1b' }}>১ম পাহারাদার:</span>
                 <span className="font-mono" style={{ color: '#475569' }}>
                   {guard1ShopNo ? `দোকান: ${guard1ShopNo}` : ''}
                 </span>
               </div>
-              <div className="font-bold text-[10px] flex items-center justify-between gap-0.5 flex-wrap" style={{ color: '#000000' }}>
-                <span>{guard1Name || '১ম জনের নাম'}</span>
+              <div className="font-bold text-[10px] flex items-center justify-between gap-1 flex-wrap min-h-[18px]" style={{ color: '#000000' }}>
+                <span className="leading-tight">{guard1Name || '১ম জনের নাম'}</span>
                 {guard1Status === 'PAID_SUBSTITUTE' && (
-                  <span className="text-[7px] px-1 py-0.2 rounded font-black" style={{ backgroundColor: '#fbbf24', color: '#000000' }}>
-                    💰 টাকা পরিশোধিত
+                  <span className="inline-flex items-center justify-center text-[7px] px-1.5 rounded font-bold shrink-0" style={{ backgroundColor: '#fbbf24', color: '#0f172a', height: '16px' }}>
+                    <span className="relative -top-[0.5px]">💰 টাকা পরিশোধিত</span>
                   </span>
                 )}
                 {guard1Status === 'ABSENT_UNPAID' && (
-                  <span className="text-[7px] px-1 py-0.2 rounded font-black" style={{ backgroundColor: '#dc2626', color: '#ffffff' }}>
-                    🚨 বকেয়া/অনুপস্থিত
+                  <span className="inline-flex items-center justify-center text-[7px] px-1.5 rounded font-bold shrink-0" style={{ backgroundColor: '#dc2626', color: '#ffffff', height: '16px' }}>
+                    <span className="relative -top-[0.5px]">🚨 বকেয়া/অনুপস্থিত</span>
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-[8px]" style={{ color: '#475569' }}>
+              <div className="flex items-center gap-1 text-[8px] leading-none" style={{ color: '#475569' }}>
                 <Store className="w-2.5 h-2.5 shrink-0" style={{ color: '#64748b' }} />
                 <span>ধরন: <strong style={{ color: '#0f172a' }}>{guard1BusinessType || '—'}</strong></span>
               </div>
               {guard1StatusNote && (
-                <div className="text-[7.5px] font-medium px-1 rounded mt-0.5" style={{ backgroundColor: '#fef3c7', color: '#78350f' }}>
+                <div className="text-[7.5px] font-medium px-1 py-0.5 rounded mt-0.5 leading-tight flex items-center" style={{ backgroundColor: '#fef3c7', color: '#78350f' }}>
                   নোট: {guard1StatusNote}
                 </div>
               )}
@@ -190,31 +194,31 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
                 color: '#0f172a',
               }}
             >
-              <div className="font-bold flex items-center justify-between text-[8.5px]">
+              <div className="font-bold flex items-center justify-between text-[8.5px] leading-none">
                 <span style={{ color: '#1e3a8a' }}>২য় পাহারাদার:</span>
                 <span className="font-mono" style={{ color: '#475569' }}>
                   {guard2ShopNo ? `দোকান: ${guard2ShopNo}` : ''}
                 </span>
               </div>
-              <div className="font-bold text-[10px] flex items-center justify-between gap-0.5 flex-wrap" style={{ color: '#000000' }}>
-                <span>{guard2Name || '২য় জনের নাম'}</span>
+              <div className="font-bold text-[10px] flex items-center justify-between gap-1 flex-wrap min-h-[18px]" style={{ color: '#000000' }}>
+                <span className="leading-tight">{guard2Name || '২য় জনের নাম'}</span>
                 {guard2Status === 'PAID_SUBSTITUTE' && (
-                  <span className="text-[7px] px-1 py-0.2 rounded font-black" style={{ backgroundColor: '#fbbf24', color: '#000000' }}>
-                    💰 টাকা পরিশোধিত
+                  <span className="inline-flex items-center justify-center text-[7px] px-1.5 rounded font-bold shrink-0" style={{ backgroundColor: '#fbbf24', color: '#0f172a', height: '16px' }}>
+                    <span className="relative -top-[0.5px]">💰 টাকা পরিশোধিত</span>
                   </span>
                 )}
                 {guard2Status === 'ABSENT_UNPAID' && (
-                  <span className="text-[7px] px-1 py-0.2 rounded font-black" style={{ backgroundColor: '#dc2626', color: '#ffffff' }}>
-                    🚨 বকেয়া/অনুপস্থিত
+                  <span className="inline-flex items-center justify-center text-[7px] px-1.5 rounded font-bold shrink-0" style={{ backgroundColor: '#dc2626', color: '#ffffff', height: '16px' }}>
+                    <span className="relative -top-[0.5px]">🚨 বকেয়া/অনুপস্থিত</span>
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-[8px]" style={{ color: '#475569' }}>
+              <div className="flex items-center gap-1 text-[8px] leading-none" style={{ color: '#475569' }}>
                 <Store className="w-2.5 h-2.5 shrink-0" style={{ color: '#64748b' }} />
                 <span>ধরন: <strong style={{ color: '#0f172a' }}>{guard2BusinessType || '—'}</strong></span>
               </div>
               {guard2StatusNote && (
-                <div className="text-[7.5px] font-medium px-1 rounded mt-0.5" style={{ backgroundColor: '#fef3c7', color: '#78350f' }}>
+                <div className="text-[7.5px] font-medium px-1 py-0.5 rounded mt-0.5 leading-tight flex items-center" style={{ backgroundColor: '#fef3c7', color: '#78350f' }}>
                   নোট: {guard2StatusNote}
                 </div>
               )}
@@ -231,27 +235,27 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
           >
             <div className="flex items-center gap-1 font-bold text-[10px] border-b pb-0.5" style={{ color: '#991b1b', borderColor: '#fecaca' }}>
               <AlertTriangle className="w-3.5 h-3.5 shrink-0" style={{ color: '#b91c1c' }} />
-              <span>জরুরি নির্দেশনা:</span>
+              <span className="leading-tight">জরুরি নির্দেশনা:</span>
             </div>
-            <ul className="space-y-1 leading-[1.4] pl-0.5">
+            <ul className="space-y-1 leading-[1.5] pl-0.5">
               <li className="flex items-start gap-1">
-                <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
-                <span>
-                  ডিউটিতে অপারগ হলে বিকল্প লোক নিতে <strong className="px-1 rounded font-bold" style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>৩০০ টাকা সহ</strong> রাত ৯:০০ টার মধ্যে{' '}
+                <span className="font-bold shrink-0 mt-0.5" style={{ color: '#dc2626' }}>•</span>
+                <div className="leading-normal">
+                  ডিউটিতে অপারগ হলে বিকল্প লোক নিতে <span className="inline-flex items-center justify-center font-bold px-1.5 rounded text-[8.5px] mx-0.5" style={{ backgroundColor: '#fee2e2', color: '#991b1b', height: '17px' }}><span className="relative -top-[0.5px]">৩০০ টাকা সহ</span></span> রাত ৯:০০ টার মধ্যে{' '}
                   <strong className="font-mono font-bold underline" style={{ color: '#991b1b' }}>{displayPhone}</strong> নম্বরে যোগাযোগ করুন।
-                </span>
+                </div>
               </li>
               <li className="flex items-start gap-1">
-                <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
-                <span>
-                  যদি রাত ৯:০০ টার মধ্যে বদলীর টাকা জমা না করে থাকেন তবে <strong className="font-bold underline px-1 rounded" style={{ backgroundColor: '#fecaca', color: '#991b1b' }}>১০০ টাকা জরিমানা</strong> হবে।
-                </span>
+                <span className="font-bold shrink-0 mt-0.5" style={{ color: '#dc2626' }}>•</span>
+                <div className="leading-normal">
+                  যদি রাত ৯:০০ টার মধ্যে বদলীর টাকা জমা না করে থাকেন তবে <span className="inline-flex items-center justify-center font-bold underline px-1.5 rounded text-[8.5px] mx-0.5" style={{ backgroundColor: '#fecaca', color: '#991b1b', height: '17px' }}><span className="relative -top-[0.5px]">১০০ টাকা জরিমানা</span></span> হবে।
+                </div>
               </li>
               <li className="flex items-start gap-1">
-                <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
-                <span>
-                  যদিবা রাত ১০:০০ টার মধ্যেও দায়িত্বশীল না হয়ে থাকেন তবে <strong className="px-1 font-bold rounded" style={{ backgroundColor: '#fecaca', color: '#991b1b' }}>১,০০০ টাকা জরিমানা</strong> হবে। অনাদায়ে বাজার কমিটি <strong className="underline font-bold" style={{ color: '#991b1b' }}>দোকান তালাবদ্ধ করে রাখবেন</strong>।
-                </span>
+                <span className="font-bold shrink-0 mt-0.5" style={{ color: '#dc2626' }}>•</span>
+                <div className="leading-normal">
+                  যদিবা রাত ১০:০০ টার মধ্যেও দায়িত্বশীল না হয়ে থাকেন তবে <span className="inline-flex items-center justify-center font-bold px-1.5 rounded text-[8.5px] mx-0.5" style={{ backgroundColor: '#fecaca', color: '#991b1b', height: '17px' }}><span className="relative -top-[0.5px]">১,০০০ টাকা জরিমানা</span></span> হবে। অনাদায়ে বাজার কমিটি <strong className="underline font-bold" style={{ color: '#991b1b' }}>দোকান তালাবদ্ধ করে রাখবেন</strong>।
+                </div>
               </li>
             </ul>
           </div>
@@ -267,8 +271,8 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
                 <Wrench className="w-2.5 h-2.5 shrink-0" style={{ color: '#92400e' }} />
                 <span>প্রয়োজনীয় সরঞ্জাম:</span>
               </div>
-              <p className="leading-tight" style={{ color: '#0f172a' }}>
-                ডিউটির সময় অবশ্যই সাথে <strong className="font-bold px-1 rounded" style={{ backgroundColor: '#fef3c7', color: '#78350f' }}>বাঁশি, বল্লম, টর্চ লাইট এবং মোবাইল</strong> রাখুন।
+              <p className="leading-normal" style={{ color: '#0f172a' }}>
+                ডিউটির সময় অবশ্যই সাথে <span className="inline-flex items-center justify-center font-bold px-1.5 rounded text-[8.5px] mx-0.5" style={{ backgroundColor: '#fef3c7', color: '#78350f', height: '17px' }}><span className="relative -top-[0.5px]">বাঁশি, বল্লম, টর্চ লাইট এবং মোবাইল</span></span> রাখুন।
               </p>
             </div>
 
@@ -342,7 +346,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
               <button
                 type="button"
                 onClick={onVerifyClick}
-                className="text-[6.5px] font-bold border px-1 py-0.2 rounded transition cursor-pointer no-print"
+                className="inline-flex items-center justify-center text-[7px] font-bold border px-1.5 py-0.5 rounded transition cursor-pointer no-print leading-none"
                 style={{ backgroundColor: '#fffbeb', borderColor: '#fde68a', color: '#92400e' }}
               >
                 🔍 সত্যতা যাচাই
@@ -367,12 +371,14 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
           </div>
         </div>
 
-        {/* Motivational Slogan Box */}
+        {/* Motivational Slogan Box - Fully Centered */}
         <div
-          className="w-full border p-1 px-1.5 rounded text-center text-[8.5px] leading-tight font-bold tracking-tight shadow-xs"
+          className="w-full border p-2 rounded text-center text-[8.5px] leading-snug font-bold tracking-tight shadow-xs flex items-center justify-center"
           style={{ backgroundColor: '#0f172a', borderColor: '#f59e0b', color: '#fef08a' }}
         >
-          &ldquo;আপনার দোকানের নিরাপত্তা যেমন আপনি কোন আপোষ করবেননা তেমনি পুরোবাজারের প্রতিটি দোকানের নিরাপত্তার বিষয়টি আপনার কাছে ততটাই গুরুত্বপূর্ণ&rdquo;
+          <span className="text-center w-full block leading-snug relative -top-[0.5px]">
+            &ldquo;আপনার দোকানের নিরাপত্তা যেমন আপনি কোন আপোষ করবেননা তেমনি পুরোবাজারের প্রতিটি দোকানের নিরাপত্তার বিষয়টি আপনার কাছে ততটাই গুরুত্বপূর্ণ&rdquo;
+          </span>
         </div>
       </div>
     </div>

@@ -140,7 +140,7 @@ export default function App() {
 
   const [serialNumber, setSerialNumber] = useState<string>(() => generateSlipSerial());
   const [paperSize, setPaperSize] = useState<'a4' | 'a5'>('a4');
-  const [activeSide, setActiveSide] = useState<'front' | 'back' | 'both'>('front');
+  const [activeSide, setActiveSide] = useState<'front' | 'back' | 'both'>('both');
   const [zoomLevel, setZoomLevel] = useState<number>(0.75);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSavedSuccess, setIsSavedSuccess] = useState<boolean>(false);

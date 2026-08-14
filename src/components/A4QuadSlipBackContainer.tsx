@@ -44,7 +44,7 @@ export const A4QuadSlipBackContainer: React.FC<A4QuadSlipBackContainerProps> = (
           <SlipBackTemplate
             data={dataDay1}
             slipNumber={serialNumberDay1}
-            copyLabel="১ম পাহারাদারের উল্টোপিঠ (১ম পার্টনার)"
+            copyLabel="১ম পাহারাদার কপি"
           />
         </div>
 
@@ -69,7 +69,7 @@ export const A4QuadSlipBackContainer: React.FC<A4QuadSlipBackContainerProps> = (
           <SlipBackTemplate
             data={dataDay1}
             slipNumber={`${serialNumberDay1}-B`}
-            copyLabel="২য় পাহারাদারের উল্টোপিঠ (২য় পার্টনার)"
+            copyLabel="২য় পাহারাদার কপি"
           />
         </div>
       </div>
@@ -86,7 +86,7 @@ export const A4QuadSlipBackContainer: React.FC<A4QuadSlipBackContainerProps> = (
           <SlipBackTemplate
             data={dataDay2}
             slipNumber={serialNumberDay2}
-            copyLabel="১ম পাহারাদারের উল্টোপিঠ (১ম পার্টনার)"
+            copyLabel="১ম পাহারাদার কপি"
           />
         </div>
 
@@ -111,7 +111,7 @@ export const A4QuadSlipBackContainer: React.FC<A4QuadSlipBackContainerProps> = (
           <SlipBackTemplate
             data={dataDay2}
             slipNumber={`${serialNumberDay2}-B`}
-            copyLabel="২য় পাহারাদারের উল্টোপিঠ (২য় পার্টনার)"
+            copyLabel="২য় পাহারাদার কপি"
           />
         </div>
       </div>

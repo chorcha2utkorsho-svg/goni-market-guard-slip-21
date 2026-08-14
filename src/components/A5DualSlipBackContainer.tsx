@@ -31,7 +31,7 @@ export const A5DualSlipBackContainer: React.FC<A5DualSlipBackContainerProps> = (
         <SlipBackTemplate
           data={data}
           slipNumber={serialNumber}
-          copyLabel="১ম পাহারাদারের উল্টোপিঠ (১ম পার্টনার)"
+          copyLabel="১ম পাহারাদার কপি"
         />
       </div>
 
@@ -56,7 +56,7 @@ export const A5DualSlipBackContainer: React.FC<A5DualSlipBackContainerProps> = (
         <SlipBackTemplate
           data={data}
           slipNumber={`${serialNumber}-B`}
-          copyLabel="২য় পাহারাদারের উল্টোপিঠ (২য় পার্টনার)"
+          copyLabel="২য় পাহারাদার কপি"
         />
       </div>
     </div>
