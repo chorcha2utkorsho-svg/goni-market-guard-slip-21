@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X, Printer, Download, Image as ImageIcon, ExternalLink, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { downloadElementAsA4PDF, downloadElementAsA5PDF, downloadElementAsPNG, captureElementToCanvas, triggerPrintWindow } from '../utils/pdfGenerator';
+import { X, Printer, Download, Image as ImageIcon, ExternalLink, CheckCircle, AlertCircle, Loader2, BookOpen, Layers } from 'lucide-react';
+import {
+  downloadElementAsA4PDF,
+  downloadElementAsA5PDF,
+  downloadDuplexA4PDF,
+  downloadDuplexA5PDF,
+  downloadElementAsPNG,
+  captureElementToCanvas,
+  triggerPrintWindow,
+} from '../utils/pdfGenerator';
 import { GuardDutySlipInput } from '../types';
 import { formatBengaliFullDate } from '../utils/bengaliUtils';
 
@@ -19,12 +27,16 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
   formData,
   serialNumber,
 }) => {
+  const [selectedSide, setSelectedSide] = useState<'front' | 'back' | 'duplex'>('duplex');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const targetElementId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
+  const frontElementId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
+  const backElementId = paperSize === 'a4' ? 'a4-quad-slip-back-container' : 'a5-dual-slip-back-container';
+
+  const currentTargetId = selectedSide === 'back' ? backElementId : frontElementId;
 
   useEffect(() => {
     if (!isOpen) {
@@ -34,17 +46,15 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
       return;
     }
 
-    // Auto generate high resolution preview image when modal opens
     let isMounted = true;
     const generatePreview = async () => {
       setIsGenerating(true);
-      setStatusMessage('স্লিপের হাই-কোয়ালিটি ক্যানভাস প্রস্তুত করা হচ্ছে...');
+      setStatusMessage('স্লিপের প্রিভিউ প্রস্তুত করা হচ্ছে...');
       setErrorMessage(null);
 
-      // Brief delay to ensure DOM is rendered
       await new Promise((r) => setTimeout(r, 200));
 
-      const elem = document.getElementById(targetElementId) || document.getElementById(`${targetElementId}-print`);
+      const elem = document.getElementById(currentTargetId) || document.getElementById(`${currentTargetId}-print`);
       if (elem) {
         try {
           const canvas = await captureElementToCanvas(elem);
@@ -72,24 +82,49 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, paperSize, targetElementId]);
+  }, [isOpen, paperSize, currentTargetId, selectedSide]);
 
   if (!isOpen) return null;
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (type: 'front' | 'back' | 'duplex') => {
     setIsGenerating(true);
-    setStatusMessage('PDF ফাইল প্রসেস ও ডাউনলোড করা হচ্ছে...');
-    const elemId = document.getElementById(targetElementId) ? targetElementId : `${targetElementId}-print`;
+    setStatusMessage('PDF ফাইল তৈরি ও ডাউনলোড হচ্ছে...');
     const dateStr = formData.dutyDate || 'date';
-    const fileName = paperSize === 'a4'
-      ? `Goni_Market_Guard_Slips_A4_${dateStr}.pdf`
-      : `Goni_Market_Guard_Slip_A5_${dateStr}.pdf`;
 
     let success = false;
-    if (paperSize === 'a4') {
-      success = await downloadElementAsA4PDF(elemId, fileName);
+    const frontId = document.getElementById(frontElementId) ? frontElementId : `${frontElementId}-print`;
+    const backId = document.getElementById(backElementId) ? backElementId : `${backElementId}-print`;
+
+    if (type === 'duplex') {
+      const fileName = paperSize === 'a4'
+        ? `Goni_Market_Guard_Slips_A4_Duplex_FrontBack_${dateStr}.pdf`
+        : `Goni_Market_Guard_Slip_A5_Duplex_FrontBack_${dateStr}.pdf`;
+
+      if (paperSize === 'a4') {
+        success = await downloadDuplexA4PDF(frontId, backId, fileName);
+      } else {
+        success = await downloadDuplexA5PDF(frontId, backId, fileName);
+      }
+    } else if (type === 'back') {
+      const fileName = paperSize === 'a4'
+        ? `Goni_Market_Guard_Slips_A4_BackSide_${dateStr}.pdf`
+        : `Goni_Market_Guard_Slip_A5_BackSide_${dateStr}.pdf`;
+
+      if (paperSize === 'a4') {
+        success = await downloadElementAsA4PDF(backId, fileName);
+      } else {
+        success = await downloadElementAsA5PDF(backId, fileName);
+      }
     } else {
-      success = await downloadElementAsA5PDF(elemId, fileName);
+      const fileName = paperSize === 'a4'
+        ? `Goni_Market_Guard_Slips_A4_FrontSide_${dateStr}.pdf`
+        : `Goni_Market_Guard_Slip_A5_FrontSide_${dateStr}.pdf`;
+
+      if (paperSize === 'a4') {
+        success = await downloadElementAsA4PDF(frontId, fileName);
+      } else {
+        success = await downloadElementAsA5PDF(frontId, fileName);
+      }
     }
 
     setIsGenerating(false);
@@ -103,9 +138,10 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
   const handleDownloadPNG = async () => {
     setIsGenerating(true);
     setStatusMessage('HD ছবি ডাউনলোড করা হচ্ছে...');
-    const elemId = document.getElementById(targetElementId) ? targetElementId : `${targetElementId}-print`;
+    const elemId = document.getElementById(currentTargetId) ? currentTargetId : `${currentTargetId}-print`;
     const dateStr = formData.dutyDate || 'date';
-    const fileName = `Goni_Market_Guard_Slip_${paperSize.toUpperCase()}_${dateStr}.png`;
+    const sideName = selectedSide === 'back' ? 'BackSide' : 'FrontSide';
+    const fileName = `Goni_Market_Guard_Slip_${paperSize.toUpperCase()}_${sideName}_${dateStr}.png`;
 
     const success = await downloadElementAsPNG(elemId, fileName);
     setIsGenerating(false);
@@ -113,7 +149,6 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
     if (success) {
       setStatusMessage('✅ HD ছবি (PNG) ডাউনলোড সফল হয়েছে!');
     } else {
-      // Fallback: If previewImage exists, trigger download directly from previewImage
       if (previewImage) {
         try {
           const a = document.createElement('a');
@@ -138,7 +173,7 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
 
   const handleOpenNewWindow = async () => {
     let imgSource = previewImage;
-    const elem = document.getElementById(targetElementId) || document.getElementById(`${targetElementId}-print`);
+    const elem = document.getElementById(currentTargetId) || document.getElementById(`${currentTargetId}-print`);
 
     if (!imgSource && elem) {
       try {
@@ -204,7 +239,7 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white">
-                প্রিন্ট ও ডাউনলোড অ্যাসিস্ট্যান্ট ({paperSize.toUpperCase()})
+                প্রিন্ট ও ডাউনলোড কেন্দ্র ({paperSize.toUpperCase()})
               </h3>
               <p className="text-xs text-slate-400">
                 তারিখ: {formatBengaliFullDate(formData.dutyDate)} | সিরিয়াল: #{serialNumber}
@@ -219,9 +254,48 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
           </button>
         </div>
 
+        {/* Side Select Tabs */}
+        <div className="flex items-center justify-between gap-2 mt-4 p-1.5 bg-slate-950 rounded-xl border border-slate-800">
+          <span className="text-xs font-semibold text-slate-400 pl-2">পেজ নির্বাচন:</span>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setSelectedSide('duplex')}
+              className={`px-3 py-1 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
+                selectedSide === 'duplex'
+                  ? 'bg-amber-500 text-slate-950 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>উভয় পিঠ (Duplex PDF)</span>
+            </button>
+            <button
+              onClick={() => setSelectedSide('front')}
+              className={`px-3 py-1 text-xs font-bold rounded-lg transition cursor-pointer ${
+                selectedSide === 'front'
+                  ? 'bg-amber-500 text-slate-950 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>সামনের পিঠ</span>
+            </button>
+            <button
+              onClick={() => setSelectedSide('back')}
+              className={`px-3 py-1 text-xs font-bold rounded-lg transition cursor-pointer flex items-center gap-1 ${
+                selectedSide === 'back'
+                  ? 'bg-amber-500 text-slate-950 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>উল্টোপিঠ (৭টি মূলমন্ত্র)</span>
+            </button>
+          </div>
+        </div>
+
         {/* Status or Alert banner */}
         {statusMessage && (
-          <div className="mt-4 p-3 bg-slate-800/80 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-center gap-2">
+          <div className="mt-3 p-3 bg-slate-800/80 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-center gap-2">
             {isGenerating ? (
               <Loader2 className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
             ) : (
@@ -232,14 +306,14 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
         )}
 
         {errorMessage && (
-          <div className="mt-4 p-3 bg-rose-950/50 border border-rose-500/40 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+          <div className="mt-3 p-3 bg-rose-950/50 border border-rose-500/40 rounded-xl text-xs text-rose-300 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Preview Container */}
-        <div className="my-4 flex-1 flex flex-col items-center justify-center bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-h-[220px] max-h-[350px] overflow-auto">
+        <div className="my-3 flex-1 flex flex-col items-center justify-center bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-h-[220px] max-h-[300px] overflow-auto">
           {isGenerating && !previewImage ? (
             <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-400 text-xs">
               <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
@@ -250,16 +324,20 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
               <img
                 src={previewImage}
                 alt="Slip Preview"
-                className="max-h-[280px] w-auto object-contain rounded-md border border-slate-700 shadow-md"
+                className="max-h-[240px] w-auto object-contain rounded-md border border-slate-700 shadow-md"
               />
               <span className="text-[11px] text-slate-400">
-                💡 মোবাইলে ছবি ডাউনলোডে সমস্যা হলে ছবির উপর চেপে ধরে &quot;Save Image&quot; বা &quot;Download Image&quot; বেছে নিন।
+                {selectedSide === 'duplex'
+                  ? '💡 Duplex PDF ডাউনলোডে ১ম পেজে সামনের স্লিপ এবং ২য় পেজে উল্টোপিঠের ৭টি ব্যবসায়িক মূলমন্ত্র থাকবে।'
+                  : selectedSide === 'back'
+                  ? '💡 এটি স্লিপের উল্টোপিঠ (উদ্যোক্তা ও সামাজিক দায়বদ্ধতার নীতিমালার ৭টি পয়েন্ট)।'
+                  : '💡 এটি স্লিপের সামনের মূল পাহারাদার তথ্য ও নিয়মের পেজ।'}
               </span>
             </div>
           ) : (
             <div className="text-slate-400 text-xs text-center py-8 flex flex-col items-center gap-2">
               <Printer className="w-8 h-8 text-amber-400/80 mb-1" />
-              <span>সরাসরি নিচের ১, ২, ৩ বা ৪ নং বাটন থেকে ডাউনলোড অথবা প্রিন্ট করুন।</span>
+              <span>সরাসরি নিচের বাটনগুলো থেকে ডাউনলোড অথবা প্রিন্ট করুন।</span>
             </div>
           )}
         </div>
@@ -267,21 +345,30 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
         {/* Main Action Buttons Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-800">
           <button
-            onClick={handleDownloadPDF}
+            onClick={() => handleDownloadPDF('duplex')}
             disabled={isGenerating}
-            className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-50"
           >
-            <Download className="w-4 h-4" />
-            <span>১. {paperSize.toUpperCase()} PDF ডাউনলোড করুন</span>
+            <Layers className="w-4 h-4 text-slate-950" />
+            <span>১. উভয় পিঠ (Duplex 2-Page) PDF</span>
+          </button>
+
+          <button
+            onClick={() => handleDownloadPDF(selectedSide === 'duplex' ? 'front' : selectedSide)}
+            disabled={isGenerating}
+            className="w-full py-2.5 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
+          >
+            <Download className="w-4 h-4 text-amber-400" />
+            <span>২. বর্তমান পেজ PDF ডাউনলোড</span>
           </button>
 
           <button
             onClick={handleDownloadPNG}
             disabled={isGenerating}
-            className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
           >
             <ImageIcon className="w-4 h-4 text-sky-200" />
-            <span>২. HD ছবি (PNG) ডাউনলোড</span>
+            <span>৩. HD ছবি (PNG) ডাউনলোড</span>
           </button>
 
           <button
@@ -289,15 +376,7 @@ export const PrintDownloadModal: React.FC<PrintDownloadModalProps> = ({
             className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <Printer className="w-4 h-4 text-amber-400" />
-            <span>৩. ব্রাউজার প্রিন্ট ডায়ালগ (Ctrl+P)</span>
-          </button>
-
-          <button
-            onClick={handleOpenNewWindow}
-            className="w-full py-2.5 px-4 rounded-xl bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 text-xs font-bold border border-emerald-600/60 transition flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <ExternalLink className="w-4 h-4 text-emerald-400" />
-            <span>৪. নতুন ট্যাবে খুলে প্রিন্ট করুন</span>
+            <span>৪. ব্রাউজার প্রিন্ট ডায়ালগ (Ctrl+P)</span>
           </button>
         </div>
       </div>

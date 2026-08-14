@@ -343,6 +343,98 @@ export async function downloadElementAsA4PDF(
 }
 
 /**
+ * Downloads a 2-page Duplex PDF (Page 1: Front Slips, Page 2: Back Slips) for A5 Landscape.
+ */
+export async function downloadDuplexA5PDF(
+  frontElementId: string,
+  backElementId: string,
+  fileName = 'Goni_Market_Guard_Slip_A5_Duplex.pdf'
+): Promise<boolean> {
+  const frontElem = document.getElementById(frontElementId);
+  const backElem = document.getElementById(backElementId);
+
+  if (!frontElem) {
+    console.error(`Front element with id ${frontElementId} not found.`);
+    return false;
+  }
+
+  try {
+    const frontCanvas = await captureElementToCanvas(frontElem);
+    const frontImg = frontCanvas.toDataURL('image/png', 1.0);
+
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a5',
+      compress: true,
+    });
+
+    // Page 1: Front
+    pdf.addImage(frontImg, 'PNG', 0, 0, 210, 148, undefined, 'FAST');
+
+    // Page 2: Back (if element exists)
+    if (backElem) {
+      const backCanvas = await captureElementToCanvas(backElem);
+      const backImg = backCanvas.toDataURL('image/png', 1.0);
+      pdf.addPage('a5', 'landscape');
+      pdf.addImage(backImg, 'PNG', 0, 0, 210, 148, undefined, 'FAST');
+    }
+
+    pdf.save(fileName);
+    return true;
+  } catch (err) {
+    console.error('Error generating A5 Duplex PDF:', err);
+    return false;
+  }
+}
+
+/**
+ * Downloads a 2-page Duplex PDF (Page 1: Front 4 Slips, Page 2: Back 4 Slips) for A4 Portrait.
+ */
+export async function downloadDuplexA4PDF(
+  frontElementId: string,
+  backElementId: string,
+  fileName = 'Goni_Market_Guard_Slips_A4_Duplex_4Up.pdf'
+): Promise<boolean> {
+  const frontElem = document.getElementById(frontElementId);
+  const backElem = document.getElementById(backElementId);
+
+  if (!frontElem) {
+    console.error(`Front element with id ${frontElementId} not found.`);
+    return false;
+  }
+
+  try {
+    const frontCanvas = await captureElementToCanvas(frontElem);
+    const frontImg = frontCanvas.toDataURL('image/png', 1.0);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    // Page 1: Front
+    pdf.addImage(frontImg, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+
+    // Page 2: Back (if element exists)
+    if (backElem) {
+      const backCanvas = await captureElementToCanvas(backElem);
+      const backImg = backCanvas.toDataURL('image/png', 1.0);
+      pdf.addPage('a4', 'portrait');
+      pdf.addImage(backImg, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    }
+
+    pdf.save(fileName);
+    return true;
+  } catch (err) {
+    console.error('Error generating A4 Duplex PDF:', err);
+    return false;
+  }
+}
+
+/**
  * Downloads multiple element IDs as a multi-page A5 PDF.
  */
 export async function downloadBatchAsA5PDF(

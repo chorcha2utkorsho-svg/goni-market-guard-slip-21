@@ -3,6 +3,8 @@ import { Navbar } from './components/Navbar';
 import { InputForm } from './components/InputForm';
 import { A5DualSlipContainer } from './components/A5DualSlipContainer';
 import { A4QuadSlipContainer } from './components/A4QuadSlipContainer';
+import { A5DualSlipBackContainer } from './components/A5DualSlipBackContainer';
+import { A4QuadSlipBackContainer } from './components/A4QuadSlipBackContainer';
 import { PreviewControls } from './components/PreviewControls';
 import { BatchGeneratorModal } from './components/BatchGeneratorModal';
 import { HistoryPanel } from './components/HistoryPanel';
@@ -15,7 +17,14 @@ import { PrintDownloadModal } from './components/PrintDownloadModal';
 import { MerchantAuthModal, MerchantProfile } from './components/MerchantAuthModal';
 import { GuardDutySlipInput, SavedSlipRecord, DutyComment, GuardStatus } from './types';
 import { getTomorrowDateString, generateSlipSerial, formatBengaliFullDate } from './utils/bengaliUtils';
-import { downloadElementAsA5PDF, downloadElementAsA4PDF, downloadElementAsPNG, triggerPrintWindow } from './utils/pdfGenerator';
+import {
+  downloadElementAsA5PDF,
+  downloadElementAsA4PDF,
+  downloadDuplexA5PDF,
+  downloadDuplexA4PDF,
+  downloadElementAsPNG,
+  triggerPrintWindow,
+} from './utils/pdfGenerator';
 import { Sparkles, Lock, ShieldCheck, ArrowRight, Store, Edit3 } from 'lucide-react';
 import { getScheduledPairForDate } from './data/rosterData';
 import { fetchSlipsFromSupabase, saveSlipToSupabase, isSupabaseConfigured } from './utils/supabase';
@@ -131,6 +140,7 @@ export default function App() {
 
   const [serialNumber, setSerialNumber] = useState<string>(() => generateSlipSerial());
   const [paperSize, setPaperSize] = useState<'a4' | 'a5'>('a4');
+  const [activeSide, setActiveSide] = useState<'front' | 'back' | 'both'>('front');
   const [zoomLevel, setZoomLevel] = useState<number>(0.75);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [isSavedSuccess, setIsSavedSuccess] = useState<boolean>(false);
@@ -352,13 +362,36 @@ export default function App() {
     try {
       let success = false;
       const dateStr = formData.dutyDate || 'date';
-      const targetId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
-      if (paperSize === 'a4') {
-        const fileName = `Goni_Market_Guard_Slips_A4_4Up_${dateStr}.pdf`;
-        success = await downloadElementAsA4PDF(targetId, fileName);
+      const frontId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
+      const backId = paperSize === 'a4' ? 'a4-quad-slip-back-container' : 'a5-dual-slip-back-container';
+
+      if (activeSide === 'both') {
+        const fileName = paperSize === 'a4'
+          ? `Goni_Market_Guard_Slips_A4_Duplex_${dateStr}.pdf`
+          : `Goni_Market_Guard_Slip_A5_Duplex_${dateStr}.pdf`;
+        if (paperSize === 'a4') {
+          success = await downloadDuplexA4PDF(frontId, backId, fileName);
+        } else {
+          success = await downloadDuplexA5PDF(frontId, backId, fileName);
+        }
+      } else if (activeSide === 'back') {
+        const fileName = paperSize === 'a4'
+          ? `Goni_Market_Guard_Slips_A4_BackSide_${dateStr}.pdf`
+          : `Goni_Market_Guard_Slip_A5_BackSide_${dateStr}.pdf`;
+        if (paperSize === 'a4') {
+          success = await downloadElementAsA4PDF(backId, fileName);
+        } else {
+          success = await downloadElementAsA5PDF(backId, fileName);
+        }
       } else {
-        const fileName = `Goni_Market_Guard_Slip_A5_${dateStr}.pdf`;
-        success = await downloadElementAsA5PDF(targetId, fileName);
+        const fileName = paperSize === 'a4'
+          ? `Goni_Market_Guard_Slips_A4_FrontSide_${dateStr}.pdf`
+          : `Goni_Market_Guard_Slip_A5_FrontSide_${dateStr}.pdf`;
+        if (paperSize === 'a4') {
+          success = await downloadElementAsA4PDF(frontId, fileName);
+        } else {
+          success = await downloadElementAsA5PDF(frontId, fileName);
+        }
       }
 
       if (!success) {
@@ -376,8 +409,11 @@ export default function App() {
     setIsDownloading(true);
     try {
       const dateStr = formData.dutyDate || 'date';
-      const targetId = paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container';
-      const fileName = `Goni_Market_Guard_Slip_${paperSize.toUpperCase()}_${dateStr}.png`;
+      const targetId = activeSide === 'back'
+        ? (paperSize === 'a4' ? 'a4-quad-slip-back-container' : 'a5-dual-slip-back-container')
+        : (paperSize === 'a4' ? 'a4-quad-slip-container' : 'a5-dual-slip-container');
+      const sideSuffix = activeSide === 'back' ? 'BackSide' : 'FrontSide';
+      const fileName = `Goni_Market_Guard_Slip_${paperSize.toUpperCase()}_${sideSuffix}_${dateStr}.png`;
       const success = await downloadElementAsPNG(targetId, fileName);
       if (!success) {
         setIsPrintModalOpen(true);
@@ -542,6 +578,8 @@ export default function App() {
                   <PreviewControls
                     paperSize={paperSize}
                     onPaperSizeChange={setPaperSize}
+                    activeSide={activeSide}
+                    onSideChange={setActiveSide}
                     zoomLevel={zoomLevel}
                     onZoomIn={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.3))}
                     onZoomOut={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.4))}
@@ -559,13 +597,21 @@ export default function App() {
                   <div className="text-[11px] text-slate-400 mb-3 flex items-center gap-2 no-print">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span>
-                      {paperSize === 'a4' ? (
+                      {activeSide === 'back' ? (
                         <>
-                          লাইভ A4 পেজ প্রিভিউ (৪টি ল্যান্ডস্কেপ স্লিপ — {formatBengaliFullDate(formData.dutyDate)} ও পরবর্তী দিন)
+                          🔄 লাইভ উল্টোপিঠ প্রিভিউ (ব্যবসায়ী ও উদ্যোক্তা অনুপ্রেরণার ৭টি মূলনীতি — {paperSize.toUpperCase()})
+                        </>
+                      ) : activeSide === 'both' ? (
+                        <>
+                          📑 লাইভ উভয় পিঠ প্রিভিউ (সামনের পাহারাদার স্লিপ + উল্টোপিঠের ৭টি মূলমন্ত্র)
+                        </>
+                      ) : paperSize === 'a4' ? (
+                        <>
+                          📄 লাইভ A4 পেজ প্রিভিউ (৪টি ল্যান্ডস্কেপ স্লিপ — {formatBengaliFullDate(formData.dutyDate)} ও পরবর্তী দিন)
                         </>
                       ) : (
                         <>
-                          লাইভ A5 পেজ প্রিভিউ (২টি স্লিপ — {formatBengaliFullDate(formData.dutyDate)})
+                          📄 লাইভ A5 পেজ প্রিভিউ (২টি স্লিপ — {formatBengaliFullDate(formData.dutyDate)})
                         </>
                       )}
                     </span>
@@ -573,26 +619,94 @@ export default function App() {
 
                   {/* Scaled Preview Canvas */}
                   <div
-                    className="transition-transform duration-200 ease-out origin-top shadow-2xl rounded-sm"
+                    className="transition-transform duration-200 ease-out origin-top shadow-2xl rounded-sm flex flex-col gap-6 items-center"
                     style={{
                       transform: `scale(${zoomLevel})`,
-                      marginBottom: `${(zoomLevel - 1) * (paperSize === 'a4' ? 450 : 200)}px`,
+                      marginBottom: `${(zoomLevel - 1) * (paperSize === 'a4' ? (activeSide === 'both' ? 900 : 450) : (activeSide === 'both' ? 400 : 200))}px`,
                     }}
                   >
-                    {paperSize === 'a4' ? (
-                      <A4QuadSlipContainer
-                        id="a4-quad-slip-container"
-                        dataDay1={formData}
-                        serialNumberDay1={serialNumber}
-                        onVerifyClick={() => setIsVerificationOpen(true)}
-                      />
-                    ) : (
-                      <A5DualSlipContainer
-                        id="a5-dual-slip-container"
-                        data={formData}
-                        serialNumber={serialNumber}
-                        onVerifyClick={() => setIsVerificationOpen(true)}
-                      />
+                    {/* Front Page */}
+                    {(activeSide === 'front' || activeSide === 'both') && (
+                      <div className="flex flex-col items-center">
+                        {activeSide === 'both' && (
+                          <div className="bg-amber-600/90 text-white text-xs font-bold px-3 py-1 rounded-full mb-2 no-print shadow-sm">
+                            ১ম পৃষ্ঠা: সামনের মূল স্লিপ (Front Side)
+                          </div>
+                        )}
+                        {paperSize === 'a4' ? (
+                          <A4QuadSlipContainer
+                            id="a4-quad-slip-container"
+                            dataDay1={formData}
+                            serialNumberDay1={serialNumber}
+                            onVerifyClick={() => setIsVerificationOpen(true)}
+                          />
+                        ) : (
+                          <A5DualSlipContainer
+                            id="a5-dual-slip-container"
+                            data={formData}
+                            serialNumber={serialNumber}
+                            onVerifyClick={() => setIsVerificationOpen(true)}
+                          />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Back Page */}
+                    {(activeSide === 'back' || activeSide === 'both') && (
+                      <div className="flex flex-col items-center">
+                        {activeSide === 'both' && (
+                          <div className="bg-emerald-600/90 text-white text-xs font-bold px-3 py-1 rounded-full mb-2 no-print shadow-sm">
+                            ২য় পৃষ্ঠা: উল্টোপিঠ (উদ্যোক্তা ও সামাজিক দায়বদ্ধতার নীতি)
+                          </div>
+                        )}
+                        {paperSize === 'a4' ? (
+                          <A4QuadSlipBackContainer
+                            id="a4-quad-slip-back-container"
+                            dataDay1={formData}
+                            serialNumberDay1={serialNumber}
+                          />
+                        ) : (
+                          <A5DualSlipBackContainer
+                            id="a5-dual-slip-back-container"
+                            data={formData}
+                            serialNumber={serialNumber}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hidden Background Mounted Elements for PDF export if not currently in DOM */}
+                  <div className="sr-only" aria-hidden="true">
+                    {activeSide === 'back' && (
+                      paperSize === 'a4' ? (
+                        <A4QuadSlipContainer
+                          id="a4-quad-slip-container"
+                          dataDay1={formData}
+                          serialNumberDay1={serialNumber}
+                        />
+                      ) : (
+                        <A5DualSlipContainer
+                          id="a5-dual-slip-container"
+                          data={formData}
+                          serialNumber={serialNumber}
+                        />
+                      )
+                    )}
+                    {activeSide === 'front' && (
+                      paperSize === 'a4' ? (
+                        <A4QuadSlipBackContainer
+                          id="a4-quad-slip-back-container"
+                          dataDay1={formData}
+                          serialNumberDay1={serialNumber}
+                        />
+                      ) : (
+                        <A5DualSlipBackContainer
+                          id="a5-dual-slip-back-container"
+                          data={formData}
+                          serialNumber={serialNumber}
+                        />
+                      )
                     )}
                   </div>
                 </div>
@@ -641,18 +755,35 @@ export default function App() {
 
       {/* Print-Only Container for browser window.print() */}
       <div className="print-only-container">
-        {paperSize === 'a4' ? (
-          <A4QuadSlipContainer
-            id="a4-quad-slip-container-print"
-            dataDay1={formData}
-            serialNumberDay1={serialNumber}
-          />
-        ) : (
-          <A5DualSlipContainer
-            id="a5-dual-slip-container-print"
-            data={formData}
-            serialNumber={serialNumber}
-          />
+        {(activeSide === 'front' || activeSide === 'both') && (
+          paperSize === 'a4' ? (
+            <A4QuadSlipContainer
+              id="a4-quad-slip-container-print"
+              dataDay1={formData}
+              serialNumberDay1={serialNumber}
+            />
+          ) : (
+            <A5DualSlipContainer
+              id="a5-dual-slip-container-print"
+              data={formData}
+              serialNumber={serialNumber}
+            />
+          )
+        )}
+        {(activeSide === 'back' || activeSide === 'both') && (
+          paperSize === 'a4' ? (
+            <A4QuadSlipBackContainer
+              id="a4-quad-slip-back-container-print"
+              dataDay1={formData}
+              serialNumberDay1={serialNumber}
+            />
+          ) : (
+            <A5DualSlipBackContainer
+              id="a5-dual-slip-back-container-print"
+              data={formData}
+              serialNumber={serialNumber}
+            />
+          )
         )}
       </div>
 

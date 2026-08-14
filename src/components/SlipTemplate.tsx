@@ -59,7 +59,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
 
   return (
     <div
-      className="relative w-full h-full p-2 flex flex-col justify-between overflow-hidden font-['Hind_Siliguri',sans-serif] bg-white text-slate-900 border-2 border-neutral-900 rounded-xs select-none"
+      className="relative w-full h-full p-2 flex flex-col justify-between overflow-hidden font-['Hind_Siliguri',sans-serif] bg-white text-slate-900 border-2 border-slate-800 rounded-sm select-none"
       style={{
         boxSizing: 'border-box',
         backgroundColor: '#ffffff',
@@ -67,7 +67,7 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
       }}
     >
       {/* Outer Thin Inner Border Frame */}
-      <div className="absolute inset-0.5 border border-neutral-300 pointer-events-none rounded-xs opacity-60"></div>
+      <div className="absolute inset-0.5 border border-slate-300 pointer-events-none rounded-xs opacity-60"></div>
 
       <div className="space-y-1">
         {/* Header Banner */}
@@ -226,31 +226,31 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
         <div className="space-y-1" style={{ color: '#0f172a' }}>
           {/* 1. জরুরি নির্দেশনা (Emergency Instructions Box) */}
           <div
-            className="border rounded p-1.5 space-y-0.5 text-[9px]"
+            className="border rounded p-1.5 space-y-1 text-[9px]"
             style={{ backgroundColor: '#fef2f2', borderColor: '#fca5a5', color: '#0f172a' }}
           >
             <div className="flex items-center gap-1 font-bold text-[10px] border-b pb-0.5" style={{ color: '#991b1b', borderColor: '#fecaca' }}>
-              <AlertTriangle className="w-3 h-3 shrink-0" style={{ color: '#b91c1c' }} />
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" style={{ color: '#b91c1c' }} />
               <span>জরুরি নির্দেশনা:</span>
             </div>
-            <ul className="space-y-0.5 leading-[1.4] pl-0.5">
+            <ul className="space-y-1 leading-[1.4] pl-0.5">
               <li className="flex items-start gap-1">
                 <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
                 <span>
-                  ডিউটিতে অপারগ হলে বিকল্প লোক নিতে <strong className="px-1 rounded font-bold" style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>৩০০ টাকা সহ</strong> বিকাল ৪টার মধ্যে{' '}
+                  ডিউটিতে অপারগ হলে বিকল্প লোক নিতে <strong className="px-1 rounded font-bold" style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>৩০০ টাকা সহ</strong> রাত ৯:০০ টার মধ্যে{' '}
                   <strong className="font-mono font-bold underline" style={{ color: '#991b1b' }}>{displayPhone}</strong> নম্বরে যোগাযোগ করুন।
                 </span>
               </li>
               <li className="flex items-start gap-1">
                 <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
                 <span>
-                  বিকাল ৪টার পর বা রাত ৯টা পর্যন্ত বিলম্ব ফি <strong className="font-bold underline" style={{ color: '#991b1b' }}>আরও ১০০ টাকা জরিমানা</strong> যুক্ত হবে।
+                  যদি রাত ৯:০০ টার মধ্যে বদলীর টাকা জমা না করে থাকেন তবে <strong className="font-bold underline px-1 rounded" style={{ backgroundColor: '#fecaca', color: '#991b1b' }}>১০০ টাকা জরিমানা</strong> হবে।
                 </span>
               </li>
               <li className="flex items-start gap-1">
                 <span className="font-bold shrink-0" style={{ color: '#dc2626' }}>•</span>
                 <span>
-                  রাত ১০টার মধ্যে দায়িত্ব না নিলে দোকান <strong className="px-1 font-bold rounded" style={{ backgroundColor: '#fecaca', color: '#991b1b' }}>সীলগালা/তালাবন্ধ হবে</strong> এবং প্রতিদিন <strong className="underline font-bold" style={{ color: '#991b1b' }}>১,০০০ টাকা জরিমানা</strong> হবে।
+                  যদিবা রাত ১০:০০ টার মধ্যেও দায়িত্বশীল না হয়ে থাকেন তবে <strong className="px-1 font-bold rounded" style={{ backgroundColor: '#fecaca', color: '#991b1b' }}>১,০০০ টাকা জরিমানা</strong> হবে। অনাদায়ে বাজার কমিটি <strong className="underline font-bold" style={{ color: '#991b1b' }}>দোকান তালাবদ্ধ করে রাখবেন</strong>।
                 </span>
               </li>
             </ul>
@@ -378,4 +378,3 @@ export const SlipTemplate: React.FC<SlipTemplateProps> = ({
     </div>
   );
 };
-
