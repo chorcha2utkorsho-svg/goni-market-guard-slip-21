@@ -59,36 +59,6 @@ const SLIDES: SlideItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&auto=format&fit=crop&q=80',
     badgeIcon: <Users className="w-4 h-4 text-amber-400" />,
   },
-  {
-    id: 's4',
-    title: 'গণি মার্কেট নৈশ নিরাপত্তা ও সুরক্ষা ব্যবস্থা',
-    subtitle: '২৪ ঘণ্টার নিশ্ছিদ্র নিরাপত্তা রোস্টার ও পাহারা পরিষদ',
-    tag: 'নৈশ নিরাপত্তা',
-    tagColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    description: 'ব্যবসায়ীদের নিজস্ব রোস্টারভিত্তিক নিশ্ছিদ্র নৈশ ডিউটি। প্রতি রাতে ৩ জন পাহারা জুটি ও আধুনিক সিসিটিভি মনিটরিংয়ে ১০০% নিরাপদ মার্কেট।',
-    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&auto=format&fit=crop&q=80',
-    badgeIcon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
-  },
-  {
-    id: 's5',
-    title: 'উত্তর ও দক্ষিণ গলির চালের পাইকারি আড়ৎ',
-    subtitle: 'দিনাজপুর, পাবনা ও কুষ্টিয়ার অটো রাইস মিলের চালের কেন্দ্রবিন্দু',
-    tag: 'চাউল ভান্ডার',
-    tagColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    description: 'নাজিরশাইল, মিনিকেট, আটাশ, পাইজাম ও সুগন্ধি পোলাও চালের পাইকারি ও খুচরা সরবরাহের জন্য দেশের নির্ভরযোগ্য চাউলের কেন্দ্র।',
-    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=1600&auto=format&fit=crop&q=80',
-    badgeIcon: <Wheat className="w-4 h-4 text-amber-400" />,
-  },
-  {
-    id: 's6',
-    title: 'পাখির চোখে গণি মার্কেট এর দৃষ্টিনন্দন সীমানা',
-    subtitle: 'সুপ্রশস্ত উত্তর ও দক্ষিণ গলি এবং কেন্দ্রীয় চত্বর',
-    tag: 'অ্যারিয়েল ভিউ',
-    tagColor: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
-    description: 'ভৌগোলিকভাবে সুবিন্যস্ত দোকানপাট, প্রতিটি স্টলের সুস্পষ্ট নম্বর ও সহজে চলাচলের জন্য পরিচ্ছন্ন গলি ব্যবস্থা।',
-    imageUrl: 'https://images.unsplash.com/photo-1519999482648-25049ddd37b1?w=1600&auto=format&fit=crop&q=80',
-    badgeIcon: <MapPin className="w-4 h-4 text-teal-400" />,
-  },
 ];
 
 interface MarketHeroSliderProps {
