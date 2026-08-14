@@ -93,4 +93,57 @@ body, html {
     width: 210mm !important;
     height: 297mm !important;
   }
+
+  /* Explicitly force flex-center alignments on all container classes used in printing */
+  .print-only-container .items-center,
+  .print-page .items-center,
+  [class*="items-center"] {
+    align-items: center !important;
+  }
+
+  .print-only-container .justify-center,
+  .print-page .justify-center,
+  [class*="justify-center"] {
+    justify-content: center !important;
+  }
+
+  .print-only-container .text-center,
+  .print-page .text-center,
+  [class*="text-center"] {
+    text-align: center !important;
+  }
+
+  /* Flex alignment enforcement for badges, pills, circles, and headers in print mode */
+  .print-only-container .inline-flex,
+  .print-page .inline-flex {
+    display: inline-flex !important;
+  }
+
+  .print-only-container .flex,
+  .print-page .flex {
+    display: flex !important;
+  }
+
+  .print-only-container .inline-flex.items-center,
+  .print-page .inline-flex.items-center,
+  .print-only-container .flex.items-center,
+  .print-page .flex.items-center {
+    align-items: center !important;
+  }
+
+  .print-only-container .inline-flex.justify-center,
+  .print-page .inline-flex.justify-center,
+  .print-only-container .flex.justify-center,
+  .print-page .flex.justify-center {
+    justify-content: center !important;
+  }
+
+  /* Force vertical centering on inline-flex badges, status pills, and numeric markers */
+  .print-only-container span.rounded-full,
+  .print-page span.rounded-full,
+  .print-only-container span.rounded,
+  .print-page span.rounded {
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
