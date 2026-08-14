@@ -94,3 +94,27 @@ export function resetDevSectionContent(sectionId?: string) {
     console.error('Failed to reset dev custom content', e);
   }
 }
+
+export function getAllDevContentJSON(): string {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw || '{}';
+  } catch {
+    return '{}';
+  }
+}
+
+export function importAllDevContentJSON(jsonString: string): boolean {
+  try {
+    const parsed = JSON.parse(jsonString);
+    if (typeof parsed === 'object' && parsed !== null) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      window.dispatchEvent(new CustomEvent('goni_dev_content_updated', { detail: { sectionId: 'all' } }));
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.error('Failed to import dev content', e);
+    return false;
+  }
+}

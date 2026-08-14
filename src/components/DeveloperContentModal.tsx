@@ -18,12 +18,18 @@ import {
   AlertCircle,
   BarChart2,
   FileSpreadsheet,
+  Download,
+  Upload,
+  Copy,
+  Check,
 } from 'lucide-react';
 import {
   getDevSectionContent,
   saveDevSectionContent,
   resetDevSectionContent,
   parseYouTubeEmbedUrl,
+  getAllDevContentJSON,
+  importAllDevContentJSON,
   SectionContentOverride,
 } from '../utils/devCustomContent';
 import { SectionUsageD3Chart } from './SectionUsageD3Chart';
@@ -54,7 +60,7 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
   initialSectionId = 'sec-1',
 }) => {
   const [selectedSectionId, setSelectedSectionId] = useState<string>(initialSectionId);
-  const [activeTabMode, setActiveTabMode] = useState<'editor' | 'analytics' | 'csv_roster'>('editor');
+  const [activeTabMode, setActiveTabMode] = useState<'editor' | 'analytics' | 'csv_roster' | 'backup_sync'>('editor');
   const [items, setItems] = useState<
     Array<{
       id: string;
@@ -72,6 +78,9 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
 
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [copiedJSON, setCopiedJSON] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importError, setImportError] = useState<string | null>(null);
 
   // Load section content when section changes
   useEffect(() => {
@@ -94,12 +103,30 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
         return [
           {
             id: 'item-1',
-            title: 'গণি মার্কেট ডিজিটাল পোর্টাল ও ব্যবসায়ী হাব',
+            title: 'অনলাইন গণিমার্কেট ডিজিটাল পোর্টাল ও ব্যবসায়ী হাব',
             subtitle: 'আধুনিক প্রযুক্তিতে সুসজ্জিত সকল দোকান ও সামাজিক ফোরাম',
-            description: 'সকল ব্যবসায়ী ও ক্রেতাদের জন্য ডিজিটাল সেবা ও অনলাইন ভিডিও পরিচিতি।',
+            description: 'সকল ব্যবসায়ী ও ক্রেতাদের জন্য ডিজিটাল সেবা, অনলাইন ডিরেক্টরি ও ভিডিও পরিচিতি।',
             imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&auto=format&fit=crop&q=80',
             videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            badge: 'ডিজিটাল হাব',
+            badge: 'ডিজিটাল পোর্টাল',
+          },
+          {
+            id: 'item-2',
+            title: 'পুরো বাজার এখন হাতের মুঠোয় - সমন্বিত প্ল্যাটফর্ম',
+            subtitle: 'উপ-শিরোনাম বা সংক্ষিপ্ত তথ্য ও দিকনির্দেশনা',
+            description: 'বাজারের নিরাপত্তা, সার্বিক উন্নয়ন, জরুরি ঘোষণা এবং প্রতিটি দোকানের তথ্য এখন এক ছাতার নিচে।',
+            imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=1600&auto=format&fit=crop&q=80',
+            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            badge: 'বাজার প্ল্যাটফর্ম',
+          },
+          {
+            id: 'item-3',
+            title: 'গনি চেয়ারম্যান, একজন মানবিক মহাসমাজ গঠনের পথিকৃৎ',
+            subtitle: 'সৃজনশীল মন, সভ্যতার বিকাশ, ন্যায় প্রতিষ্ঠার আন্দোলনে গনি চেয়ারম্যান চিরকাল স্মরণীয়',
+            description: 'সত্য ন্যায় আর আত্মবিশ্বাসের মূর্তমান প্রতীক ছিলেন গনি চেয়ারম্যান। গ্রামের একজন হতদরিদ্র মানুষ যখন ধনী প্রভাবশালী মানুষের নির্যাতনের শিকার হতেন তখন তিনি ছিলেন একমাত্র ভরসাস্থল।',
+            imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&auto=format&fit=crop&q=80',
+            videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            badge: 'স্মরণীয় পথিকৃৎ',
           },
         ];
       case 'sec-2':
@@ -271,6 +298,18 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
             </button>
 
             <button
+              onClick={() => setActiveTabMode('backup_sync')}
+              className={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+                activeTabMode === 'backup_sync'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                  : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              }`}
+            >
+              <Download className="w-4 h-4 text-cyan-400" />
+              <span>💾 JSON ব্যাকআপ ও গিট সিঙ্ক</span>
+            </button>
+
+            <button
               onClick={() => {
                 window.dispatchEvent(new CustomEvent('goni_market_open_slip_generator'));
                 onClose();
@@ -297,6 +336,102 @@ export const DeveloperContentModal: React.FC<DeveloperContentModalProps> = ({
         ) : activeTabMode === 'csv_roster' ? (
           <div className="my-auto overflow-y-auto max-h-[70vh] pr-1">
             <CsvRosterImporter />
+          </div>
+        ) : activeTabMode === 'backup_sync' ? (
+          <div className="my-auto overflow-y-auto max-h-[70vh] space-y-4 p-4 bg-slate-950 rounded-2xl border border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold">
+                <Download className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">💾 JSON এক্সপোর্ট ও গিট কোড সিঙ্ক</h3>
+                <p className="text-[11px] text-slate-400">
+                  ব্রাউজার এডিটরে দেওয়া কন্টেন্ট সরাসরি ডাউনলোড করুন অথবা নতুন ডিভাইসে ইম্পোর্ট করুন।
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Export Box */}
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                <h4 className="font-bold text-amber-400 text-xs flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  <span>বর্তমান কন্টেন্ট JSON এক্সপোর্ট</span>
+                </h4>
+                <p className="text-[11px] text-slate-400">
+                  আপনার সকল সেকশনের সেভ করা ডাটা এক ক্লিকে JSON ফরম্যাটে কপি বা ফাইল হিসেবে সংরক্ষণ করুন:
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const data = getAllDevContentJSON();
+                      navigator.clipboard.writeText(data);
+                      setCopiedJSON(true);
+                      setTimeout(() => setCopiedJSON(false), 2500);
+                    }}
+                    className="flex-1 py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    {copiedJSON ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedJSON ? 'কপি হয়েছে!' : 'JSON ক্লিপবোর্ডে কপি'}</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const data = getAllDevContentJSON();
+                      const blob = new Blob([data], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `goni-market-custom-content-${Date.now()}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="py-2 px-4 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>ডাউনলোড</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Import Box */}
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                <h4 className="font-bold text-emerald-400 text-xs flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
+                  <span>JSON ডাটা ইম্পোর্ট করুন</span>
+                </h4>
+                <textarea
+                  rows={3}
+                  value={importText}
+                  onChange={(e) => setImportText(e.target.value)}
+                  placeholder='এখানে সংরক্ষিত JSON পেস্ট করুন...'
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono text-[10px] outline-none focus:border-emerald-400"
+                />
+                {importError && (
+                  <p className="text-[10px] text-rose-400 font-bold">{importError}</p>
+                )}
+                <button
+                  onClick={() => {
+                    if (!importText.trim()) {
+                      setImportError('দয়া করে ভ্যালিড JSON পেস্ট করুন।');
+                      return;
+                    }
+                    const ok = importAllDevContentJSON(importText);
+                    if (ok) {
+                      setImportError(null);
+                      setImportText('');
+                      setSaveSuccess('JSON ডাটা সফলভাবে ইম্পোর্ট হয়েছে!');
+                      setActiveTabMode('editor');
+                    } else {
+                      setImportError('ভুল JSON ফরম্যাট! দয়া করে সঠিক JSON প্রদান করুন।');
+                    }
+                  }}
+                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>ইম্পোর্ট ও প্রয়োগ করুন</span>
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <>
